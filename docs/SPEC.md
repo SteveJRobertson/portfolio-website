@@ -1,114 +1,113 @@
-# Technical Specification & Product Architecture: Teletext Portfolio
+# Specification: Teletext Web Portfolio
 
-**Project**: Steve Robertson - Teletext Web Portfolio  
-**Author**: Solutions Architect & Product Owner  
-**Date**: October 2026  
-**Status**: Draft for Review  
+**Owner**: Steve Robertson (Product Owner)
+**Status**: Agreed baseline. Restored from the original brief on 4 Oct 2026; see [REVIEW.md](./REVIEW.md).
 
 ---
 
-## 1. Product Definition & Vision
+## 1. Summary
 
-The objective is to build a highly memorable, interactive, and fast personal developer portfolio modeled after classic European Teletext systems (BBC Ceefax / ITV ORACLE). 
+A developer portfolio built as an authentic European Teletext (Ceefax / ORACLE) service. It should be memorable first: when look and feel conflict with accessibility, look and feel wins. Accessibility is still provided in full through a parallel semantic layer and a plain "Text mode".
 
-The application must combine high visual fidelity to the 1980s/90s CRT broadcast aesthetic with modern web performance, mobile responsiveness, and WCAG accessibility compliance.
+## 2. Stack
 
-### Target Audience & UX Goals
-- **Recruiters & Engineering Managers**: Instantly wowed by the creative concept, responsive execution, and technical rigor.
-- **Developers & Tech Enthusiasts**: Appreciate the authentic SAA5050 Mode 7 typography, 3-digit navigation, Fastext color buttons, and Storybook design system showcase.
-- **Assistive Tech Users**: Can navigate effortlessly via standard keyboard shortcuts, screen readers (via hidden semantic DOM), or high-contrast accessible mode (Page 888).
+| Domain | Choice | Notes |
+|---|---|---|
+| Build | Vite + TypeScript | Static output in `dist/`. |
+| UI | React | State for the 3-digit buffer, clock, sub-page cycling and key handling. |
+| Design system | Storybook | Tokens, primitives and screen layouts, shown in isolation. |
+| Content | Local JSON files in `src/content/pages/` | No CMS. Validated at build time. |
+| Font | Bedstead (self-hosted WOFF2) | Mode 7 / SAA5050 geometry. Public domain. |
+| Tests | Vitest (unit), Playwright (visual, later) | |
+| Hosting | GitHub Pages via GitHub Actions | **Deferred**: the repo is private. |
 
----
+## 3. Display engine
 
-## 2. Architectural Analysis & Technology Choices
+The viewport is always locked to `100dvh` with no window scroll. The grid mode is chosen by **aspect ratio only**, from one place in CSS:
 
-### 2.1 Technology Stack
-- **Framework**: **Vite + React + TypeScript** (Single Page Application).
-  - *Rationale*: React provides seamless state management for the rolling 3-digit buffer, keybindings, CRT clock ticker, and page transitions. Vite ensures sub-second HMR and lightweight build output for static hosting.
-- **Design System Catalog**: **Storybook**.
-  - *Rationale*: Teletext is a purely tokenized system (8 primary CRT colors, SAA5050 character cells, mosaic blocks, Fastext actions). Storybook documents these tokens and allows isolated visual testing.
-- **Styling**: **Vanilla CSS / CSS Modules with Custom Properties (Variables)**.
-  - *Rationale*: Full control over monospaced character spacing (`1ch`), viewport-based `min()` font scaling, and retro CRT scanline/glow effects without heavy utility framework overhead.
-- **Typography**: **Bedstead** WOFF2 (Mode 7 pixel-accurate font) with fallback to `ModeSeven`.
-- **Hosting & Deployment**: **GitHub Pages via GitHub Actions CI/CD**.
+| Mode | Query | Grid | Layout |
+|---|---|---|---|
+| Widescreen | `min-aspect-ratio: 16/10` | 56 × 24 | 38-column main pane, 1-column separator, 17-column quick-index sidebar |
+| Classic | `1/1` to `16/10` | 40 × 24 | Traditional 4:3 screen |
+| Portrait | `max-aspect-ratio: 1/1` | 20 × 36 | Tall phone matrix, no scroll, safe-area insets |
 
----
+- Every screen renders exactly `cols × rows` character cells. Row 1 is the header and the last row is the Fastext bar.
+- Font size is `min(font-from-width, font-from-height)`, so the whole grid always fits.
+- `white-space: pre`, font smoothing disabled.
+- Double-height rows take up two row slots.
+- An optional CRT scanline/glow overlay, off when `prefers-reduced-motion` is set, with a toggle on page 888.
 
-## 3. Key Architectural Improvements Over Previous Proposals
+## 4. Design tokens
 
-| Feature / Domain | Previous Chat Proposal | Proposed Solution (PO / Architect) | Architectural Advantage |
-| :--- | :--- | :--- | :--- |
-| **Mobile Grid Layout** | Manual 20×36 dual-buffer array (`mobileLines` + `desktopLines`) | **Dual Mobile Strategy**: Scaled 40×24 CRT Stage + Retro Handheld TV Keypad docked below OR fluid reflow mode. | Eliminates dual-content authoring tax while adding a retro interactive TV remote UX for mobile. |
-| **Content Authoring** | Raw line-by-line character array | **Teletext Markup / JSON Parser Engine** with auto word-wrapping | Write clean text with simple color tags (`{cyan}TEXT{/cyan}`); the parser calculates line boundaries automatically. |
-| **Accessibility (a11y)** | Hidden DOM (`.sr-only`) + Page 888 toggle | **Dual-Tree Render (Aria-Hidden CRT + Semantic DOM) + Page 888 Subtitle / Reader Toggle** | Full WCAG AA/AAA compliance, screen reader support, keyboard trapping prevention, and SEO indexing. |
-| **Widescreen Mode** | Fixed 56×24 aspect-ratio switch | **56×24 Widescreen Teletext ETS 300 706 Split-Screen** (Content + Teletext Index Sidebar) | Maximizes desktop real estate authentically without stretching line lengths awkward across wide monitors. |
+- Background `#0C0C0C`.
+- Foreground: white `#FFFFFF`, yellow `#FFFF00`, cyan `#00FFFF`, green `#00FF00`, magenta `#FF00FF`, red `#FF3333`, blue `#4D79FF` (lightened for contrast).
+- Atoms: `TeletextChar`, `ColorSpan`, `FastextButton`, `ScanlineOverlay`.
+- Molecules: `HeaderTicker`, `PageBufferDisplay`, `NumericKeypad`.
+- Organisms: `TeletextGrid` (56×24 / 40×24 / 20×36), `TeletextScreen`.
 
----
+## 5. Navigation
 
-## 4. System Components & Architecture Diagram
+- **3-digit buffer**: one shared buffer fed by the keyboard (`0`–`9`) and the on-screen keypad. The header shows `P1--` while you type. The third digit navigates. `Escape` clears.
+- **Routing**: path based (`/100`, `/101`, …; `/` = 100), using the History API so back, forward and bookmarks work.
+- **Unknown pages**: show an authentic "PAGE NOT FOUND" screen that links back to 100.
+- **Fastext**: four slots per page (red, green, yellow, blue/cyan). Rendered as real `<a href>` links with a clear focus style. Hotkeys `R`, `G`, `Y`, `B`, ignored when a modifier key is held.
+- **Sub-pages**: long pages can cycle (`01/03`) on a timer, with a way to hold or pause.
+- **Mobile**: the on-screen keypad means the native keyboard never opens.
 
-```
-+---------------------------------------------------------------------------------+
-|                                 USER INPUT LAYER                                |
-|  - Physical Keyboard (0-9, R/G/Y/B, Arrows)                                     |
-|  - Touch / Mouse (Fastext Bar & Mobile On-Screen Remote Controller)             |
-|  - URL Router (/100 or /about, /200 or /projects, /300, /400, /888)             |
-+---------------------------------------------------------------------------------+
-                                        |
-                                        v
-+---------------------------------------------------------------------------------+
-|                           TELETEXT STATE MACHINE HUB                            |
-|  - 3-Digit Page Routing Buffer ([1], [0], [0])                                  |
-|  - Live Ticker / Clock Generator                                                |
-|  - CRT Shader & Theme State Manager                                             |
-+---------------------------------------------------------------------------------+
-                                        |
-                   +--------------------+--------------------+
-                   |                                         |
-                   v                                         v
-+------------------------------------+    +------------------------------------+
-|        VISUAL CRT RENDER ENGINE    |    |      SEMANTIC ACCESSIBLE DOM       |
-|  - 40x24 / 56x24 CSS Grid          |    |  - Semantic HTML (<main>, <nav>)   |
-|  - Bedstead Monospace Pixel Font   |    |  - Screen Reader Announcements     |
-|  - Scanline Overlay & Phosphor Glow|    |  - WCAG High Contrast (Page 888)   |
-|  - aria-hidden="true"              |    |  - SEO Crawlable Text              |
-+------------------------------------+    +------------------------------------+
-```
+## 6. Pages
 
----
+| Page | Content |
+|---|---|
+| 100 | Index / cover |
+| 101 | About |
+| 110 | Experience (sub-pages, one per role) |
+| 200 | Projects index; 201–20x individual projects |
+| 300 | Skills (sub-pages by group) |
+| 400 | Contact |
+| 888 | Accessibility: Text mode and CRT effect toggles |
+| 404 | Page not found |
 
-## 5. Page Directory Blueprint
+There is one page registry. The router, sidebar, keypad, semantic tree and validator all read from it.
 
-- **Page 100**: Main Index / Cover Page ( Steve-Text Home )
-- **Page 101**: About Steve (Bio, Experience Summary, Edinburgh location)
-- **Page 200**: Projects & Case Studies Index
-  - Page 201–205: Individual Project Showcase sub-pages
-- **Page 300**: Tech Stack & Engineering Skills Matrix
-- **Page 400**: Contact & Social Links (GitHub, LinkedIn, Email)
-- **Page 888**: Accessibility / Reader Mode / Subtitles (WCAG Mode Toggle)
-- **Page 404**: Authentic Broadcast "PAGE NOT FOUND / SIGNAL LOST" Error Screen
+## 7. Content schema and validation
 
----
+- Each page is a JSON file with `page`, `title`, `fastext`, `rows`, and optional `mobileRows` and `subpages`.
+- Rows are written once using colour tags (e.g. `{cyan}TEXT{/}`). A build-time wrapper lays them out for 38/40 columns and for 20 columns. `mobileRows` overrides the automatic portrait layout.
+- The validator fails the build when:
+  1. a row is wider than the mode's column limit;
+  2. a page has more rows than the mode allows;
+  3. a Fastext or inline link points at a page that doesn't exist;
+  4. an unknown colour tag is used.
 
-## 6. Decision Log
+## 8. Graphics
 
-- **DEC-001**: Adopt **Vite + React + TypeScript + Storybook** for tech stack.
-- **DEC-002**: Use **Bedstead** WOFF2 monospaced font with exact Mode 7 character metrics.
-- **DEC-003**: Implement **Dual-Tree Rendering** (`aria-hidden` visual matrix + `.sr-only` semantic DOM) for 100% accessibility parity.
-- **DEC-004**: Adopt **Aspect-Ratio Viewport Engine**:
-  - Desktop (≥16:9): 56×24 Widescreen with Sidebar Index.
-  - Tablet/Desktop (4:3 to 16:10): 40×24 Classic Ceefax Grid.
-  - Mobile (<1:1): Scaled Teletext Viewport + Retro TV Handset Keypad.
+- Block graphics use 2×3 mosaic characters on the grid, never free-floating `<canvas>` pixels.
+- A build-time converter turns raster images (headshot, project screenshots) into mosaic text in the 8-colour palette.
+- Optionally, artwork drawn in edit.tf can be imported.
+- All graphics are `aria-hidden`, with a text alternative in the semantic tree.
 
----
+## 9. Accessibility
 
-## 8. Delivery Plan & Sprint Roadmap
+1. **Semantic mirror**: the visual grid is `aria-hidden` and contains **no focusable elements**. The interactive controls and a visually hidden semantic tree (headings, paragraphs, lists, links) present the same content. Page changes are announced through a live region, and focus moves to the page heading.
+2. **Text mode (page 888)**: switches the whole UI to a clean, high-contrast HTML reader view. The choice is remembered.
+3. Pinch-zoom is never blocked. Focus is always visible. Keyboard listeners add to normal navigation and never replace it.
 
-| Sprint | Focus / Goal | Deliverables | Status |
-| :--- | :--- | :--- | :--- |
-| **Sprint 1** | **Foundation & Design System Setup** | Vite + React + TS setup, SAA5050 8-color tokens in `index.css`, `<ColorSpan>`, `<TeletextChar>`, Bedstead font definitions, build verification. | **COMPLETE** ✅ |
-| **Sprint 2** | **Core Engine & Navigation State Machine** | 40×24 `<TeletextScreen>` stage, `usePageBuffer` 3-digit routing hook (`0-9`), `<HeaderTicker>` live clock, `<FastTextBar>` (`R`, `G`, `Y`, `C` hotkeys), Dual-Tree Accessibility DOM. | **COMPLETE** ✅ |
-| **Sprint 3** | **Content Pipeline & Page Authoring** | Typed JSON page schemas (`/src/content/pages/`), auto word-wrapping Teletext markup parser engine, build-time line length validator, authoring content for Pages 100, 101, 200, 300, 400. | **COMPLETE** ✅ |
-| **Sprint 4** | **Canvas Shader & Mobile Handset UX** | Real-time Canvas image posterizer into 2×3 Teletext mosaic characters (`<TeletextCanvasImage>`), Retro TV Handset Keypad component for touch viewports, Page 888 Subtitle / Reader mode toggle. | **COMPLETE** ✅ |
-| **Sprint 5** | **CI/CD & GitHub Pages Launch** | `.github/workflows/deploy.yml` pipeline, build-time line length validation, TypeScript verification, GitHub Pages deployment. | **COMPLETE** ✅ |
+## 10. Decision log
 
+| ID | Decision |
+|---|---|
+| DEC-001 | Vite + React + TypeScript + Storybook. |
+| DEC-002 | Bedstead, self-hosted. No third-party font CDN. |
+| DEC-003 | Semantic mirror + Text mode for accessibility. The visual grid stays non-interactive for assistive tech. |
+| DEC-004 | Aspect-ratio engine: 56×24 / 40×24 / 20×36. Supersedes Gemini's "scaled 40×24 + remote" mobile approach, which was never signed off. |
+| DEC-005 | Write content once with colour tags and wrap it at build time. Per-page `mobileRows` override. |
+| DEC-006 | Path-based routing. |
+| DEC-007 | Deployment deferred while the repo is private. |
+| DEC-008 | Deliver as one PR per phase, on stacked branches (see [ROADMAP.md](./ROADMAP.md)). |
+| DEC-009 | Page map from [CONTENT.md](./CONTENT.md) approved, including 110 Experience with per-role sub-pages. |
+
+## 11. Open questions
+
+- Final Fastext hotkey for the fourth button: `B` (matches the original remote) or `C` (matches the colour).
+- Sub-page cycle interval and how to hold or pause.
+- Custom domain vs `github.io` when deployment resumes.
