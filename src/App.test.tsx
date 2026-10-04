@@ -68,9 +68,17 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/300');
   });
 
-  it('names the missing page on the not-found screen', () => {
+  it('redirects an unknown page to 404, from the URL or the digits', () => {
     renderAt('/512');
-    expect(heading().textContent).toBe('Page 512 not found');
+    expect(window.location.pathname).toBe('/404');
+    expect(heading().textContent).toBe('Page not found');
+
+    press('5');
+    press('1');
+    press('3');
+    act(() => vi.advanceTimersByTime(DIGIT_DELAY_MS));
+    expect(window.location.pathname).toBe('/404');
+    expect(heading().textContent).toBe('Page not found');
   });
 
   it('puts every sub-page in the mirror and announces sub-page steps', () => {

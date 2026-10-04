@@ -50,7 +50,7 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 
 - **3-digit buffer**: one shared buffer fed by the keyboard (`0`–`9`) and the on-screen keypad. The header shows `P1--` while you type. The third digit navigates. `Escape` clears.
 - **Routing**: path based (`/100`, `/101`, …; `/` = 100), using the History API so back, forward and bookmarks work. `pageHref()` in `src/navigation/paths.ts` is the only place a page URL is built.
-- **Unknown pages**: show an authentic "PAGE NOT FOUND" screen that links back to 100. The URL keeps the number asked for, and the heading names it ("Page 512 not found").
+- **Unknown pages**: show an authentic "PAGE NOT FOUND" screen that links back to 100. Any page number or path that isn't in the registry redirects to `/404` (a replace on load or back/forward, a push when navigating).
 - **Fastext**: four slots per page (red, green, yellow, cyan). Rendered as real `<a href>` links with a focus style distinct from hover; a plain click navigates in place, a modified click opens a new tab. Hotkeys `R`, `G`, `Y`, and `B` or `C` for the fourth.
 - **Hotkeys**: one listener (`useHotkeys`). Keys with a modifier and keys typed into form fields are ignored. The digit and letter shortcuts can be switched off on page 888 (WCAG 2.1.4); `←`/`→` are off in Text mode.
 - **Sub-pages**: long pages can cycle (`01/03`) on a timer, with a way to hold or pause.

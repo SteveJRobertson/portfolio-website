@@ -6,7 +6,7 @@ import { GridLine } from './components/GridLine';
 import { MobileKeypad } from './components/MobileKeypad';
 import { SemanticPage, type MirrorFocus } from './components/SemanticPage';
 import { SettingsControls } from './components/SettingsControls';
-import { NAVIGABLE_PAGES, NOT_FOUND_PAGE, PAGES, QUICK_INDEX, getPage, isValidPage } from './content/registry';
+import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage } from './content/registry';
 import { useGridMode } from './display/useGridMode';
 import { layoutBody } from './display/layout';
 import { sidebarRows } from './display/sidebar';
@@ -24,8 +24,8 @@ export const App: React.FC = () => {
   const [settings, updateSettings] = useSettings();
   const mode = useGridMode();
 
-  const page = (isValidPage(requested) && getPage(requested)) || getPage(NOT_FOUND_PAGE)!;
-  const heading = page.page === NOT_FOUND_PAGE && requested !== NOT_FOUND_PAGE ? `Page ${requested} not found` : page.title;
+  const page = getPage(requested)!;
+  const heading = page.title;
   const subpage = useSubpage(requested, page.wide.length);
   const buffer = useDigitBuffer(requested, navigate);
 

@@ -13,7 +13,7 @@ export interface MirrorFocus {
 
 interface SemanticPageProps {
   page: CompiledPage;
-  /** The heading text (the page title, or "Page 512 not found"). */
+  /** The heading text (the page title). */
   heading: string;
   headingRef: React.Ref<HTMLHeadingElement>;
   /** Every page, for the page list. */

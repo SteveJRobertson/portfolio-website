@@ -37,9 +37,19 @@ describe('useNavigation', () => {
     expect(result.current).toMatchObject({ page: 200, changes: 0 });
   });
 
-  it('keeps an unknown page number, so the not-found page can name it', () => {
+  it('redirects an unknown page to 404 without adding a history entry', () => {
     window.history.replaceState(null, '', '/942');
-    expect(renderHook(() => useNavigation()).result.current.page).toBe(942);
+    const length = window.history.length;
+    expect(renderHook(() => useNavigation()).result.current.page).toBe(404);
+    expect(window.location.pathname).toBe('/404');
+    expect(window.history.length).toBe(length);
+  });
+
+  it('redirects navigation to an unknown page to 404', () => {
+    const { result } = renderHook(() => useNavigation());
+    act(() => result.current.navigate(512));
+    expect(result.current.page).toBe(404);
+    expect(window.location.pathname).toBe('/404');
   });
 
   it('pushes history on navigate and follows back and forward', () => {
