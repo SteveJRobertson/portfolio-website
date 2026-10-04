@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_SETTINGS, SETTINGS_KEY, loadSettings, useSettings } from './useSettings';
+import { DEFAULT_SETTINGS, SETTINGS_KEY, crtEffectOn, loadSettings, useSettings } from './useSettings';
 
 describe('useSettings', () => {
   afterEach(() => {
@@ -15,15 +15,28 @@ describe('useSettings', () => {
   it('remembers a change', () => {
     const { result } = renderHook(() => useSettings());
     act(() => result.current[1]({ textMode: true }));
-    expect(result.current[0]).toEqual({ textMode: true, shortcuts: true });
-    expect(loadSettings()).toEqual({ textMode: true, shortcuts: true });
+    expect(result.current[0]).toEqual({ textMode: true, shortcuts: true, crt: null });
+    expect(loadSettings()).toEqual({ textMode: true, shortcuts: true, crt: null });
   });
 
   it('ignores saved values of the wrong type', () => {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ textMode: 'yes', shortcuts: false }));
-    expect(loadSettings()).toEqual({ textMode: false, shortcuts: false });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ textMode: 'yes', shortcuts: false, crt: 'on' }));
+    expect(loadSettings()).toEqual({ textMode: false, shortcuts: false, crt: null });
     window.localStorage.setItem(SETTINGS_KEY, 'not json');
     expect(loadSettings()).toEqual(DEFAULT_SETTINGS);
+  });
+
+  it('remembers the CRT choice', () => {
+    const { result } = renderHook(() => useSettings());
+    act(() => result.current[1]({ crt: false }));
+    expect(loadSettings().crt).toBe(false);
+  });
+
+  it('turns the CRT effect on unless the system asks for reduced motion or more contrast, until the visitor chooses', () => {
+    expect(crtEffectOn(null, false)).toBe(true);
+    expect(crtEffectOn(null, true)).toBe(false);
+    expect(crtEffectOn(true, true)).toBe(true);
+    expect(crtEffectOn(false, false)).toBe(false);
   });
 
   it('still works when storage throws', () => {

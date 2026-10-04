@@ -59,7 +59,7 @@ export const sextant = (bits: number): string => {
   if (bits === 0b111111) return '█';
   if (bits === 0b010101) return '▌';
   if (bits === 0b101010) return '▐';
-  return String.fromCodePoint(0x1fb00 + bits - 1 - (bits > 0b010101 ? 1 : 0));
+  return String.fromCodePoint(0x1fb00 + bits - 1 - (bits > 0b010101 ? 1 : 0) - (bits > 0b101010 ? 1 : 0));
 };
 
 const clamp = (v: number) => Math.min(255, Math.max(0, v));
@@ -153,7 +153,8 @@ const cellFor = (pixels: number[][], palette: readonly TeletextColor[]): Cell =>
       if (error < best.error) best = { error, a, b };
     }
   }
-  const solid = (c: TeletextColor): Cell => (c === 'black' ? { ch: ' ' } : { ch: '\u2588', color: c });
+  // A solid cell is a space on a coloured background, so runs of them have no seams between glyphs.
+  const solid = (c: TeletextColor): Cell => (c === 'black' ? { ch: ' ' } : { ch: ' ', bg: c });
   let fg = palette[best.a];
   let bg = palette[best.b];
   let bits = d.reduce((n, row, i) => (row[best.a] <= row[best.b] ? n | (1 << i) : n), 0);
@@ -167,16 +168,16 @@ const cellFor = (pixels: number[][], palette: readonly TeletextColor[]): Cell =>
   return { ch: sextant(bits), color: fg, ...(bg !== 'black' && { bg }) };
 };
 
-/** Joins neighbouring cells of the same colours into segments. A blank cell joins whatever comes before it. */
+/** Joins neighbouring cells of the same colours into segments. A space only needs the same background. */
 const toSegments = (cells: Cell[]): GridSegment[] => {
   const segments: GridSegment[] = [];
   for (const cell of cells) {
     const last = segments[segments.length - 1];
-    const blank = cell.ch === ' ' && cell.bg === undefined;
+    const blank = cell.ch === ' ';
     if (last && last.bg === cell.bg && (blank || last.color === cell.color)) {
       last.text += cell.ch;
     } else {
-      segments.push({ text: cell.ch, ...(cell.color && { color: cell.color }), ...(cell.bg && { bg: cell.bg }) });
+      segments.push({ text: cell.ch, mosaic: true, ...(cell.color && { color: cell.color }), ...(cell.bg && { bg: cell.bg }) });
     }
   }
   return segments;

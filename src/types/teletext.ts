@@ -27,6 +27,8 @@ export interface GridSegment {
   link?: number;
   /** An email or web address found in the text (mailto: or https:), clickable in the grid. */
   href?: string;
+  /** Block graphics from a picture: the background uses the full-strength palette so neighbouring cells blend. */
+  mosaic?: boolean;
 }
 
 export interface GridRow {

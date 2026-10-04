@@ -27,7 +27,7 @@ const TextMode = ({ page }: TextModeProps) => {
         onNavigate={fn()}
         visible
       >
-        {page === 888 && <SettingsControls settings={{ textMode: true, shortcuts: true }} onChange={fn()} />}
+        {page === 888 && <SettingsControls settings={{ textMode: true, shortcuts: true, crt: null }} onChange={fn()} />}
       </SemanticPage>
     </div>
   );

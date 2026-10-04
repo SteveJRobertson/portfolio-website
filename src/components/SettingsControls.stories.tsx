@@ -6,7 +6,7 @@ import { SettingsControls } from './SettingsControls';
 const meta: Meta<typeof SettingsControls> = {
   title: 'Molecules/SettingsControls',
   component: SettingsControls,
-  args: { settings: { textMode: false, shortcuts: true }, onChange: fn() },
+  args: { settings: { textMode: false, shortcuts: true, crt: null }, crtOn: true, onChange: fn() },
   decorators: [
     (Story) => (
       <div className="control-strip">
@@ -20,4 +20,7 @@ export default meta;
 type Story = StoryObj<typeof SettingsControls>;
 
 export const Defaults: Story = {};
-export const ShortcutsOff: Story = { args: { settings: { textMode: false, shortcuts: false } } };
+export const ShortcutsOff: Story = { args: { settings: { textMode: false, shortcuts: false, crt: null } } };
+export const CrtOff: Story = { args: { settings: { textMode: false, shortcuts: true, crt: false }, crtOn: false } };
+/** In Text mode the CRT switch is left out: Text mode never shows the effect. */
+export const TextMode: Story = { args: { settings: { textMode: true, shortcuts: true, crt: null }, crtOn: undefined } };

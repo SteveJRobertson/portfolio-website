@@ -24,6 +24,15 @@ const renderAt = (path: string, settings?: object) => {
 };
 
 const heading = () => screen.getByRole('heading', { level: 1 });
+
+/** Makes one media query match (jsdom has no matchMedia of its own). */
+const stubMedia = (matching: string) =>
+  vi.stubGlobal('matchMedia', (query: string) => ({
+    matches: query === matching,
+    media: query,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  }));
 const header = () => document.querySelector('.tt-header')!.textContent;
 const cycle = () => act(() => vi.advanceTimersByTime(SUBPAGE_INTERVAL_MS));
 
@@ -38,6 +47,7 @@ describe('App', () => {
   beforeEach(() => vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'] }));
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllGlobals();
     window.localStorage.clear();
   });
 
@@ -144,21 +154,30 @@ describe('App', () => {
     vi.restoreAllMocks();
   });
 
-  it('opens pages held when reduced motion is preferred', () => {
-    const matchMedia = vi.fn((query: string) => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-      media: query,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }));
-    vi.stubGlobal('matchMedia', matchMedia);
-    try {
-      renderAt('/110');
-      cycle();
-      expect(header()).toContain('1/6 HOLD');
-    } finally {
-      vi.unstubAllGlobals();
-    }
+  it('opens pages held, with the CRT effect off, when reduced motion is preferred', () => {
+    stubMedia('(prefers-reduced-motion: reduce)');
+    renderAt('/110');
+    cycle();
+    expect(header()).toContain('1/6 HOLD');
+    expect(document.querySelector('.crt-overlay')).toBeNull();
+  });
+
+  it('shows the CRT effect by default, and can turn it off on 888', () => {
+    renderAt('/888');
+    expect(document.querySelector('.crt-overlay')).not.toBeNull();
+    const toggle = screen.getByRole('button', { name: /CRT EFFECT/ });
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(toggle);
+    expect(document.querySelector('.crt-overlay')).toBeNull();
+    expect(JSON.parse(window.localStorage.getItem(SETTINGS_KEY)!)).toMatchObject({ crt: false });
+  });
+
+  it('starts with the CRT effect off when more contrast is preferred, until it is turned on', () => {
+    stubMedia('(prefers-contrast: more)');
+    renderAt('/888');
+    expect(document.querySelector('.crt-overlay')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /CRT EFFECT/ }));
+    expect(document.querySelector('.crt-overlay')).not.toBeNull();
   });
 
   it('keeps the grid out of the accessibility tree, apart from the Fastext links', () => {

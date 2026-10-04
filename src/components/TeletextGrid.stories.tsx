@@ -4,6 +4,7 @@ import { TeletextGrid } from './TeletextGrid';
 import { GridLine } from './GridLine';
 import { HeaderTicker } from './HeaderTicker';
 import { FastTextBar } from './FastTextBar';
+import { ScanlineOverlay } from './ScanlineOverlay';
 import { GRID_MODES, type GridModeName } from '../display/gridModes';
 import { layoutBody } from '../display/layout';
 import { textRow } from '../display/rows';
@@ -18,29 +19,37 @@ interface ScreenProps {
   /** Zero-based sub-page. */
   subpage: number;
   showCells: boolean;
+  /** The CRT scanlines and glow. */
+  crt?: boolean;
+  /** HOLD is on (shown in the header on pages with sub-pages). */
+  held?: boolean;
   fontSize?: number;
 }
 
 /** A full screen at a fixed font size, so each mode can be compared side by side. */
-const Screen = ({ mode: name, page, subpage, showCells, fontSize = 20 }: ScreenProps) => {
+const Screen = ({ mode: name, page, subpage, showCells, crt = false, held = false, fontSize = 20 }: ScreenProps) => {
   const mode = GRID_MODES[name];
   const data = getPage(page)!;
   const index = Math.min(subpage, data.wide.length - 1);
   const rows = (name === 'portrait' ? data.narrow : data.wide)[index];
   return (
-    <div style={{ fontSize }} className={showCells ? 'tt-story-cells' : undefined}>
+    <div
+      style={{ fontSize, position: 'relative' }}
+      className={[showCells && 'tt-story-cells', crt && 'teletext-screen--crt'].filter(Boolean).join(' ') || undefined}
+    >
       <TeletextGrid cols={mode.cols} rows={mode.rows}>
         <HeaderTicker
           bufferText={`P${page}`}
           currentPage={page}
           cols={mode.cols}
-          subpage={{ index, count: data.wide.length }}
+          subpage={{ index, count: data.wide.length, held }}
         />
         {layoutBody(mode, rows, SIDEBAR_ROWS).map(({ key, ...line }) => (
           <GridLine key={key} {...line} />
         ))}
         <FastTextBar links={data.fastext} onNavigate={fn()} cols={mode.cols} row={mode.rows} />
       </TeletextGrid>
+      {crt && <ScanlineOverlay />}
       {showCells && (
         <style>{`.tt-story-cells .tt-grid {
           background-image:
@@ -72,6 +81,12 @@ export const Classic: Story = {};
 export const Portrait: Story = { args: { mode: 'portrait' } };
 export const CellOverlay: Story = { args: { showCells: true } };
 export const SubPages: Story = { args: { page: 110, subpage: 1 } };
+export const Held: Story = { args: { page: 110, subpage: 1, held: true } };
+/** The CRT effect from page 888: scanlines, glow and a vignette. */
+export const CrtEffect: Story = { args: { mode: 'widescreen', page: 110, crt: true } };
+export const CrtEffectOnMosaic: Story = { args: { page: 203, crt: true } };
+export const Mosaic: Story = { args: { page: 203 } };
+export const MosaicPortrait: Story = { args: { mode: 'portrait', page: 203 } };
 
 /** Every page and sub-page in the registry, so new content shows up here automatically. */
 export const AllPages: Story = {

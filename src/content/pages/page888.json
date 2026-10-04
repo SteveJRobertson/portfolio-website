@@ -9,12 +9,14 @@
     "{blue}{rule}{/}",
     "",
     { "text": "The switches are below the screen.", "screenOnly": true },
-    "",
     { "text": "{cyan}TEXT MODE{/}", "heading": true },
     "A plain, high-contrast reader view of every page. Your choice is remembered.",
     "",
     { "text": "{cyan}SHORTCUTS{/}", "heading": true },
-    "Number keys and R, G, Y, B jump between pages. Turn them off if they get in the way of speech input.",
+    "Number keys, R, G, Y and B jump between pages; H holds a cycling page. Turn them off if they get in the way of speech input.",
+    "",
+    { "text": "{cyan}CRT EFFECT{/}", "heading": true },
+    "Scanlines and glow, like an old TV. Off at first if your system asks for less motion or more contrast.",
     "",
     "Pinch-zoom always works."
   ]

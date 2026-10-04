@@ -6,7 +6,7 @@ interface HeaderTickerProps {
   bufferText: string;
   currentPage: number;
   cols: number;
-  subpage?: { index: number; count: number };
+  subpage?: { index: number; count: number; held?: boolean };
 }
 
 /** Row 1 of the grid: page buffer, service name, page number and clock. */

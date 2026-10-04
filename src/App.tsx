@@ -9,14 +9,14 @@ import { SettingsControls } from './components/SettingsControls';
 import { HoldButton } from './components/HoldButton';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage } from './content/registry';
 import { useGridMode } from './display/useGridMode';
-import { REDUCED_MOTION, useMediaQuery, usePageVisible } from './display/useMediaQuery';
+import { MORE_CONTRAST, REDUCED_MOTION, useMediaQuery, usePageVisible } from './display/useMediaQuery';
 import { layoutBody } from './display/layout';
 import { sidebarRows } from './display/sidebar';
 import { useSubpage } from './hooks/useSubpage';
 import { useDigitBuffer } from './navigation/useDigitBuffer';
 import { useHotkeys } from './navigation/useHotkeys';
 import { useNavigation } from './navigation/useNavigation';
-import { useSettings } from './settings/useSettings';
+import { crtEffectOn, useSettings } from './settings/useSettings';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
@@ -36,6 +36,8 @@ export const App: React.FC = () => {
   const heading = page.title;
   const visible = usePageVisible();
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
+  const moreContrast = useMediaQuery(MORE_CONTRAST);
+  const crt = crtEffectOn(settings.crt, reducedMotion || moreContrast);
   // Keyboard focus in the hidden mirror is shown by outlining its twin on screen.
   const [mirrorFocus, setMirrorFocus] = useState<MirrorFocus | null>(null);
   const subpage = useSubpage(requested, page.wide.length, {
@@ -147,7 +149,7 @@ export const App: React.FC = () => {
       </a>
 
       <div className="teletext-wrapper">
-        <TeletextScreen mode={mode}>
+        <TeletextScreen mode={mode} crt={crt}>
           <HeaderTicker bufferText={buffer.text} currentPage={requested} cols={mode.cols} subpage={subpage} />
 
           {lines.map(({ key, ...line }) => (
@@ -176,7 +178,7 @@ export const App: React.FC = () => {
             currentPage={requested}
           />
           {subpage.count > 1 && <HoldButton held={subpage.held} onToggle={toggleHold} />}
-          {page.page === 888 && <SettingsControls settings={settings} onChange={updateSettings} />}
+          {page.page === 888 && <SettingsControls settings={settings} onChange={updateSettings} crtOn={crt} />}
         </section>
       </div>
 
