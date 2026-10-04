@@ -1,15 +1,18 @@
-import type { CompiledPage, FastextLink, GridRow } from '../types/teletext.ts';
+import { TELETEXT_COLORS, type CompiledPage, type FastextLink, type GridRow, type TeletextColor } from '../types/teletext.ts';
 import {
+  IMAGE_KEYS,
   ROW_KEYS,
   NARROW_BODY_ROWS,
   NARROW_COLS,
   WIDE_BODY_ROWS,
   WIDE_COLS,
   type FastextSource,
+  type ImageRowSource,
   type PageSource,
   type RowSource,
 } from './schema.ts';
-import { layoutRows, slotsUsed } from './wrap.ts';
+import { layoutRows, slotsUsed, type ImageRenderer } from './wrap.ts';
+import { mosaicCols, mosaicRowsFor, overfullCells, toMosaic, type RgbaImage } from './mosaic.ts';
 import { buildSemantic } from './semantic.ts';
 
 export interface SourceFile {
@@ -25,10 +28,28 @@ export interface CompileResult {
 
 const BOOLEAN_KEYS = ROW_KEYS.filter((k) => k !== 'text');
 
+const isCount = (v: unknown) => Number.isInteger(v) && (v as number) > 0;
+const isFactor = (v: unknown) => v === undefined || (typeof v === 'number' && v > 0);
+
+const isImageSource = (fields: Record<string, unknown>): boolean =>
+  typeof fields.image === 'string' &&
+  typeof fields.alt === 'string' &&
+  isCount(fields.rows) &&
+  (fields.mobileRows === undefined || isCount(fields.mobileRows)) &&
+  (fields.palette === undefined ||
+    (Array.isArray(fields.palette) && fields.palette.every((c) => TELETEXT_COLORS.includes(c as TeletextColor)))) &&
+  isFactor(fields.contrast) &&
+  isFactor(fields.saturation) &&
+  isFactor(fields.brightness) &&
+  (fields.pixelArt === undefined || typeof fields.pixelArt === 'boolean') &&
+  (fields.beside === undefined || (Array.isArray(fields.beside) && fields.beside.every((r) => isRow(r) && !(typeof r === 'object' && 'image' in r)))) &&
+  Object.keys(fields).every((k) => (IMAGE_KEYS as readonly string[]).includes(k));
+
 const isRow = (row: unknown): row is RowSource => {
   if (typeof row === 'string') return true;
   if (typeof row !== 'object' || row === null) return false;
   const fields = row as Record<string, unknown>;
+  if ('image' in fields) return isImageSource(fields);
   return (
     typeof fields.text === 'string' &&
     Object.keys(fields).every((k) => (ROW_KEYS as readonly string[]).includes(k)) &&
@@ -61,8 +82,9 @@ const shapeErrors = (data: unknown): string[] => {
   if ((page.rows === undefined) === (page.subpages === undefined)) {
     errors.push('needs exactly one of "rows" or "subpages"');
   }
-  if (page.rows !== undefined && !isRowList(page.rows)) errors.push(`"rows" must be a list of lines (a line object may only have ${ROW_KEYS.join(', ')})`);
-  if (page.subpages !== undefined && !isSubpageList(page.subpages)) errors.push(`"subpages" must be a list of line lists (a line object may only have ${ROW_KEYS.join(', ')})`);
+  const lineHelp = `a line object may only have ${ROW_KEYS.join(', ')}; an image needs image, alt and rows, and may have ${IMAGE_KEYS.slice(3).join(', ')}`;
+  if (page.rows !== undefined && !isRowList(page.rows)) errors.push(`"rows" must be a list of lines (${lineHelp})`);
+  if (page.subpages !== undefined && !isSubpageList(page.subpages)) errors.push(`"subpages" must be a list of line lists (${lineHelp})`);
   if (page.mobileRows !== undefined && !isRowList(page.mobileRows)) errors.push('"mobileRows" must be a list of lines');
   if (page.mobileSubpages !== undefined && !isSubpageList(page.mobileSubpages)) {
     errors.push('"mobileSubpages" must be a list of line lists');
@@ -74,11 +96,49 @@ const subpagesOf = (rows?: RowSource[], subpages?: RowSource[][]): RowSource[][]
   subpages ?? (rows ? [rows] : undefined);
 
 /**
+ * Converts image rows to mosaic cells. Wide layouts use the row's `rows`;
+ * portrait fits the picture to the width unless `mobileRows` says otherwise.
+ * Pixel art is used as drawn, so its size is fixed by the PNG.
+ */
+const imageRenderer =
+  (images: Readonly<Record<string, RgbaImage>>): ImageRenderer =>
+  (source: ImageRowSource, width: number) => {
+    const fail = (error: string) => ({ rows: [], cols: 0, errors: [error] });
+    const picture = images[source.image];
+    if (!picture) return fail(`image "${source.image}" isn't in src/content/images (expected ${source.image}.png)`);
+    if (!source.alt.trim()) return fail(`image "${source.image}" needs "alt" text`);
+
+    if (source.pixelArt) {
+      if (picture.width % 2 || picture.height % 3) {
+        return fail(`pixel art "${source.image}" is ${picture.width} × ${picture.height}; it must be 2 pixels a column and 3 a row`);
+      }
+      const rows = picture.height / 3;
+      const cols = picture.width / 2;
+      if (source.rows !== rows) return fail(`pixel art "${source.image}" is ${rows} rows tall, so "rows" must be ${rows}`);
+      if (cols > width) return fail(`image "${source.image}" is ${cols} cells wide; the limit is ${width}`);
+      const overfull = overfullCells(picture);
+      if (overfull.length) {
+        return fail(`pixel art "${source.image}" uses more than two colours in cell(s) ${overfull.join('; ')} (column,row); a cell can show two`);
+      }
+      return { rows: toMosaic(picture, { rows, cols }), cols, errors: [] };
+    }
+
+    const narrow = width < WIDE_COLS;
+    const rows = narrow ? (source.mobileRows ?? Math.min(source.rows, mosaicRowsFor(picture, width))) : source.rows;
+    const cols = mosaicCols(picture, rows);
+    if (cols > width) return fail(`image "${source.image}" is ${cols} cells wide at ${rows} rows; the limit is ${width}`);
+    return { rows: toMosaic(picture, { ...source, rows }), cols, errors: [] };
+  };
+
+/**
  * Validates and lays out every page (SPEC §7). Fails on: rows too wide, too
  * many rows, Fastext or inline links to pages that don't exist, unknown or
- * unclosed tags, and file names that don't match their page.
+ * unclosed tags, file names that don't match their page, and images that are
+ * missing, too big or have no alt text. `images` holds the decoded pictures
+ * in `src/content/images`, by name.
  */
-export const compilePages = (files: SourceFile[]): CompileResult => {
+export const compilePages = (files: SourceFile[], images: Readonly<Record<string, RgbaImage>> = {}): CompileResult => {
+  const renderImage = imageRenderer(images);
   const errors: string[] = [];
   const sources: { file: string; page: PageSource }[] = [];
   const seen = new Map<number, string>();
@@ -111,7 +171,7 @@ export const compilePages = (files: SourceFile[]): CompileResult => {
       const width = mode === 'wide' ? WIDE_COLS : NARROW_COLS;
       const limit = mode === 'wide' ? WIDE_BODY_ROWS : NARROW_BODY_ROWS;
       const where = `${file}${subpages.length > 1 ? ` sub-page ${i + 1}` : ''} (${mode === 'wide' ? `${width} columns` : 'portrait'})`;
-      const result = layoutRows(rows, width, wrap);
+      const result = layoutRows(rows, width, wrap, renderImage);
       errors.push(...result.errors.map((e) => `${where}: ${e}`));
       const used = slotsUsed(result.rows);
       if (used > limit) errors.push(`${where}: needs ${used} rows; the limit is ${limit}`);

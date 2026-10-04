@@ -27,6 +27,8 @@ export interface GridSegment {
   link?: number;
   /** An email or web address found in the text (mailto: or https:), clickable in the grid. */
   href?: string;
+  /** Block graphics from a picture: the background uses the full-strength palette so neighbouring cells blend. */
+  mosaic?: boolean;
 }
 
 export interface GridRow {
@@ -56,7 +58,8 @@ export interface SemanticInline {
 export type SemanticBlock =
   | { kind: 'heading'; content: SemanticInline[] }
   | { kind: 'paragraph'; content: SemanticInline[] }
-  | { kind: 'list'; items: SemanticInline[][] };
+  | { kind: 'list'; items: SemanticInline[][] }
+  | { kind: 'image'; alt: string };
 
 /** A page as the app sees it: already wrapped for both widths by the content plugin. */
 export interface CompiledPage {

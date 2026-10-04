@@ -13,6 +13,8 @@ interface MobileKeypadProps {
   onNavigate: (page: number) => void;
   /** Steps through the current page's sub-pages (-1 or +1). */
   onSubpage: (delta: number) => void;
+  /** HOLD for pages with sub-pages; left out on single pages. */
+  hold?: { held: boolean; onToggle: () => void };
   currentPage: number;
 }
 
@@ -27,6 +29,7 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
   fastext,
   onNavigate,
   onSubpage,
+  hold,
   currentPage,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -117,6 +120,11 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
           <button type="button" className="remote-btn nav-btn" aria-label="Next sub-page" onClick={() => onSubpage(1)}>
             SUB ▶
           </button>
+          {hold && (
+            <button type="button" className="remote-btn nav-btn" aria-pressed={hold.held} onClick={hold.onToggle}>
+              HOLD
+            </button>
+          )}
           <button type="button" className="remote-btn nav-btn" aria-label="888 A11Y: accessibility" onClick={() => onNavigate(888)}>
             888 A11Y
           </button>

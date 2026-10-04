@@ -54,9 +54,9 @@ The current site has a large **Experience** section that the original page map d
 | Page | Content |
 |---|---|
 | 100 | Index: name, title, location, page directory |
-| 101 | About: summary + positioning |
+| 101 | About: summary + positioning, with a Teletext cartoon of Steve (Phase 5, moved here from 203 at Steve's request) |
 | 110 | Experience, with cycling sub-pages `01/06`, one per role (a natural fit for Teletext sub-pages) |
-| 200 | Projects index → 201 Isolate UI, 202 Lighthouse Compare, 203 Steve-Text (including the mosaic image demo) |
+| 200 | Projects index → 201 Isolate UI, 202 Lighthouse Compare, 203 Steve-Text |
 | 300 | Skills, as a 3-page cycle grouped as above |
 | 400 | Contact |
 | 888 | Accessibility / Text mode |

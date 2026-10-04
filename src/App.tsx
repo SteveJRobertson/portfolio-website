@@ -6,15 +6,17 @@ import { GridLine } from './components/GridLine';
 import { MobileKeypad } from './components/MobileKeypad';
 import { SemanticPage, type MirrorFocus } from './components/SemanticPage';
 import { SettingsControls } from './components/SettingsControls';
+import { HoldButton } from './components/HoldButton';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage } from './content/registry';
 import { useGridMode } from './display/useGridMode';
+import { MORE_CONTRAST, REDUCED_MOTION, useMediaQuery, usePageVisible } from './display/useMediaQuery';
 import { layoutBody } from './display/layout';
 import { sidebarRows } from './display/sidebar';
 import { useSubpage } from './hooks/useSubpage';
 import { useDigitBuffer } from './navigation/useDigitBuffer';
 import { useHotkeys } from './navigation/useHotkeys';
 import { useNavigation } from './navigation/useNavigation';
-import { useSettings } from './settings/useSettings';
+import { crtEffectOn, useSettings } from './settings/useSettings';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
@@ -32,17 +34,18 @@ export const App: React.FC = () => {
 
   const page = getPage(requested)!;
   const heading = page.title;
-  const subpage = useSubpage(requested, page.wide.length);
-  const buffer = useDigitBuffer(requested, navigate);
-
-  useHotkeys({
-    characterKeys: settings.shortcuts,
-    arrowKeys: !settings.textMode,
-    onDigit: buffer.digit,
-    onClear: buffer.clear,
-    onFastext: (slot) => navigate(page.fastext[slot].page),
-    onSubpage: subpage.step,
+  const visible = usePageVisible();
+  const reducedMotion = useMediaQuery(REDUCED_MOTION);
+  const moreContrast = useMediaQuery(MORE_CONTRAST);
+  const crt = crtEffectOn(settings.crt, reducedMotion || moreContrast);
+  // Keyboard focus in the hidden mirror is shown by outlining its twin on screen.
+  const [mirrorFocus, setMirrorFocus] = useState<MirrorFocus | null>(null);
+  const subpage = useSubpage(requested, page.wide.length, {
+    // Cycling waits while nobody can see it, or while someone is reading the mirror (Text mode shows every part at once).
+    paused: !visible || mirrorFocus !== null || settings.textMode,
+    startHeld: reducedMotion,
   });
+  const buffer = useDigitBuffer(requested, navigate);
 
   // Focus goes to the page heading after a page change or a switch of view, but not on first load.
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -60,28 +63,38 @@ export const App: React.FC = () => {
     document.title = `P${requested} ${heading} | Steve Robertson`;
   }, [requested, heading]);
 
-  // Sub-page changes don't move focus, so they're announced. Not when focus itself moved there.
+  // Sub-page steps don't move focus, so the visitor's own steps and HOLD are announced.
+  // Timed steps aren't (the mirror already has every part, so they'd only interrupt),
+  // and neither are steps that follow focus into another part of the mirror.
   const [announcement, setAnnouncement] = useState('');
-  const shown = useRef({ page: requested, index: subpage.index });
-  const followingFocus = useRef(false);
-  useEffect(() => {
-    const before = shown.current;
-    shown.current = { page: requested, index: subpage.index };
-    if (before.page !== requested || before.index === subpage.index) return;
-    if (followingFocus.current) followingFocus.current = false;
-    else setAnnouncement(`Part ${subpage.index + 1} of ${subpage.count}`);
-  }, [requested, subpage.index, subpage.count]);
+  const stepSubpage = (delta: number) => {
+    if (subpage.count < 2) return;
+    subpage.step(delta);
+    setAnnouncement(`Part ${((subpage.index + delta + subpage.count) % subpage.count) + 1} of ${subpage.count}`);
+  };
 
-  // Keyboard focus in the hidden mirror is shown by outlining its twin on screen.
-  const [mirrorFocus, setMirrorFocus] = useState<MirrorFocus | null>(null);
+  const toggleHold = () => {
+    subpage.toggleHold();
+    setAnnouncement(subpage.held ? 'Cycling' : `Held on part ${subpage.index + 1} of ${subpage.count}`);
+  };
+
+  useHotkeys({
+    characterKeys: settings.shortcuts,
+    arrowKeys: !settings.textMode,
+    onDigit: buffer.digit,
+    onClear: buffer.clear,
+    onFastext: (slot) => navigate(page.fastext[slot].page),
+    onSubpage: stepSubpage,
+    onHold: () => {
+      if (subpage.count > 1) toggleHold();
+    },
+  });
+
   const { index: subpageIndex, show: showSubpage } = subpage;
   const onMirrorFocus = useCallback(
     (focus: MirrorFocus | null) => {
       setMirrorFocus(focus);
-      if (focus?.subpage !== undefined && focus.subpage !== subpageIndex) {
-        followingFocus.current = true;
-        showSubpage(focus.subpage);
-      }
+      if (focus?.subpage !== undefined && focus.subpage !== subpageIndex) showSubpage(focus.subpage);
     },
     [subpageIndex, showSubpage],
   );
@@ -136,7 +149,7 @@ export const App: React.FC = () => {
       </a>
 
       <div className="teletext-wrapper">
-        <TeletextScreen mode={mode}>
+        <TeletextScreen mode={mode} crt={crt}>
           <HeaderTicker bufferText={buffer.text} currentPage={requested} cols={mode.cols} subpage={subpage} />
 
           {lines.map(({ key, ...line }) => (
@@ -160,10 +173,12 @@ export const App: React.FC = () => {
             onClear={buffer.clear}
             fastext={page.fastext}
             onNavigate={navigate}
-            onSubpage={subpage.step}
+            onSubpage={stepSubpage}
+            hold={subpage.count > 1 ? { held: subpage.held, onToggle: toggleHold } : undefined}
             currentPage={requested}
           />
-          {page.page === 888 && <SettingsControls settings={settings} onChange={updateSettings} />}
+          {subpage.count > 1 && <HoldButton held={subpage.held} onToggle={toggleHold} />}
+          {page.page === 888 && <SettingsControls settings={settings} onChange={updateSettings} crtOn={crt} />}
         </section>
       </div>
 

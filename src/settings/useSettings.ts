@@ -5,9 +5,17 @@ export interface Settings {
   textMode: boolean;
   /** Number and letter shortcuts. On by default; can be turned off for speech-input users. */
   shortcuts: boolean;
+  /** The CRT scanline and glow effect. Null until the visitor chooses: see `crtEffectOn`. */
+  crt: boolean | null;
 }
 
-export const DEFAULT_SETTINGS: Settings = { textMode: false, shortcuts: true };
+export const DEFAULT_SETTINGS: Settings = { textMode: false, shortcuts: true, crt: null };
+
+/**
+ * Whether to draw the CRT effect: the visitor's choice, or on unless they've
+ * asked their system for reduced motion or more contrast.
+ */
+export const crtEffectOn = (crt: boolean | null, prefersPlain: boolean): boolean => crt ?? !prefersPlain;
 
 export const SETTINGS_KEY = 'steve-text:settings';
 
@@ -18,6 +26,7 @@ export const loadSettings = (): Settings => {
     return {
       textMode: typeof saved.textMode === 'boolean' ? saved.textMode : DEFAULT_SETTINGS.textMode,
       shortcuts: typeof saved.shortcuts === 'boolean' ? saved.shortcuts : DEFAULT_SETTINGS.shortcuts,
+      crt: typeof saved.crt === 'boolean' ? saved.crt : DEFAULT_SETTINGS.crt,
     };
   } catch {
     return DEFAULT_SETTINGS;

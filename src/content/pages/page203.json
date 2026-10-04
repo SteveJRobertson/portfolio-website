@@ -12,6 +12,6 @@
     "{green}TECH{/}    React, TypeScript, Vite",
     "{green}STATUS{/}  In progress",
     "",
-    "{yellow}Coming soon: photos turned into Teletext block graphics.{/}"
+    "The cartoon on {link:101}101{/} is drawn the Teletext way: 2 × 3 blocks a character cell, and two colours a cell."
   ]
 }

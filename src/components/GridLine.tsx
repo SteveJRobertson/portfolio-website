@@ -39,6 +39,7 @@ export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width
             key={i}
             color={segment.color ?? 'white'}
             bg={segment.bg}
+            mosaic={segment.mosaic}
             className={[onClick && 'tt-link', focused && 'tt-twin-focus'].filter(Boolean).join(' ')}
             onClick={onClick}
           >

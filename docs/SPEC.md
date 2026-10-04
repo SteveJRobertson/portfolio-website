@@ -36,13 +36,13 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 - Font size is `min(font-from-width, font-from-height)`, so the whole grid always fits.
 - `white-space: pre`, font smoothing disabled.
 - Double-height rows take up two row slots.
-- An optional CRT scanline/glow overlay, off when `prefers-reduced-motion` is set, with a toggle on page 888.
+- A CRT effect: scanlines and a vignette over the screen, and a soft glow on the glyphs. It's static (nothing flickers or rolls), never takes clicks and is `aria-hidden`. It's on until the visitor chooses, except that it starts off when `prefers-reduced-motion: reduce` or `prefers-contrast: more` is set. Its switch is on page 888 next to Text mode and Shortcuts, and the choice is remembered. Text mode never shows it.
 
 ## 4. Design tokens
 
 - Background `#0C0C0C`.
 - Foreground: white `#FFFFFF`, yellow `#FFFF00`, cyan `#00FFFF`, green `#00FF00`, magenta `#FF00FF`, red `#FF3333`, blue `#4D79FF` (lightened for contrast).
-- Atoms: `TeletextChar`, `ColorSpan`, `FastextButton`, `ScanlineOverlay`.
+- Atoms: `TeletextChar`, `ColorSpan`, `FastextButton`, `ScanlineOverlay`, `HoldButton`, mosaic cells.
 - Molecules: `HeaderTicker`, `PageBufferDisplay`, `NumericKeypad`.
 - Organisms: `TeletextGrid` (56×24 / 40×24 / 20×36), `TeletextScreen`.
 
@@ -52,8 +52,8 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 - **Routing**: path based (`/100`, `/101`, …; `/` = 100), using the History API so back, forward and bookmarks work. `pageHref()` in `src/navigation/paths.ts` is the only place a page URL is built.
 - **Unknown pages**: show an authentic "PAGE NOT FOUND" screen that links back to 100. Any page number or path that isn't in the registry redirects to `/404` (a replace on load or back/forward, a push when navigating).
 - **Fastext**: four slots per page (red, green, yellow, cyan). Rendered as real `<a href>` links with a focus style distinct from hover; a plain click navigates in place, a modified click opens a new tab. Hotkeys `R`, `G`, `Y`, and `B` or `C` for the fourth.
-- **Hotkeys**: one listener (`useHotkeys`). Keys with a modifier and keys typed into form fields are ignored. The digit and letter shortcuts can be switched off on page 888 (WCAG 2.1.4); `←`/`→` are off in Text mode.
-- **Sub-pages**: long pages can cycle (`01/03`) on a timer, with a way to hold or pause.
+- **Hotkeys**: one listener (`useHotkeys`). Keys with a modifier and keys typed into form fields are ignored. The digit and letter shortcuts (including `H` for HOLD) can be switched off on page 888 (WCAG 2.1.4); `←`/`→` are off in Text mode.
+- **Sub-pages**: pages with sub-pages cycle every 15 seconds (`SUBPAGE_INTERVAL_MS`), wrapping round, and the header shows the counter (`2/6`). A manual step (`←`/`→`, the keypad, or focus moving into another part of the mirror) restarts the countdown. **HOLD** freezes the current sub-page until it's released: the `H` key, a HOLD button in the strip under the screen (shown only on pages with sub-pages, so it works with shortcuts off), or the keypad. While held the header shows `HOLD` after the counter, dropping the date at 40 columns and the name at 20 to make room. Cycling also waits, without setting HOLD, while the tab is hidden, while keyboard focus is in the semantic mirror, and in Text mode. With `prefers-reduced-motion: reduce` every page opens held. Changing page goes back to the first sub-page and releases HOLD. Manual steps and HOLD are announced in the live region; timed steps aren't, because the mirror already holds every part (WCAG 2.2.2 is met by HOLD).
 - **Mobile**: the on-screen keypad means the native keyboard never opens. Its colour buttons follow the current page's Fastext.
 - **Links in the grid**: inline `{link:NNN}` text, quick-index entries, and email and web addresses (found at build time, `mailto:` or a new tab) respond to a click or tap, but never take keyboard focus. Their real links are in the semantic mirror.
 
@@ -76,6 +76,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 
 - Each page is a JSON file `src/content/pages/pageNNN.json` with `page`, `title`, `label` (short name for the quick index and Fastext), `fastext` (four `{ "page": NNN }` entries, red to cyan, with an optional `label`), optional `index` (list it in the quick index), and either `rows` or `subpages`. `mobileRows` / `mobileSubpages` optionally override the portrait layout line for line.
 - A row is one logical line of any length: a string, or an object `{ "text": … }` with optional `"doubleHeight": true`, `"heading": true` (a heading in the semantic mirror) and `"screenOnly": true` (left out of the mirror, for hints like "Press ← or →"). An empty string is a blank row. Any other key is an error.
+- An image row is `{ "image": "steve", "alt": "…", "rows": 12 }`, for `src/content/images/steve.png`, with optional `mobileRows`, `palette` (the colours it may use), `contrast`, `saturation` and `brightness`. `rows` is its height at 38 columns and the width follows the picture's shape; portrait fits it into 20 columns unless `mobileRows` is set. `"pixelArt": true` uses a PNG drawn at 2 × 3 pixels a cell as it is (see §8). `"beside": [rows]` lays text out to the right of the picture, as on a Ceefax page, when that leaves at least 12 columns; otherwise (portrait) the text goes under it. A picture on its own is centred (see §8).
 - Colour tags: `{red}` `{green}` `{yellow}` `{blue}` `{magenta}` `{cyan}` `{white}` and `{bg:colour}`, closed by `{/}`; `{link:NNN}…{/}` is an inline page link; `{rule}` or `{rule:-}` alone on a row draws a full-width rule; `{{` is a literal brace.
 - A build-time wrapper (a Vite plugin serving `virtual:pages`) lays every row out at **38 columns**, used by both widescreen and classic so their line breaks match, and at **20 columns** for portrait. Rows get a one-cell margin; `* ` bullets and `NNN ` page numbers hang their continuation lines; lines can also break after `/`, `-` and `@`. Dev, build, Storybook and Vitest all use the same plugin.
 - The validator (`npm run validate`, and the plugin on every build) fails when:
@@ -83,14 +84,22 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
   2. a page or sub-page has more rows than the mode allows (22, or 34 in portrait; double height counts as two);
   3. a Fastext or inline link points at a page that doesn't exist;
   4. an unknown or unclosed tag is used;
-  5. a file name doesn't match its page number, or two files define the same page.
+  5. a file name doesn't match its page number, or two files define the same page;
+  6. an image is missing from `src/content/images`, has no `alt` text, or is wider than the pane at its height; pixel art isn't 2 × 3 pixels a cell, its `rows` doesn't match its height, or a cell uses more than two colours.
 
 ## 8. Graphics
 
 - Block graphics use 2×3 mosaic characters on the grid, never free-floating `<canvas>` pixels.
-- A build-time converter turns raster images (headshot, project screenshots) into mosaic text in the 8-colour palette.
-- Optionally, artwork drawn in edit.tf can be imported.
-- All graphics are `aria-hidden`, with a text alternative in the semantic tree.
+- A build-time converter (`src/content/mosaic.ts`, run by the content plugin, so nothing generated is committed) turns PNGs in `src/content/images/` into mosaic cells in the 8-colour palette:
+  1. Transparent pixels become the black screen, then the optional saturation, contrast and brightness tweaks apply.
+  2. The picture is scaled down by area averaging to 2 pixels across and 3 down per cell. Those pixels are almost square (0.3em × 0.33em), so a picture keeps its shape with `cols = rows × aspect × 5/3`.
+  3. Each cell takes the pair of palette colours (foreground and background) that matches its six pixels best, and each pixel takes the nearer of the two. There's no dithering: at 2×3 pixels a cell it only adds speckle.
+  4. The six bits pick the character: space, `█`, `▌`, `▐`, or U+1FB00–U+1FB3B. A cell of one colour is a space on that background, so neighbouring cells have no seams. Mosaic backgrounds use the full-strength palette (`m-bg-*`), not the darker text backgrounds.
+- **Pixel art** is the better choice for people: Teletext faces read as caricatures, with flat colour, strong shapes and a black background, and a converted photo at this size turns to mush. A pixel-art PNG is drawn at exactly 2 × 3 pixels a cell in palette colours, with transparent pixels as the black screen, and used without scaling. Each cell may use only two colours, as on a real set, and the validator says which cells break that.
+- Photos convert best cropped to the subject with the background removed. Each cell has its own two colours, rather than Teletext's rule that a colour change costs a cell.
+- PNGs are decoded with `pngjs` at build time only; nothing ships to the browser but the cells.
+- edit.tf import is left out until there's artwork to import (DEC-013).
+- All graphics are `aria-hidden`, with a text alternative in the semantic tree: an image row's `alt` becomes `role="img"` in the mirror and an "Image: …" caption in Text mode.
 
 ## 9. Accessibility
 
@@ -115,8 +124,8 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-010 | The mode queries live in one TypeScript module (React needs `cols × rows` to render the cells) and CSS keys off `data-mode`. Revisit for pre-rendering in Phase 6. |
 | DEC-011 | Content is wrapped once at 38 columns for widescreen and classic, and at 20 for portrait. Until Phase 5 adds cycling, sub-pages are stepped with ←/→ and the keypad. The old canvas demo on 202 is dropped; 203 gets mosaic graphics in Phase 5. |
 | DEC-012 | Phase 4: the 888 switches live in the strip under the screen; grid links answer clicks but never take focus, with real links in the mirror and a focus outline on the grid twin; mirror headings are marked with `"heading": true` rather than guessed from colour; axe runs in Vitest with jsdom (contrast stays in `contrast.test.ts`), with Playwright left for Phase 6; `B` and `C` both work for the fourth Fastext slot. |
+| DEC-013 | Phase 5: sub-pages cycle every 15 seconds and a manual step restarts the countdown (rather than holding the page); HOLD is the `H` key, a strip button and the keypad; pages open held with reduced motion. Images are PNGs converted at build time with each cell choosing its own two colours and no dithering. The portrait was first a converted photo on 203, which Steve found too big and too soft; it's now a 16 × 12-cell cartoon of Steve, drawn as pixel art from his photo (a cyan baseball cap with a blue peak), on page 101 with his summary beside it. 101 becomes two sub-pages so the picture fits in portrait. The CRT effect is static and on by default, off at first with reduced motion or more contrast. edit.tf import is deferred. |
 
 ## 11. Open questions
 
-- Sub-page cycle interval and how to hold or pause.
 - Custom domain vs `github.io` when deployment resumes.

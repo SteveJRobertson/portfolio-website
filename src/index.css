@@ -77,6 +77,16 @@ html, body {
 .bg-white   { background-color: #ffffff; color: #000000; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
 
+/* Block graphics backgrounds: the same colours as the foreground, so a picture's cells blend */
+.m-bg-red     { background-color: var(--tt-red); }
+.m-bg-green   { background-color: var(--tt-green); }
+.m-bg-yellow  { background-color: var(--tt-yellow); }
+.m-bg-blue    { background-color: var(--tt-blue); }
+.m-bg-magenta { background-color: var(--tt-magenta); }
+.m-bg-cyan    { background-color: var(--tt-cyan); }
+.m-bg-white   { background-color: var(--tt-white); }
+.m-bg-black   { background-color: var(--tt-black); }
+
 /* ============================================================
    DISPLAY ENGINE (SPEC §3)
    The mode (cols x rows) comes from src/display/gridModes.ts via
@@ -133,6 +143,23 @@ html, body {
   border: var(--tt-border) solid #222222;
   border-radius: 6px;
   box-shadow: 0 0 50px rgba(0, 255, 0, 0.08), 0 0 25px rgba(0, 0, 0, 0.95);
+  position: relative;
+}
+
+/* CRT effect (888 switch): phosphor glow on the glyphs, then scanlines and a vignette laid over the
+   whole tube. Static, so it's safe with reduced motion; it starts off with reduced motion or more contrast. */
+.teletext-screen--crt .tt-grid {
+  text-shadow: 0 0 0.12em currentColor;
+}
+
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.45) 100%),
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0, rgba(0, 0, 0, 0.32) 1px, transparent 1px, transparent 3px);
 }
 
 /* Exact cols x rows character cells */
@@ -269,7 +296,7 @@ html, body {
   outline: none;
 }
 
-/* The strip under the screen: remote toggle, and on 888 the accessibility switches */
+/* The strip under the screen: remote toggle, HOLD on pages with sub-pages, and on 888 the accessibility switches */
 .control-strip {
   position: relative;
   height: var(--tt-remote-h);
@@ -281,7 +308,8 @@ html, body {
 }
 
 .remote-toggle-btn,
-.settings__toggle {
+.settings__toggle,
+.hold-toggle {
   background: #222222;
   color: var(--tt-green);
   border: 1px solid var(--tt-green);
@@ -298,7 +326,25 @@ html, body {
   gap: 0.5rem;
 }
 
-.settings__toggle[aria-pressed='true'] {
+/* Phones: four buttons have to fit the strip on 888 */
+@media (max-width: 480px) {
+  .control-strip,
+  .settings {
+    gap: 0.3rem;
+  }
+
+  .control-strip button {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.45rem;
+  }
+
+  .settings__long {
+    display: none;
+  }
+}
+
+.settings__toggle[aria-pressed='true'],
+.hold-toggle[aria-pressed='true'] {
   background: var(--tt-green);
   color: #000000;
 }

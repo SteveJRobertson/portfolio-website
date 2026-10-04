@@ -1,5 +1,5 @@
 import type { GridRow, GridSegment, TeletextColor } from '../types/teletext.ts';
-import type { RowSource } from './schema.ts';
+import { isImageRow, type ImageRowSource, type RowSource } from './schema.ts';
 import { parseMarkup } from './markup.ts';
 import { autolink } from './semantic.ts';
 
@@ -99,19 +99,66 @@ const wrapTokens = (tokens: StyledChar[][], firstRoom: number, nextRoom: number)
   return lines;
 };
 
+/** Turns an image row into mosaic rows `cols` wide, for a pane `width` wide (the compiler supplies the pictures). */
+export type ImageRenderer = (source: ImageRowSource, width: number) => { rows: GridRow[]; cols: number; errors: string[] };
+
+/** The narrowest text column worth putting beside a picture; anything less stacks the text below it. */
+const MIN_BESIDE_COLS = 12;
+
+const padTo = (row: GridRow, cells: number): GridSegment[] => {
+  const used = row.segments.reduce((n, s) => n + chars(s.text).length, 0);
+  return used < cells ? [...row.segments, { text: ' '.repeat(cells - used) }] : row.segments;
+};
+
+/**
+ * An image row: the picture centred on its own, or with its `beside` text to
+ * the right (left-aligned picture, one blank cell, then the text with its
+ * usual margin). Where the text column would be too narrow, as in portrait,
+ * the text goes below the centred picture.
+ */
+const layoutImage = (source: ImageRowSource, width: number, wrap: boolean, renderImage: ImageRenderer): LaidOutRows => {
+  const image = renderImage(source, width);
+  if (image.errors.length) return { rows: [], errors: image.errors, links: [] };
+  const left = MARGIN + image.cols + 1;
+  const besideWidth = width - left;
+
+  if (source.beside && besideWidth >= MIN_BESIDE_COLS) {
+    const text = layoutRows(source.beside, besideWidth, wrap);
+    const rows = Array.from({ length: Math.max(image.rows.length, text.rows.length) }, (_, i): GridRow => {
+      const picture = padTo(image.rows[i] ?? { segments: [] }, image.cols);
+      const words = text.rows[i]?.segments ?? [];
+      return { segments: [{ text: ' '.repeat(MARGIN) }, ...picture, { text: ' ' }, ...words] };
+    });
+    return { rows, errors: text.errors.map((e) => `beside: ${e}`), links: text.links };
+  }
+
+  const pad = Math.floor((width - image.cols) / 2);
+  const rows = image.rows.map((row) => ({ segments: pad ? [{ text: ' '.repeat(pad) }, ...row.segments] : row.segments }));
+  const text = source.beside ? layoutRows(['', ...source.beside], width, wrap) : { rows: [], errors: [], links: [] };
+  return { rows: [...rows, ...text.rows], errors: text.errors.map((e) => `beside: ${e}`), links: text.links };
+};
+
 /**
  * Lays out logical lines for one width. With `wrap` off (a `mobileRows`
  * override) each line is used as written and over-long lines are reported.
  */
-export const layoutRows = (sources: RowSource[], width: number, wrap = true): LaidOutRows => {
+export const layoutRows = (sources: RowSource[], width: number, wrap = true, renderImage?: ImageRenderer): LaidOutRows => {
   const rows: GridRow[] = [];
   const errors: string[] = [];
   const links: number[] = [];
 
   sources.forEach((source, index) => {
+    const where = `line ${index + 1}`;
+    if (isImageRow(source)) {
+      if (!renderImage) return errors.push(`${where}: images can't be used here`);
+      const image = layoutImage(source, width, wrap, renderImage);
+      rows.push(...image.rows);
+      links.push(...image.links);
+      errors.push(...image.errors.map((e) => `${where}: ${e}`));
+      return;
+    }
     const { text, doubleHeight } = typeof source === 'string' ? { text: source, doubleHeight: false } : source;
     const parsed = parseMarkup(text);
-    const where = `line ${index + 1}`;
     errors.push(...parsed.errors.map((e) => `${where}: ${e}`));
     links.push(...parsed.links);
     const extra: Partial<GridRow> = doubleHeight ? { doubleHeight: true } : {};
