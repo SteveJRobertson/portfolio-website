@@ -5,7 +5,7 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 | Phase | Status |
 |---|---|
 | 0. Honest docs | In review |
-| 1. Foundations | Not started |
+| 1. Foundations | In review |
 | 2. Grid engine | Not started |
 | 3. Content pipeline | Not started |
 | 4. Navigation & accessibility | Not started |
@@ -23,11 +23,11 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [x] `docs/CONTENT.md` content brief from the current site
 
 ### Phase 1: Foundations
-- [ ] Self-host Bedstead WOFF2; remove Google Fonts
-- [ ] Remove `user-scalable=no` / `maximum-scale` from the viewport meta
-- [ ] Add Vitest with an `npm test` script
-- [ ] Add Storybook with token and primitive stories
-- [ ] Fix the CI typecheck (`tsc -b`), add lint and test steps
+- [x] Self-host Bedstead WOFF2 (v002.002, CC0, includes U+1FB00 mosaics); remove Google Fonts
+- [x] Remove `user-scalable=no` / `maximum-scale` from the viewport meta
+- [x] Add Vitest with an `npm test` script (validator, page buffer, Fastext, contrast)
+- [x] Add Storybook with token and primitive stories
+- [x] Fix the CI typecheck (`tsc -b`), add lint and test steps (`ci.yml` on every PR); deploy made manual-only
 
 ### Phase 2: Grid engine
 - [ ] `<TeletextGrid cols rows>` that renders exact cells
