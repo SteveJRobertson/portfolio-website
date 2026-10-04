@@ -1,0 +1,87 @@
+/* ============================================================
+   TELETEXT DESIGN SYSTEM TOKENS (ETS 300 706 Standard)
+   ============================================================ */
+
+/* Bedstead Font Definition */
+@font-face {
+  font-family: 'Bedstead';
+  src: url('/fonts/bedstead.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  /* Teletext SAA5050 8-Color Palette */
+  --tt-black: #0c0c0c;
+  --tt-red: #ff3333;
+  --tt-green: #00ff00;
+  --tt-yellow: #ffff00;
+  --tt-blue: #4d79ff; /* Lightened from #0000FF to pass WCAG AA contrast */
+  --tt-magenta: #ff00ff;
+  --tt-cyan: #00ffff;
+  --tt-white: #ffffff;
+
+  /* Fonts */
+  --tt-font: 'Bedstead', 'VT323', 'Share Tech Mono', monospace;
+
+  /* Core Teletext Aspect & Grid Ratios */
+  --tt-cols-classic: 40;
+  --tt-cols-wide: 56;
+  --tt-rows: 24;
+  --tt-line-height: 1.25;
+}
+
+/* Global Reset & Scroll Lock */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: #000000;
+  color: var(--tt-white);
+  font-family: var(--tt-font);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* Teletext Color Utility Classes */
+.c-red     { color: var(--tt-red); }
+.c-green   { color: var(--tt-green); }
+.c-yellow  { color: var(--tt-yellow); }
+.c-blue    { color: var(--tt-blue); }
+.c-magenta { color: var(--tt-magenta); }
+.c-cyan    { color: var(--tt-cyan); }
+.c-white   { color: var(--tt-white); }
+.c-black   { color: var(--tt-black); }
+
+.bg-red     { background-color: #cc0000; color: #ffffff; }
+.bg-green   { background-color: #00aa00; color: #000000; }
+.bg-yellow  { background-color: #cccc00; color: #000000; }
+.bg-blue    { background-color: #0000cc; color: #ffffff; }
+.bg-magenta { background-color: #cc00cc; color: #ffffff; }
+.bg-cyan    { background-color: #00aaaa; color: #000000; }
+.bg-white   { background-color: #ffffff; color: #000000; }
+.bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
+
+/* Accessible Screen Reader Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
