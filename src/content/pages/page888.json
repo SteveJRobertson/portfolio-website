@@ -1,0 +1,18 @@
+{
+  "page": 888,
+  "title": "Accessibility",
+  "label": "A11Y",
+  "index": true,
+  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
+  "rows": [
+    { "text": "{magenta}ACCESSIBILITY{/}", "doubleHeight": true },
+    "{blue}{rule}{/}",
+    "",
+    "Two switches are coming to this page:",
+    "",
+    "* {cyan}Text mode{/}: a plain, high-contrast reader view of every page.",
+    "* {cyan}CRT effect{/}: scanlines and glow, off when you prefer reduced motion.",
+    "",
+    "Pinch-zoom always works."
+  ]
+}

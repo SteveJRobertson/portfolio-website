@@ -1,14 +1,10 @@
 import React, { useEffect } from 'react';
-import type { FastTextLink } from '../types/teletext';
+import type { FastextLink } from '../types/teletext';
 import { FASTEXT_ORDER, fastextLabels, fastextSlotWidths } from '../display/fastext';
 
 interface FastTextBarProps {
-  links: {
-    red: FastTextLink;
-    green: FastTextLink;
-    yellow: FastTextLink;
-    cyan: FastTextLink;
-  };
+  /** Red, green, yellow, cyan. */
+  links: readonly [FastextLink, FastextLink, FastextLink, FastextLink];
   onNavigate: (page: number) => void;
   /** Grid width; the bar fills the last row in four equal slots. */
   cols: number;
@@ -34,10 +30,10 @@ export const FastTextBar: React.FC<FastTextBarProps> = ({
       }
 
       const key = e.key.toLowerCase();
-      if (key === 'r') onNavigate(links.red.page);
-      if (key === 'g') onNavigate(links.green.page);
-      if (key === 'y') onNavigate(links.yellow.page);
-      if (key === 'c' || key === 'b') onNavigate(links.cyan.page);
+      if (key === 'r') onNavigate(links[0].page);
+      if (key === 'g') onNavigate(links[1].page);
+      if (key === 'y') onNavigate(links[2].page);
+      if (key === 'c' || key === 'b') onNavigate(links[3].page);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -45,7 +41,7 @@ export const FastTextBar: React.FC<FastTextBarProps> = ({
   }, [links, onNavigate]);
 
   const widths = fastextSlotWidths(cols);
-  const labels = fastextLabels(FASTEXT_ORDER.map((color) => links[color]), widths);
+  const labels = fastextLabels(links, widths);
 
   return (
     <nav
@@ -59,7 +55,7 @@ export const FastTextBar: React.FC<FastTextBarProps> = ({
           type="button"
           className={`fasttext-btn bg-${color}`}
           style={{ width: `calc(${widths[i]} * var(--tt-cell-w))` }}
-          onClick={() => onNavigate(links[color].page)}
+          onClick={() => onNavigate(links[i].page)}
         >
           {labels[i]}
         </button>

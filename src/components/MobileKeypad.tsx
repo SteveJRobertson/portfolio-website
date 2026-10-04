@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
+import { NAVIGABLE_PAGES } from '../content/registry';
 
 interface MobileKeypadProps {
   onNavigate: (page: number) => void;
+  /** Steps through the current page's sub-pages (-1 or +1). */
+  onSubpage: (delta: number) => void;
   currentPage: number;
 }
 
 export const MobileKeypad: React.FC<MobileKeypadProps> = ({
   onNavigate,
+  onSubpage,
   currentPage,
 }) => {
   const [digits, setDigits] = useState<string[]>([]);
@@ -28,11 +32,10 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
   };
 
   const handlePageDelta = (delta: number) => {
-    const validPages = [100, 101, 200, 201, 202, 300, 400, 888];
-    const currentIndex = validPages.indexOf(currentPage);
+    const currentIndex = NAVIGABLE_PAGES.indexOf(currentPage);
     if (currentIndex !== -1) {
-      const nextIndex = (currentIndex + delta + validPages.length) % validPages.length;
-      onNavigate(validPages[nextIndex]);
+      const nextIndex = (currentIndex + delta + NAVIGABLE_PAGES.length) % NAVIGABLE_PAGES.length;
+      onNavigate(NAVIGABLE_PAGES[nextIndex]);
     } else {
       onNavigate(100);
     }
@@ -87,6 +90,8 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
           <div className="remote-nav-row">
             <button type="button" className="remote-btn nav-btn" onClick={() => handlePageDelta(-1)}>▲ PREV PAGE</button>
             <button type="button" className="remote-btn nav-btn" onClick={() => handlePageDelta(1)}>▼ NEXT PAGE</button>
+            <button type="button" className="remote-btn nav-btn" onClick={() => onSubpage(-1)}>◀ SUB</button>
+            <button type="button" className="remote-btn nav-btn" onClick={() => onSubpage(1)}>SUB ▶</button>
             <button type="button" className="remote-btn nav-btn" onClick={() => onNavigate(888)}>888 A11Y</button>
           </div>
         </div>

@@ -6,28 +6,40 @@ import { HeaderTicker } from './HeaderTicker';
 import { FastTextBar } from './FastTextBar';
 import { GRID_MODES, type GridModeName } from '../display/gridModes';
 import { layoutBody } from '../display/layout';
-import { rowFromData, textRow } from '../display/rows';
-import { SIDEBAR_ROWS } from '../display/sidebar';
-import { getPageData } from '../utils/pageRegistry';
+import { textRow } from '../display/rows';
+import { sidebarRows } from '../display/sidebar';
+import { PAGES, QUICK_INDEX, getPage } from '../content/registry';
+
+const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 
 interface ScreenProps {
   mode: GridModeName;
   page: number;
+  /** Zero-based sub-page. */
+  subpage: number;
   showCells: boolean;
+  fontSize?: number;
 }
 
 /** A full screen at a fixed font size, so each mode can be compared side by side. */
-const Screen = ({ mode: name, page, showCells }: ScreenProps) => {
+const Screen = ({ mode: name, page, subpage, showCells, fontSize = 20 }: ScreenProps) => {
   const mode = GRID_MODES[name];
-  const data = getPageData(page)!;
+  const data = getPage(page)!;
+  const index = Math.min(subpage, data.wide.length - 1);
+  const rows = (name === 'portrait' ? data.narrow : data.wide)[index];
   return (
-    <div style={{ fontSize: 20 }} className={showCells ? 'tt-story-cells' : undefined}>
+    <div style={{ fontSize }} className={showCells ? 'tt-story-cells' : undefined}>
       <TeletextGrid cols={mode.cols} rows={mode.rows}>
-        <HeaderTicker bufferText={`P${page}`} currentPage={page} cols={mode.cols} />
-        {layoutBody(mode, data.mainRows.map(rowFromData), SIDEBAR_ROWS).map(({ key, ...line }) => (
+        <HeaderTicker
+          bufferText={`P${page}`}
+          currentPage={page}
+          cols={mode.cols}
+          subpage={{ index, count: data.wide.length }}
+        />
+        {layoutBody(mode, rows, SIDEBAR_ROWS).map(({ key, ...line }) => (
           <GridLine key={key} {...line} />
         ))}
-        <FastTextBar links={data.fastText} onNavigate={fn()} cols={mode.cols} row={mode.rows} />
+        <FastTextBar links={data.fastext} onNavigate={fn()} cols={mode.cols} row={mode.rows} />
       </TeletextGrid>
       {showCells && (
         <style>{`.tt-story-cells .tt-grid {
@@ -44,10 +56,11 @@ const Screen = ({ mode: name, page, showCells }: ScreenProps) => {
 const meta: Meta<typeof Screen> = {
   title: 'Organisms/TeletextGrid',
   component: Screen,
-  args: { mode: 'classic', page: 100, showCells: false },
+  args: { mode: 'classic', page: 100, subpage: 0, showCells: false },
   argTypes: {
     mode: { control: 'inline-radio', options: Object.keys(GRID_MODES) },
-    page: { control: 'select', options: [100, 101, 200, 201, 300, 400] },
+    page: { control: 'select', options: PAGES.map((p) => p.page) },
+    subpage: { control: { type: 'number', min: 0, max: 5 } },
   },
 };
 
@@ -58,6 +71,21 @@ export const Widescreen: Story = { args: { mode: 'widescreen' } };
 export const Classic: Story = {};
 export const Portrait: Story = { args: { mode: 'portrait' } };
 export const CellOverlay: Story = { args: { showCells: true } };
+export const SubPages: Story = { args: { page: 110, subpage: 1 } };
+
+/** Every page and sub-page in the registry, so new content shows up here automatically. */
+export const AllPages: Story = {
+  argTypes: { page: { table: { disable: true } }, subpage: { table: { disable: true } } },
+  render: ({ mode, showCells }) => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
+      {PAGES.flatMap((p) =>
+        p.wide.map((_, i) => (
+          <Screen key={`${p.page}-${i}`} mode={mode} page={p.page} subpage={i} showCells={showCells} fontSize={10} />
+        )),
+      )}
+    </div>
+  ),
+};
 
 export const DoubleHeight: StoryObj<typeof TeletextGrid> = {
   render: () => (

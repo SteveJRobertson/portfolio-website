@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-
-const VALID_PAGES = [100, 101, 200, 201, 202, 300, 400, 888];
+import { NOT_FOUND_PAGE, isValidPage } from '../content/registry';
 
 interface UsePageBufferReturn {
   bufferText: string;
@@ -12,10 +11,10 @@ const getPageFromPath = (path: string): number => {
   const cleanPath = path.replace(/^\//, '').trim();
   if (!cleanPath || cleanPath === '100') return 100;
   const parsed = parseInt(cleanPath, 10);
-  if (!isNaN(parsed) && VALID_PAGES.includes(parsed)) {
+  if (!isNaN(parsed) && isValidPage(parsed)) {
     return parsed;
   }
-  return 404;
+  return NOT_FOUND_PAGE;
 };
 
 export const usePageBuffer = (initialDefault = 100): UsePageBufferReturn => {
@@ -31,7 +30,7 @@ export const usePageBuffer = (initialDefault = 100): UsePageBufferReturn => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
 
   const navigateToPage = useCallback((page: number) => {
-    const targetPage = VALID_PAGES.includes(page) ? page : 404;
+    const targetPage = isValidPage(page) ? page : NOT_FOUND_PAGE;
     setCurrentPage(targetPage);
     setDigits([]);
     setIsTyping(false);

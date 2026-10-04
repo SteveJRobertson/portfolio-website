@@ -62,7 +62,7 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 | 100 | Index / cover |
 | 101 | About |
 | 110 | Experience (sub-pages, one per role) |
-| 200 | Projects index; 201–20x individual projects |
+| 200 | Projects index; 201 Isolate UI, 202 Lighthouse Compare, 203 Steve-Text |
 | 300 | Skills (sub-pages by group) |
 | 400 | Contact |
 | 888 | Accessibility: Text mode and CRT effect toggles |
@@ -72,13 +72,16 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 
 ## 7. Content schema and validation
 
-- Each page is a JSON file with `page`, `title`, `fastext`, `rows`, and optional `mobileRows` and `subpages`.
-- Rows are written once using colour tags (e.g. `{cyan}TEXT{/}`). A build-time wrapper lays them out for 38/40 columns and for 20 columns. `mobileRows` overrides the automatic portrait layout.
-- The validator fails the build when:
+- Each page is a JSON file `src/content/pages/pageNNN.json` with `page`, `title`, `label` (short name for the quick index and Fastext), `fastext` (four `{ "page": NNN }` entries, red to cyan, with an optional `label`), optional `index` (list it in the quick index), and either `rows` or `subpages`. `mobileRows` / `mobileSubpages` optionally override the portrait layout line for line.
+- A row is one logical line of any length: a string, or `{ "text": …, "doubleHeight": true }`. An empty string is a blank row.
+- Colour tags: `{red}` `{green}` `{yellow}` `{blue}` `{magenta}` `{cyan}` `{white}` and `{bg:colour}`, closed by `{/}`; `{link:NNN}…{/}` is an inline page link; `{rule}` or `{rule:-}` alone on a row draws a full-width rule; `{{` is a literal brace.
+- A build-time wrapper (a Vite plugin serving `virtual:pages`) lays every row out at **38 columns**, used by both widescreen and classic so their line breaks match, and at **20 columns** for portrait. Rows get a one-cell margin; `* ` bullets and `NNN ` page numbers hang their continuation lines; lines can also break after `/`, `-` and `@`. Dev, build, Storybook and Vitest all use the same plugin.
+- The validator (`npm run validate`, and the plugin on every build) fails when:
   1. a row is wider than the mode's column limit;
-  2. a page has more rows than the mode allows;
+  2. a page or sub-page has more rows than the mode allows (22, or 34 in portrait; double height counts as two);
   3. a Fastext or inline link points at a page that doesn't exist;
-  4. an unknown colour tag is used.
+  4. an unknown or unclosed tag is used;
+  5. a file name doesn't match its page number, or two files define the same page.
 
 ## 8. Graphics
 
@@ -107,6 +110,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-008 | Deliver as one PR per phase, on stacked branches (see [ROADMAP.md](./ROADMAP.md)). |
 | DEC-009 | Page map from [CONTENT.md](./CONTENT.md) approved, including 110 Experience with per-role sub-pages. |
 | DEC-010 | The mode queries live in one TypeScript module (React needs `cols × rows` to render the cells) and CSS keys off `data-mode`. Revisit for pre-rendering in Phase 6. |
+| DEC-011 | Content is wrapped once at 38 columns for widescreen and classic, and at 20 for portrait. Until Phase 5 adds cycling, sub-pages are stepped with ←/→ and the keypad. The old canvas demo on 202 is dropped; 203 gets mosaic graphics in Phase 5. |
 
 ## 11. Open questions
 

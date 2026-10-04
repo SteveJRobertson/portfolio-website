@@ -1,31 +1,17 @@
 {
-  "pageNumber": 201,
-  "title": "DESIGN SYSTEM CASE STUDY",
-  "path": "/201",
-  "fastText": {
-    "red": { "label": "Projects [200]", "page": 200, "path": "/200", "color": "red" },
-    "green": { "label": "Shader [202]", "page": 202, "path": "/202", "color": "green" },
-    "yellow": { "label": "Stack [300]", "page": 300, "path": "/300", "color": "yellow" },
-    "cyan": { "label": "Contact [400]", "page": 400, "path": "/400", "color": "cyan" }
-  },
-  "mainRows": [
-    { "color": "yellow", "text": "======================================" },
-    { "color": "cyan", "text": " P201 CASE STUDY: TELETEXT SYSTEM     " },
-    { "color": "yellow", "text": "======================================" },
-    { "color": "white", "text": " " },
-    { "color": "white", "text": " Tokenized design system built using  " },
-    { "color": "white", "text": " SAA5050 Mode 7 character metrics.    " },
-    { "color": "green", "text": " HIGHLIGHTS:                          " },
-    { "color": "cyan", "text": " * Storybook component catalog        " },
-    { "color": "cyan", "text": " * WCAG AA/AAA contrast calibration   " },
-    { "color": "cyan", "text": " * Zero-dependency monospaced CSS grid" },
-    { "color": "white", "text": " " },
-    { "color": "yellow", "text": " PRESS [200] OR 'R' TO BACK TO LIST   " }
-  ],
-  "semanticContent": {
-    "heading": "Case Study: Teletext Design System",
-    "body": [
-      "A strict tokenized design system capturing retro computing aesthetics while delivering modern web performance and accessibility."
-    ]
-  }
+  "page": 201,
+  "title": "Isolate UI",
+  "label": "ISOLATE UI",
+  "fastext": [{ "page": 200 }, { "page": 202 }, { "page": 203 }, { "page": 400 }],
+  "rows": [
+    { "text": "{green}ISOLATE UI{/}", "doubleHeight": true },
+    "{blue}{rule}{/}",
+    "",
+    "Isolating and testing UI components in a sandboxed environment.",
+    "",
+    "{green}TECH{/}    TypeScript, React",
+    "{green}STATUS{/}  In progress",
+    "",
+    "{cyan}github.com/SteveJRobertson/isolate-ui{/}"
+  ]
 }

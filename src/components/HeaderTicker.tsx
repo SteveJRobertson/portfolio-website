@@ -6,6 +6,7 @@ interface HeaderTickerProps {
   bufferText: string;
   currentPage: number;
   cols: number;
+  subpage?: { index: number; count: number };
 }
 
 /** Row 1 of the grid: page buffer, service name, page number and clock. */
@@ -13,6 +14,7 @@ export const HeaderTicker: React.FC<HeaderTickerProps> = ({
   bufferText,
   currentPage,
   cols,
+  subpage,
 }) => {
   const [now, setNow] = useState<Date>(() => new Date());
 
@@ -23,7 +25,7 @@ export const HeaderTicker: React.FC<HeaderTickerProps> = ({
 
   return (
     <header className="tt-header" style={{ display: 'contents' }}>
-      <GridLine row={1} width={cols} content={formatHeader({ bufferText, currentPage, now, cols })} />
+      <GridLine row={1} width={cols} content={formatHeader({ bufferText, currentPage, now, cols, subpage })} />
     </header>
   );
 };

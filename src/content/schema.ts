@@ -1,0 +1,42 @@
+import { GRID_MODES, bodyRowCount } from '../display/gridModes.ts';
+
+/**
+ * The page source format (SPEC §7): one JSON file per page in
+ * `src/content/pages/`, written once with colour tags and wrapped at build time.
+ */
+
+/** A logical line. A plain string, or an object to make it double height. */
+export type RowSource = string | { text: string; doubleHeight?: boolean };
+
+export interface FastextSource {
+  page: number;
+  /** Defaults to the target page's `label`. */
+  label?: string;
+}
+
+export interface PageSource {
+  /** 100–899, and must match the file name (`page110.json`). */
+  page: number;
+  title: string;
+  /** Short name for the quick index and Fastext, e.g. "ABOUT". */
+  label: string;
+  /** List the page in the widescreen quick index. */
+  index?: boolean;
+  /** Red, green, yellow, cyan. */
+  fastext: [FastextSource, FastextSource, FastextSource, FastextSource];
+  /** A single page… */
+  rows?: RowSource[];
+  /** …or several sub-pages. */
+  subpages?: RowSource[][];
+  /** Portrait override, used line for line instead of the automatic wrap. */
+  mobileRows?: RowSource[];
+  mobileSubpages?: RowSource[][];
+}
+
+/** The widescreen main pane width (38). Classic shows the same line breaks with two cells spare. */
+export const WIDE_COLS = GRID_MODES.widescreen.mainCols;
+export const NARROW_COLS = GRID_MODES.portrait.mainCols;
+
+/** Body rows between the header and Fastext (22 and 34). */
+export const WIDE_BODY_ROWS = bodyRowCount(GRID_MODES.widescreen);
+export const NARROW_BODY_ROWS = bodyRowCount(GRID_MODES.portrait);

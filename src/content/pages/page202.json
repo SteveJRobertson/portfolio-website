@@ -1,0 +1,17 @@
+{
+  "page": 202,
+  "title": "Lighthouse Compare",
+  "label": "LIGHTHOUSE",
+  "fastext": [{ "page": 200 }, { "page": 201 }, { "page": 203 }, { "page": 400 }],
+  "rows": [
+    { "text": "{green}LIGHTHOUSE{/}", "doubleHeight": true },
+    "{blue}{rule}{/}",
+    "",
+    "{yellow}Lighthouse Compare{/}: compare Lighthouse reports side by side to track improvements over time.",
+    "",
+    "{green}TECH{/}    JavaScript",
+    "{green}STATUS{/}  In progress",
+    "",
+    "{cyan}github.com/SteveJRobertson/lighthouse-compare{/}"
+  ]
+}

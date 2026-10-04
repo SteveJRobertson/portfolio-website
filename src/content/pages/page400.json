@@ -1,33 +1,23 @@
 {
-  "pageNumber": 400,
-  "title": "CONTACT & LINKS",
-  "path": "/400",
-  "fastText": {
-    "red": { "label": "Index [100]", "page": 100, "path": "/", "color": "red" },
-    "green": { "label": "About [101]", "page": 101, "path": "/101", "color": "green" },
-    "yellow": { "label": "Projects [200]", "page": 200, "path": "/200", "color": "yellow" },
-    "cyan": { "label": "Stack [300]", "page": 300, "path": "/300", "color": "cyan" }
-  },
-  "mainRows": [
-    { "color": "yellow", "text": "======================================" },
-    { "color": "cyan", "text": " P400 CONTACT & CONNECT WITH STEVE    " },
-    { "color": "yellow", "text": "======================================" },
-    { "color": "white", "text": " " },
-    { "color": "green", "text": " GET IN TOUCH:                        " },
-    { "color": "white", "text": " GITHUB:   github.com/SteveJRobertson " },
-    { "color": "white", "text": " LOCATION: Edinburgh, Scotland, UK    " },
-    { "color": "white", "text": " TIMEZONE: UK Local Time (GMT/BST)    " },
-    { "color": "white", "text": " " },
-    { "color": "magenta", "text": " OPEN FOR ARCHITECTURE CONSULTING     " },
-    { "color": "white", "text": " " },
-    { "color": "yellow", "text": " PRESS [100] OR 'R' TO RETURN HOME    " }
-  ],
-  "semanticContent": {
-    "heading": "Contact & Connections",
-    "body": [
-      "Steve Robertson - Senior Solutions Architect & Lead Frontend Engineer",
-      "GitHub: https://github.com/SteveJRobertson",
-      "Location: Edinburgh, Scotland, UK"
-    ]
-  }
+  "page": 400,
+  "title": "Contact",
+  "label": "CONTACT",
+  "index": true,
+  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 110 }, { "page": 200 }],
+  "rows": [
+    { "text": "{cyan}CONTACT{/}", "doubleHeight": true },
+    "{blue}{rule}{/}",
+    "",
+    "{green}EMAIL{/}",
+    "steve.robertson80@gmail.com",
+    "",
+    "{green}LINKEDIN{/}",
+    "linkedin.com/in/steverobertson80",
+    "",
+    "{green}GITHUB{/}",
+    "github.com/stevejrobertson",
+    "",
+    "{green}WEBSITE{/}",
+    "steverobertson.dev"
+  ]
 }

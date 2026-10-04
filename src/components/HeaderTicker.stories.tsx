@@ -24,3 +24,4 @@ export const Classic: Story = {};
 export const Widescreen: Story = { args: { cols: 56 } };
 export const Portrait: Story = { args: { cols: 20 } };
 export const TypingPageNumber: Story = { args: { bufferText: 'P30-' } };
+export const WithSubpages: Story = { args: { bufferText: 'P110', currentPage: 110, subpage: { index: 0, count: 6 } } };
