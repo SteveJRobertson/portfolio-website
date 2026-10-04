@@ -326,6 +326,23 @@ html, body {
   gap: 0.5rem;
 }
 
+/* Phones: four buttons have to fit the strip on 888 */
+@media (max-width: 480px) {
+  .control-strip,
+  .settings {
+    gap: 0.3rem;
+  }
+
+  .control-strip button {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.45rem;
+  }
+
+  .settings__long {
+    display: none;
+  }
+}
+
 .settings__toggle[aria-pressed='true'],
 .hold-toggle[aria-pressed='true'] {
   background: var(--tt-green);

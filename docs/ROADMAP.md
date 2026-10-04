@@ -8,8 +8,8 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 | 1. Foundations | Done |
 | 2. Grid engine | Done |
 | 3. Content pipeline | Done |
-| 4. Navigation & accessibility | In review |
-| 5. Graphics & polish | Not started |
+| 4. Navigation & accessibility | Done |
+| 5. Graphics & polish | In review |
 | 6. Ship | Deferred (private repo) |
 
 ---
@@ -55,10 +55,11 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [x] axe checks in CI (Vitest + axe-core, every page, both views)
 
 ### Phase 5: Graphics & polish
-- [ ] Build-time image → 2×3 mosaic converter (text output)
-- [ ] Optional edit.tf import
-- [ ] Scanline/glow overlay that respects reduced motion, with a toggle on 888
-- [ ] Sub-page cycling with hold
+- [x] Build-time image → 2×3 mosaic converter (PNG in `src/content/images/`, image rows in the page JSON, validated)
+- [x] Page 203 portrait from Steve's photo, on its own sub-page
+- [ ] Optional edit.tf import (deferred until there's artwork, DEC-013)
+- [x] CRT scanline/glow overlay, off at first with reduced motion or more contrast, with a switch on 888
+- [x] Sub-page cycling every 15 seconds with HOLD (H key, strip button, keypad)
 
 ### Phase 6: Ship (deferred)
 - [ ] Per-page pre-rendered HTML + meta tags

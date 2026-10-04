@@ -24,11 +24,12 @@ npm run build      # validate + typecheck + production build
 | Path | Purpose |
 |---|---|
 | `src/content/pages/*.json` | One file per Teletext page, written with colour tags (see SPEC §7) |
-| `src/content/` | Tag parser, wrapper, semantic mirror builder, validator and the page registry |
+| `src/content/images/*.png` | Pictures turned into block graphics at build time (see SPEC §8) |
+| `src/content/` | Tag parser, wrapper, mosaic converter, semantic mirror builder, validator and the page registry |
 | `src/display/` | Grid modes and screen layout |
 | `src/components/` | Teletext UI components |
 | `src/navigation/` | Routing, the shared 3-digit buffer and hotkeys |
-| `src/settings/` | Saved Text mode and shortcut settings (page 888) |
+| `src/settings/` | Saved Text mode, shortcut and CRT effect settings (page 888) |
 | `scripts/` | `validatePages.ts` and the Vite plugin that compiles the pages |
 | `src/design-system/` | Token stories and helpers |
 | `public/fonts/` | Self-hosted Bedstead (CC0) |

@@ -29,8 +29,14 @@ export const SettingsControls: React.FC<SettingsControlsProps> = ({ settings, on
       SHORTCUTS <span aria-hidden="true">{settings.shortcuts ? 'ON' : 'OFF'}</span>
     </button>
     {crtOn !== undefined && (
-      <button type="button" className="settings__toggle" aria-pressed={crtOn} onClick={() => onChange({ crt: !crtOn })}>
-        CRT EFFECT <span aria-hidden="true">{crtOn ? 'ON' : 'OFF'}</span>
+      <button
+        type="button"
+        className="settings__toggle"
+        aria-label="CRT EFFECT"
+        aria-pressed={crtOn}
+        onClick={() => onChange({ crt: !crtOn })}
+      >
+        CRT<span className="settings__long"> EFFECT</span> <span aria-hidden="true">{crtOn ? 'ON' : 'OFF'}</span>
       </button>
     )}
   </div>
