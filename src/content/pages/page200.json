@@ -5,7 +5,7 @@
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 400 }],
   "rows": [
-    { "banner": "PROJECTS", "bg": "green" },
+    { "banner": "{black}PROJECTS{/}", "bg": "green" },
     "",
     "Personal projects, all in progress.",
     "",
