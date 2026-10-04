@@ -3,11 +3,10 @@
   "title": "About me",
   "label": "ABOUT",
   "index": true,
-  "fastext": [{ "page": 100 }, { "page": 110 }, { "page": 300 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 110 }, { "page": 300 }, { "page": 400 }],
   "subpages": [
     [
-      { "text": "{red}ABOUT ME{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "ABOUT ME", "bg": "red" },
       "",
       {
         "image": "steve",
@@ -22,8 +21,7 @@
       }
     ],
     [
-      { "text": "{red}ABOUT ME{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "ABOUT ME", "bg": "red" },
       "",
       "{green}I thrive where frontend engineering intersects with design, platform teams and business stakeholders.{/}",
       "",

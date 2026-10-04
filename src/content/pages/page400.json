@@ -3,10 +3,9 @@
   "title": "Contact",
   "label": "CONTACT",
   "index": true,
-  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 110 }, { "page": 200 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110 }, { "page": 200 }],
   "rows": [
-    { "text": "{cyan}CONTACT{/}", "doubleHeight": true },
-    "{blue}{rule}{/}",
+    { "banner": "{blue}CONTACT{/}", "bg": "cyan" },
     "",
     { "text": "{green}EMAIL{/}", "heading": true },
     "steve.robertson80@gmail.com",

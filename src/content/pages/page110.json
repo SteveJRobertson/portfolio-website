@@ -3,11 +3,10 @@
   "title": "Experience",
   "label": "EXPERIENCE",
   "index": true,
-  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 300 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 300 }, { "page": 400 }],
   "subpages": [
     [
-      { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "EXPERIENCE", "bg": "red" },
       "",
       { "text": "{yellow}FanDuel{/}", "heading": true },
       "{cyan}Senior Software Engineer{/}",
@@ -21,8 +20,7 @@
       { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
-      { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "EXPERIENCE", "bg": "red" },
       "",
       { "text": "{yellow}Wood Mackenzie{/}", "heading": true },
       "{cyan}Design System Lead (Contract){/}",
@@ -37,8 +35,7 @@
       { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
-      { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "EXPERIENCE", "bg": "red" },
       "",
       { "text": "{yellow}Royal Bank of Scotland{/}", "heading": true },
       "{cyan}Frontend Engineer{/}",
@@ -51,8 +48,7 @@
       { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
-      { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "EXPERIENCE", "bg": "red" },
       "",
       { "text": "{yellow}Aegon{/}", "heading": true },
       "{cyan}Frontend Engineer{/}",
@@ -65,8 +61,7 @@
       { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
-      { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "EXPERIENCE", "bg": "red" },
       "",
       { "text": "{yellow}Royal London{/}", "heading": true },
       "{cyan}Frontend Developer{/}",
@@ -77,8 +72,7 @@
       { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
-      { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "EXPERIENCE", "bg": "red" },
       "",
       { "text": "{yellow}Sopra Steria, Realise, Freelance{/}", "heading": true },
       "{cyan}Earlier career{/}",

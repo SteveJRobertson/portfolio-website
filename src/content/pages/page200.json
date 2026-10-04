@@ -3,10 +3,9 @@
   "title": "Projects",
   "label": "PROJECTS",
   "index": true,
-  "fastext": [{ "page": 100 }, { "page": 201 }, { "page": 202 }, { "page": 203 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 201 }, { "page": 202 }, { "page": 203 }],
   "rows": [
-    { "text": "{green}PROJECTS{/}", "doubleHeight": true },
-    "{blue}{rule}{/}",
+    { "banner": "PROJECTS", "bg": "green" },
     "",
     "Personal projects, all in progress.",
     "",

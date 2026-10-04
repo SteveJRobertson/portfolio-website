@@ -2,10 +2,9 @@
   "page": 404,
   "title": "Page not found",
   "label": "NOT FOUND",
-  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
   "rows": [
-    { "text": "{red}PAGE NOT FOUND{/}", "doubleHeight": true },
-    "{red}{rule}{/}",
+    { "banner": "PAGE NOT FOUND", "bg": "red" },
     "",
     "The page number you keyed is not in service.",
     "",

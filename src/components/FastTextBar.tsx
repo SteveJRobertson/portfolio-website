@@ -14,7 +14,8 @@ interface FastTextBarProps {
 }
 
 /**
- * The Fastext row: four real links drawn in the grid's last row (SPEC §5).
+ * The Fastext row: four real links drawn in the grid's last row (SPEC §5),
+ * each in its key's colour on black, as on a real set.
  * A plain click navigates in place; a modified click opens a new tab as usual.
  * The R/G/Y/B hotkeys live in useHotkeys.
  */
@@ -33,7 +34,7 @@ export const FastTextBar: React.FC<FastTextBarProps> = ({ links, onNavigate, col
           key={color}
           href={pageHref(links[i].page)}
           aria-label={fastextName(i, links[i])}
-          className={`fasttext-btn bg-${color}`}
+          className={`fasttext-btn fasttext-btn--${color}`}
           style={{ width: `calc(${widths[i]} * var(--tt-cell-w))` }}
           onClick={(e) => {
             if (!isPlainClick(e)) return;

@@ -1,4 +1,5 @@
 import { TELETEXT_COLORS, type GridSegment, type TeletextColor } from '../types/teletext.ts';
+import { sextant } from './mosaic.ts';
 
 /**
  * Colour-tag markup for one logical line (SPEC §7):
@@ -6,7 +7,9 @@ import { TELETEXT_COLORS, type GridSegment, type TeletextColor } from '../types/
  *   {cyan}TEXT{/}        foreground colour
  *   {bg:blue}TEXT{/}     background colour
  *   {link:201}TEXT{/}    inline page link (cyan unless a colour is set inside it)
- *   {rule} / {rule:-}    a full-width rule; the only thing on its row, colour from the enclosing tag
+ *   {rule} / {rule:-}    a full-width rule; the only thing on its row, colour from the enclosing tag.
+ *                        {rule} is a solid mosaic bar; {rule:X} repeats X
+ *   {dots}               a leader: dots that push the rest of the line to the right edge
  *   {{                   a literal "{"
  *
  * Tags nest, `{/}` closes the most recent one, and every tag must be closed by
@@ -29,6 +32,9 @@ interface Style {
   link?: number;
 }
 
+/** The middle third of a cell: a solid bar across the screen. */
+export const RULE = sextant(0b001100);
+
 const isColor = (name: string): name is TeletextColor => (TELETEXT_COLORS as readonly string[]).includes(name);
 
 export const parseMarkup = (source: string): ParsedLine => {
@@ -38,6 +44,7 @@ export const parseMarkup = (source: string): ParsedLine => {
   const stack: Style[] = [];
   let fill: string | undefined;
   let fillColor: TeletextColor | undefined;
+  let leaders = 0;
 
   const current = (): Style => stack[stack.length - 1] ?? {};
 
@@ -48,7 +55,7 @@ export const parseMarkup = (source: string): ParsedLine => {
     if (bg) style.bg = bg;
     if (link !== undefined) style.link = link;
     const last = segments[segments.length - 1];
-    if (last && last.color === style.color && last.bg === style.bg && last.link === style.link) last.text += text;
+    if (last && !last.leader && last.color === style.color && last.bg === style.bg && last.link === style.link) last.text += text;
     else segments.push(style);
   };
 
@@ -88,8 +95,11 @@ export const parseMarkup = (source: string): ParsedLine => {
       const page = Number(tag.slice(5));
       links.push(page);
       stack.push({ ...current(), color: 'cyan', link: page });
+    } else if (tag === 'dots') {
+      leaders++;
+      segments.push({ text: '.', color: current().color ?? 'white', leader: true });
     } else if (tag === 'rule' || /^rule:.$/u.test(tag)) {
-      fill = tag === 'rule' ? '=' : tag.slice(5);
+      fill = tag === 'rule' ? RULE : tag.slice(5);
       fillColor = current().color ?? 'white';
     } else {
       errors.push(`unknown tag "{${tag}}"`);
@@ -97,6 +107,7 @@ export const parseMarkup = (source: string): ParsedLine => {
   }
   push(text);
 
+  if (leaders > 1) errors.push('only one "{dots}" fits on a line');
   if (stack.length > 0) errors.push(`${stack.length} tag(s) not closed with "{/}"`);
   if (fill !== undefined && segments.some((s) => s.text.trim() !== '')) {
     errors.push('"{rule}" must be the only thing on its line');
