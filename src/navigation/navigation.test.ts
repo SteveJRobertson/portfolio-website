@@ -107,14 +107,16 @@ describe('useHotkeys', () => {
       onClear: vi.fn(),
       onFastext: vi.fn(),
       onSubpage: vi.fn(),
+      onHold: vi.fn(),
       ...overrides,
     };
     renderHook(() => useHotkeys(handlers));
     return handlers;
   };
 
-  it('maps digits, Escape, R/G/Y/B/C and the arrows', () => {
+  it('maps digits, Escape, R/G/Y/B/C, H and the arrows', () => {
     const h = setup();
+    press('h');
     press('7');
     press('Escape');
     ['r', 'g', 'y', 'b', 'C'].forEach((key) => press(key));
@@ -124,6 +126,7 @@ describe('useHotkeys', () => {
     expect(h.onClear).toHaveBeenCalledTimes(1);
     expect(vi.mocked(h.onFastext).mock.calls).toEqual([[0], [1], [2], [3], [3]]);
     expect(vi.mocked(h.onSubpage).mock.calls).toEqual([[-1], [1]]);
+    expect(h.onHold).toHaveBeenCalledTimes(1);
   });
 
   it('ignores keys with modifiers so browser shortcuts still work', () => {
@@ -151,8 +154,10 @@ describe('useHotkeys', () => {
     const h = setup({ characterKeys: false, arrowKeys: false });
     press('1');
     press('r');
+    press('h');
     press('ArrowRight');
     press('Escape');
+    expect(h.onHold).not.toHaveBeenCalled();
     expect(h.onDigit).not.toHaveBeenCalled();
     expect(h.onFastext).not.toHaveBeenCalled();
     expect(h.onSubpage).not.toHaveBeenCalled();

@@ -1,5 +1,5 @@
 import type { GridRow, GridSegment, TeletextColor } from '../types/teletext.ts';
-import type { RowSource } from './schema.ts';
+import { isImageRow, type ImageRowSource, type RowSource } from './schema.ts';
 import { parseMarkup } from './markup.ts';
 import { autolink } from './semantic.ts';
 
@@ -99,19 +99,29 @@ const wrapTokens = (tokens: StyledChar[][], firstRoom: number, nextRoom: number)
   return lines;
 };
 
+/** Turns an image row into mosaic rows for one width (the compiler supplies the pictures). */
+export type ImageRenderer = (source: ImageRowSource, width: number) => { rows: GridRow[]; errors: string[] };
+
 /**
  * Lays out logical lines for one width. With `wrap` off (a `mobileRows`
  * override) each line is used as written and over-long lines are reported.
  */
-export const layoutRows = (sources: RowSource[], width: number, wrap = true): LaidOutRows => {
+export const layoutRows = (sources: RowSource[], width: number, wrap = true, renderImage?: ImageRenderer): LaidOutRows => {
   const rows: GridRow[] = [];
   const errors: string[] = [];
   const links: number[] = [];
 
   sources.forEach((source, index) => {
+    const where = `line ${index + 1}`;
+    if (isImageRow(source)) {
+      if (!renderImage) return errors.push(`${where}: images can't be used here`);
+      const image = renderImage(source, width);
+      rows.push(...image.rows);
+      errors.push(...image.errors.map((e) => `${where}: ${e}`));
+      return;
+    }
     const { text, doubleHeight } = typeof source === 'string' ? { text: source, doubleHeight: false } : source;
     const parsed = parseMarkup(text);
-    const where = `line ${index + 1}`;
     errors.push(...parsed.errors.map((e) => `${where}: ${e}`));
     links.push(...parsed.links);
     const extra: Partial<GridRow> = doubleHeight ? { doubleHeight: true } : {};

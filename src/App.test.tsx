@@ -6,6 +6,7 @@ import { App } from './App';
 import { NAVIGABLE_PAGES } from './content/registry';
 import { DIGIT_DELAY_MS } from './navigation/useDigitBuffer';
 import { SETTINGS_KEY } from './settings/useSettings';
+import { SUBPAGE_INTERVAL_MS } from './hooks/useSubpage';
 
 const press = (key: string) =>
   act(() => {
@@ -23,6 +24,8 @@ const renderAt = (path: string, settings?: object) => {
 };
 
 const heading = () => screen.getByRole('heading', { level: 1 });
+const header = () => document.querySelector('.tt-header')!.textContent;
+const cycle = () => act(() => vi.advanceTimersByTime(SUBPAGE_INTERVAL_MS));
 
 /** axe on the whole document. jsdom can't compute colours, so contrast is covered by contrast.test.ts instead. */
 const axeViolations = async () => {
@@ -95,6 +98,67 @@ describe('App', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Aegon' })).toBeTruthy();
     press('ArrowRight');
     expect(screen.getByRole('status').textContent).toBe('Part 2 of 6');
+  });
+
+  it('cycles sub-pages on a timer without announcing them, and holds them', () => {
+    renderAt('/110');
+    expect(header()).toContain('1/6');
+    cycle();
+    expect(header()).toContain('2/6');
+    expect(screen.getByRole('status').textContent).toBe('');
+
+    const hold = screen.getByRole('button', { name: /HOLD/ });
+    fireEvent.click(hold);
+    expect(hold.getAttribute('aria-pressed')).toBe('true');
+    expect(header()).toContain('2/6 HOLD');
+    expect(screen.getByRole('status').textContent).toBe('Held on part 2 of 6');
+    cycle();
+    expect(header()).toContain('2/6');
+
+    press('h');
+    expect(screen.getByRole('status').textContent).toBe('Cycling');
+    cycle();
+    expect(header()).toContain('3/6');
+  });
+
+  it('only shows HOLD on pages with sub-pages', () => {
+    renderAt('/101');
+    expect(screen.queryByRole('button', { name: /HOLD/ })).toBeNull();
+  });
+
+  it('stops cycling while keyboard focus is in the mirror', () => {
+    renderAt('/300');
+    // jsdom never matches :focus-visible, so pretend this focus came from the keyboard.
+    const matches = Element.prototype.matches;
+    vi.spyOn(Element.prototype, 'matches').mockImplementation(function (this: Element, selector: string) {
+      return selector === ':focus-visible' || matches.call(this, selector);
+    });
+    const pageLink = within(screen.getByRole('navigation', { name: 'All pages' })).getAllByRole('link')[0];
+    act(() => pageLink.focus());
+    cycle();
+    cycle();
+    expect(header()).toContain('1/3');
+    act(() => pageLink.blur());
+    cycle();
+    expect(header()).toContain('2/3');
+    vi.restoreAllMocks();
+  });
+
+  it('opens pages held when reduced motion is preferred', () => {
+    const matchMedia = vi.fn((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    vi.stubGlobal('matchMedia', matchMedia);
+    try {
+      renderAt('/110');
+      cycle();
+      expect(header()).toContain('1/6 HOLD');
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it('keeps the grid out of the accessibility tree, apart from the Fastext links', () => {

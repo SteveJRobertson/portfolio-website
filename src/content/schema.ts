@@ -1,4 +1,5 @@
 import { GRID_MODES, bodyRowCount } from '../display/gridModes.ts';
+import type { TeletextColor } from '../types/teletext.ts';
 
 /**
  * The page source format (SPEC §7): one JSON file per page in
@@ -10,9 +11,32 @@ import { GRID_MODES, bodyRowCount } from '../display/gridModes.ts';
  * it as a heading in the semantic mirror, or keep it out of the mirror
  * (`screenOnly`, for hints like "Press ← or →" that only make sense on screen).
  */
-export type RowSource = string | { text: string; doubleHeight?: boolean; heading?: boolean; screenOnly?: boolean };
+export type TextRowSource = string | { text: string; doubleHeight?: boolean; heading?: boolean; screenOnly?: boolean };
+
+/**
+ * A picture from `src/content/images/<image>.png`, converted to mosaic cells
+ * at build time (SPEC §8). `rows` is its height in the 38-column layout; the
+ * width follows its shape. Portrait fits it into 20 columns, or uses
+ * `mobileRows`. `alt` is its text in the semantic mirror and Text mode.
+ */
+export interface ImageRowSource {
+  image: string;
+  alt: string;
+  rows: number;
+  mobileRows?: number;
+  /** Colours it may use (all eight when left out). */
+  palette?: TeletextColor[];
+  contrast?: number;
+  saturation?: number;
+  brightness?: number;
+}
+
+export type RowSource = TextRowSource | ImageRowSource;
 
 export const ROW_KEYS = ['text', 'doubleHeight', 'heading', 'screenOnly'] as const;
+export const IMAGE_KEYS = ['image', 'alt', 'rows', 'mobileRows', 'palette', 'contrast', 'saturation', 'brightness'] as const;
+
+export const isImageRow = (row: RowSource): row is ImageRowSource => typeof row === 'object' && 'image' in row;
 
 export interface FastextSource {
   page: number;

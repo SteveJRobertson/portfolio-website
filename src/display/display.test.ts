@@ -149,6 +149,20 @@ describe('formatHeader', () => {
     expect(text(20)).toBe('P110 1/6 STEVE 14:03');
   });
 
+  it.each(MODES)('fits HOLD after the counter in $name', ({ cols }) => {
+    const row = formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 1, count: 6, held: true } });
+    expect(rowLength(row)).toBe(cols);
+    expect(rowText(row)).toContain('2/6 HOLD');
+  });
+
+  it('makes room for HOLD by dropping the date at 40 columns and the name at 20', () => {
+    const text = (cols: number) =>
+      rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6, held: true } }));
+    expect(text(56)).toBe('P110 STEVE-TEXT 110 1/6 HOLD' + ' '.repeat(9) + 'SUN 04 OCT 14:03:22');
+    expect(text(40)).toBe('P110 STEVE-TEXT 110 1/6 HOLD    14:03:22');
+    expect(text(20)).toBe('P110 1/6 HOLD  14:03');
+  });
+
   it('hides the counter on single pages', () => {
     const row = formatHeader({ bufferText: 'P100', currentPage: 100, now, cols: 40, subpage: { index: 0, count: 1 } });
     expect(rowText(row)).not.toContain('1/1');

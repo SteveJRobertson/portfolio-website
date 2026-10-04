@@ -86,6 +86,14 @@ const Block: React.FC<{ block: SemanticBlock; onNavigate: (page: number) => void
       </ul>
     );
   }
+  if (block.kind === 'image') {
+    // The picture is mosaic cells on screen; here it's its description. Text mode shows the caption.
+    return (
+      <div role="img" aria-label={block.alt} className="mirror__image">
+        Image: {block.alt}
+      </div>
+    );
+  }
   return (
     <p>
       <Inline content={block.content} onNavigate={onNavigate} />

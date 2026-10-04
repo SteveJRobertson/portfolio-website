@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { parseMarkup } from './markup';
 import { layoutRows, slotsUsed } from './wrap';
 import { compilePages, type SourceFile } from './compile';
+import { compilePageDir } from '../../scripts/lib/pageFiles';
 import { autolink, buildSemantic } from './semantic';
 import { NARROW_BODY_ROWS, WIDE_BODY_ROWS, type PageSource } from './schema';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage, isValidPage } from './registry';
@@ -213,9 +214,8 @@ describe('real content', () => {
   const dir = path.join(__dirname, 'pages');
   const raw = fs.readdirSync(dir).map((name) => fs.readFileSync(path.join(dir, name), 'utf-8'));
 
-  it('compiles every page with no errors', () => {
-    const { errors } = compilePages(fs.readdirSync(dir).map((name, i) => ({ file: name, data: JSON.parse(raw[i]) })));
-    expect(errors).toEqual([]);
+  it('compiles every page and image with no errors', () => {
+    expect(compilePageDir().errors).toEqual([]);
   });
 
   it('fits every screen at both widths', () => {

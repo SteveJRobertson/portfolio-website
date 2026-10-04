@@ -1,13 +1,14 @@
 import path from 'node:path';
 import type { Plugin } from 'vite';
-import { PAGES_DIR, compilePageDir } from './pageFiles.ts';
+import { IMAGES_DIR, PAGES_DIR, compilePageDir } from './pageFiles.ts';
 
 const VIRTUAL_ID = 'virtual:pages';
 const RESOLVED_ID = '\0' + VIRTUAL_ID;
 
 /**
  * Compiles `src/content/pages/*.json` into `virtual:pages` (SPEC §7): validated,
- * and wrapped for 38 and 20 columns, so the app ships finished rows. A content
+ * and wrapped for 38 and 20 columns, with images from `src/content/images`
+ * converted to mosaic cells (SPEC §8), so the app ships finished rows. A content
  * error fails the build, and shows the error overlay in dev.
  */
 export const contentPlugin = (): Plugin => ({
@@ -21,9 +22,11 @@ export const contentPlugin = (): Plugin => ({
     return `export const pages = ${JSON.stringify(pages)};`;
   },
   configureServer(server) {
-    server.watcher.add(PAGES_DIR);
+    server.watcher.add([PAGES_DIR, IMAGES_DIR]);
     const reload = (file: string) => {
-      if (path.dirname(file) !== PAGES_DIR || !file.endsWith('.json')) return;
+      const page = path.dirname(file) === PAGES_DIR && file.endsWith('.json');
+      const image = path.dirname(file) === IMAGES_DIR && file.endsWith('.png');
+      if (!page && !image) return;
       const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
       if (mod) server.moduleGraph.invalidateModule(mod);
       server.ws.send({ type: 'full-reload' });

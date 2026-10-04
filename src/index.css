@@ -269,7 +269,7 @@ html, body {
   outline: none;
 }
 
-/* The strip under the screen: remote toggle, and on 888 the accessibility switches */
+/* The strip under the screen: remote toggle, HOLD on pages with sub-pages, and on 888 the accessibility switches */
 .control-strip {
   position: relative;
   height: var(--tt-remote-h);
@@ -281,7 +281,8 @@ html, body {
 }
 
 .remote-toggle-btn,
-.settings__toggle {
+.settings__toggle,
+.hold-toggle {
   background: #222222;
   color: var(--tt-green);
   border: 1px solid var(--tt-green);
@@ -298,7 +299,8 @@ html, body {
   gap: 0.5rem;
 }
 
-.settings__toggle[aria-pressed='true'] {
+.settings__toggle[aria-pressed='true'],
+.hold-toggle[aria-pressed='true'] {
   background: var(--tt-green);
   color: #000000;
 }

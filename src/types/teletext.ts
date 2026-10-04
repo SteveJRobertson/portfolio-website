@@ -56,7 +56,8 @@ export interface SemanticInline {
 export type SemanticBlock =
   | { kind: 'heading'; content: SemanticInline[] }
   | { kind: 'paragraph'; content: SemanticInline[] }
-  | { kind: 'list'; items: SemanticInline[][] };
+  | { kind: 'list'; items: SemanticInline[][] }
+  | { kind: 'image'; alt: string };
 
 /** A page as the app sees it: already wrapped for both widths by the content plugin. */
 export interface CompiledPage {

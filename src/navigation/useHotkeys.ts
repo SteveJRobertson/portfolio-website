@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 export interface HotkeyHandlers {
-  /** Digits and R/G/Y/B/C. Off when the visitor turns shortcuts off on 888 (WCAG 2.1.4). */
+  /** Digits, R/G/Y/B/C and H. Off when the visitor turns shortcuts off on 888 (WCAG 2.1.4). */
   characterKeys: boolean;
   /** ← and →. Off in Text mode, where every sub-page is already on screen and arrows scroll. */
   arrowKeys: boolean;
@@ -10,6 +10,8 @@ export interface HotkeyHandlers {
   /** 0–3: red, green, yellow, cyan. */
   onFastext: (slot: number) => void;
   onSubpage: (delta: number) => void;
+  /** H: HOLD the current sub-page, or release it. */
+  onHold: () => void;
 }
 
 const FASTEXT_KEYS: Record<string, number> = { r: 0, g: 1, y: 2, b: 3, c: 3 };
@@ -40,6 +42,7 @@ export const useHotkeys = (handlers: HotkeyHandlers) => {
       if (h.arrowKeys && (key === 'arrowleft' || key === 'arrowright')) return h.onSubpage(key === 'arrowleft' ? -1 : 1);
       if (!h.characterKeys) return;
       if (/^\d$/.test(key)) return h.onDigit(key);
+      if (key === 'h') return h.onHold();
       if (key in FASTEXT_KEYS) h.onFastext(FASTEXT_KEYS[key]);
     };
     window.addEventListener('keydown', onKeyDown);
