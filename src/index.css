@@ -73,15 +73,121 @@ html, body {
 .bg-white   { background-color: #ffffff; color: #000000; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
 
-/* Accessible Screen Reader Utility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+/* Teletext Wrapper & CRT TV Chassis Frame */
+.teletext-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100dvh;
+  background-color: #000000;
+  box-sizing: border-box;
+  padding: 1rem;
+}
+
+/* Teletext Container & Aspect Ratio Engine */
+.teletext-screen {
+  --cols: 40;
+  --rows: 24;
+  --line-height-ratio: 1.25;
+
+  font-family: var(--tt-font);
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  white-space: pre;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--tt-black);
+  color: var(--tt-white);
+  box-sizing: border-box;
+  padding: 0.6em 0.8em;
+  border: 3px solid #222222;
+  border-radius: 6px;
+  box-shadow: 0 0 50px rgba(0, 255, 0, 0.08), 0 0 25px rgba(0, 0, 0, 0.95);
+  
+  /* Calculate font size so --cols characters fill 100% of the screen width exactly */
+  --font-from-w: calc((100vw - 3rem) / var(--cols) / 0.6);
+  --font-from-h: calc((100dvh - 3rem) / var(--rows) / var(--line-height-ratio));
+  font-size: min(var(--font-from-w), var(--font-from-h));
+  line-height: var(--line-height-ratio);
+  
+  width: calc(var(--cols) * 1ch);
+  height: calc(var(--rows) * var(--line-height-ratio) * 1em);
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+}
+
+/* Widescreen Desktop Mode (56 Columns with Sidebar Index) */
+@media (min-width: 1024px) and (min-aspect-ratio: 16/10) {
+  .teletext-screen {
+    --cols: 56; /* 38 cols content + 1 col separator + 17 cols sidebar */
+  }
+}
+
+.teletext-row {
+  display: flex;
+  height: 1.25em;
+  line-height: 1.25em;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  width: 100%;
+}
+
+.teletext-row-grid {
+  display: grid;
+  grid-template-columns: 38ch 18ch;
+  height: 1.25em;
+  line-height: 1.25em;
+  width: 100%;
+}
+
+.teletext-main-col {
+  width: 38ch;
+  overflow: hidden;
+  white-space: pre;
+}
+
+.teletext-sidebar-col {
+  width: 18ch;
+  border-left: 1px solid var(--tt-blue);
+  padding-left: 1ch;
+  overflow: hidden;
+  white-space: pre;
+  box-sizing: border-box;
+}
+
+.teletext-row {
+  display: flex;
+  height: 1.25em;
+  line-height: 1.25em;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* FastText Navigation Bar */
+.fasttext-bar {
+  display: flex;
+  width: 100%;
+  height: 1.25em;
+  gap: 2px;
+}
+
+.fasttext-btn {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.5ch;
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.fasttext-btn:focus-visible,
+.fasttext-btn:hover {
+  outline: 2px solid #ffffff;
+  filter: brightness(1.2);
 }

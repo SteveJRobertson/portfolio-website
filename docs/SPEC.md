@@ -102,7 +102,13 @@ The application must combine high visual fidelity to the 1980s/90s CRT broadcast
 
 ---
 
-## 7. Unresolved Questions & PO Next Steps
+## 8. Delivery Plan & Sprint Roadmap
 
-1. **Image Generation Strategy**: Do you want project screenshots/headshots auto-converted to 2×3 Teletext block art using a Canvas Ditherer component, or pre-rendered SVG/ASCII assets?
-2. **CRT Effects**: Should retro CRT scanlines, screen curvature, and subtle RGB phosphor glow be enabled by default with a quick toggle?
+| Sprint | Focus / Goal | Deliverables | Status |
+| :--- | :--- | :--- | :--- |
+| **Sprint 1** | **Foundation & Design System Setup** | Vite + React + TS setup, SAA5050 8-color tokens in `index.css`, `<ColorSpan>`, `<TeletextChar>`, Bedstead font definitions, build verification. | **COMPLETE** ✅ |
+| **Sprint 2** | **Core Engine & Navigation State Machine** | 40×24 `<TeletextScreen>` stage, `usePageBuffer` 3-digit routing hook (`0-9`), `<HeaderTicker>` live clock, `<FastTextBar>` (`R`, `G`, `Y`, `C` hotkeys), Dual-Tree Accessibility DOM. | **COMPLETE** ✅ |
+| **Sprint 3** | **Content Pipeline & Page Authoring** | Typed JSON page schemas (`/src/content/pages/`), auto word-wrapping Teletext markup parser engine, build-time line length validator, authoring content for Pages 100, 101, 200, 300, 400. | **IN PROGRESS** 🔄 |
+| **Sprint 4** | **Canvas Shader & Mobile Handset UX** | Real-time Canvas image posterizer into 2×3 Teletext mosaic characters (`<TeletextCanvasImage>`), Retro TV Handset Keypad component for touch viewports, Page 888 Subtitle / Reader mode toggle. | **PLANNED** ⏳ |
+| **Sprint 5** | **CI/CD & GitHub Pages Launch** | `.github/workflows/deploy.yml` pipeline, WCAG AA/AAA accessibility audit, cross-browser responsive testing, production launch. | **PLANNED** ⏳ |
+
