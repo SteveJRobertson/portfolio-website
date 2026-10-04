@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { parseMarkup } from './markup';
 import { layoutRows, slotsUsed } from './wrap';
 import { compilePages, type SourceFile } from './compile';
+import { autolink, buildSemantic } from './semantic';
 import { NARROW_BODY_ROWS, WIDE_BODY_ROWS, type PageSource } from './schema';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage, isValidPage } from './registry';
 import { sidebarRows } from '../display/sidebar';
@@ -188,6 +189,8 @@ describe('compilePages', () => {
     expect(errorsFor(file(source()), file(source(), 'page100.json'))).toContain('also defined in');
     expect(errorsFor(file({ page: 100 }, 'page100.json'))).toContain('"title" is required');
     expect(errorsFor(file(source({ subpages: [['x']] })))).toContain('exactly one of "rows" or "subpages"');
+    expect(errorsFor(file({ ...source(), rows: [{ text: 'x', bold: true }] }))).toContain('may only have text, doubleHeight, heading, screenOnly');
+    expect(errorsFor(file({ ...source(), rows: [{ text: 'x', heading: 'yes' }] }))).toContain('"rows" must be a list of lines');
     expect(errorsFor(file(source({ rows: undefined, subpages: [['x']], mobileRows: ['a'], mobileSubpages: undefined }))
     )).toBe('');
     expect(errorsFor(file(source({ rows: undefined, subpages: [['x'], ['y']], mobileSubpages: [['a']] })))).toContain(
@@ -238,5 +241,66 @@ describe('registry', () => {
   it('builds the quick index from pages marked index', () => {
     expect(QUICK_INDEX.map((p) => p.page)).toEqual([100, 101, 110, 200, 300, 400, 888]);
     expect(sidebarRows(QUICK_INDEX).map((r) => rowText(r))).toContain(' 110 EXPERIENCE');
+  });
+});
+
+describe('buildSemantic', () => {
+  it('drops banners, rules, blank and screen-only rows', () => {
+    expect(
+      buildSemantic([
+        { text: '{red}ABOUT{/}', doubleHeight: true },
+        '{blue}{rule}{/}',
+        '',
+        'Hello there.',
+        { text: 'Press ← or →', screenOnly: true },
+      ]),
+    ).toEqual([{ kind: 'paragraph', content: [{ text: 'Hello there.' }] }]);
+  });
+
+  it('keeps each logical row whole, however long, and collapses alignment spaces', () => {
+    const long = 'word '.repeat(30).trim();
+    expect(buildSemantic([long, '{green}TECH{/}    React'])).toEqual([
+      { kind: 'paragraph', content: [{ text: long }] },
+      { kind: 'paragraph', content: [{ text: 'TECH React' }] },
+    ]);
+  });
+
+  it('makes headings, bullet lists and inline page links', () => {
+    expect(buildSemantic([{ text: '{yellow}FanDuel{/}', heading: true }, '* One', '* Two', '', 'See {link:110}110{/}.'])).toEqual([
+      { kind: 'heading', content: [{ text: 'FanDuel' }] },
+      { kind: 'list', items: [[{ text: 'One' }], [{ text: 'Two' }]] },
+      { kind: 'paragraph', content: [{ text: 'See ' }, { text: '110', page: 110 }, { text: '.' }] },
+    ]);
+  });
+
+  it('turns a page directory into a list of whole-row links, with indented rows continuing an item', () => {
+    expect(buildSemantic(['{link:201}201{/}  {yellow}Isolate UI{/}', '     A sandbox.', '', '{link:202}202{/}  Lighthouse'])).toEqual([
+      {
+        kind: 'list',
+        items: [[{ text: '201 Isolate UI', page: 201 }, { text: ': ' }, { text: 'A sandbox.' }]],
+      },
+      { kind: 'list', items: [[{ text: '202 Lighthouse', page: 202 }]] },
+    ]);
+  });
+
+  it('links email and web addresses', () => {
+    expect(autolink('Mail steve@example.com or see github.com/x/y-z.')).toEqual([
+      { text: 'Mail ' },
+      { text: 'steve@example.com', href: 'mailto:steve@example.com' },
+      { text: ' or see ' },
+      { text: 'github.com/x/y-z', href: 'https://github.com/x/y-z' },
+      { text: '.' },
+    ]);
+    expect(autolink('Node.js and CI/CD')).toEqual([{ text: 'Node.js and CI/CD' }]);
+  });
+
+  it('gives every real page a mirror with content in each sub-page', () => {
+    for (const page of PAGES) {
+      expect(page.semantic).toHaveLength(page.wide.length);
+      page.semantic.forEach((blocks) => expect(blocks.length).toBeGreaterThan(0));
+    }
+    const contact = getPage(400)!.semantic[0];
+    expect(contact.filter((b) => b.kind === 'heading')).toHaveLength(4);
+    expect(JSON.stringify(contact)).toContain('"href":"mailto:steve.robertson80@gmail.com"');
   });
 });

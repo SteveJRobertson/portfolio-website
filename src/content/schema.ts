@@ -5,8 +5,14 @@ import { GRID_MODES, bodyRowCount } from '../display/gridModes.ts';
  * `src/content/pages/`, written once with colour tags and wrapped at build time.
  */
 
-/** A logical line. A plain string, or an object to make it double height. */
-export type RowSource = string | { text: string; doubleHeight?: boolean };
+/**
+ * A logical line. A plain string, or an object to make it double height, mark
+ * it as a heading in the semantic mirror, or keep it out of the mirror
+ * (`screenOnly`, for hints like "Press ← or →" that only make sense on screen).
+ */
+export type RowSource = string | { text: string; doubleHeight?: boolean; heading?: boolean; screenOnly?: boolean };
+
+export const ROW_KEYS = ['text', 'doubleHeight', 'heading', 'screenOnly'] as const;
 
 export interface FastextSource {
   page: number;

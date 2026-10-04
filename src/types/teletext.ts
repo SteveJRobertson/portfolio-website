@@ -23,7 +23,7 @@ export interface GridSegment {
   text: string;
   color?: TeletextColor;
   bg?: TeletextColor;
-  /** Target of an inline `{link:NNN}` tag; Phase 4 turns it into a real link in the semantic tree. */
+  /** Target of an inline `{link:NNN}` tag: clickable in the grid, a real link in the semantic mirror. */
   link?: number;
 }
 
@@ -43,6 +43,19 @@ export interface FastextLink {
   label: string;
 }
 
+/** A run of text in the semantic mirror: plain, a page link, or an external link (email, web address). */
+export interface SemanticInline {
+  text: string;
+  page?: number;
+  href?: string;
+}
+
+/** One block of the semantic mirror (SPEC §9), built from the logical source rows. */
+export type SemanticBlock =
+  | { kind: 'heading'; content: SemanticInline[] }
+  | { kind: 'paragraph'; content: SemanticInline[] }
+  | { kind: 'list'; items: SemanticInline[][] };
+
 /** A page as the app sees it: already wrapped for both widths by the content plugin. */
 export interface CompiledPage {
   page: number;
@@ -56,4 +69,6 @@ export interface CompiledPage {
   wide: GridRow[][];
   /** One entry per sub-page, laid out for the 20-column portrait grid. */
   narrow: GridRow[][];
+  /** One entry per sub-page: the same content as headings, paragraphs, lists and links. */
+  semantic: SemanticBlock[][];
 }

@@ -1,101 +1,127 @@
-import React, { useState } from 'react';
+import React, { useId, useRef, useState } from 'react';
+import type { FastextLink } from '../types/teletext';
 import { NAVIGABLE_PAGES } from '../content/registry';
+import { FASTEXT_ORDER, fastextName } from '../display/fastext';
 
 interface MobileKeypadProps {
+  /** The shared digit buffer's text, e.g. "P1--". */
+  buffer: string;
+  onDigit: (digit: string) => void;
+  onClear: () => void;
+  /** The current page's Fastext links, red to cyan. */
+  fastext: readonly FastextLink[];
   onNavigate: (page: number) => void;
   /** Steps through the current page's sub-pages (-1 or +1). */
   onSubpage: (delta: number) => void;
   currentPage: number;
 }
 
+/**
+ * The remote handset (SPEC §5): on-screen buttons, so a phone's keyboard never
+ * opens. It feeds the same digit buffer as the keyboard.
+ */
 export const MobileKeypad: React.FC<MobileKeypadProps> = ({
+  buffer,
+  onDigit,
+  onClear,
+  fastext,
   onNavigate,
   onSubpage,
   currentPage,
 }) => {
-  const [digits, setDigits] = useState<string[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const bodyId = useId();
 
-  const handleDigitClick = (numStr: string) => {
-    const nextDigits = [...digits, numStr];
-    setDigits(nextDigits);
-
-    if (nextDigits.length === 3) {
-      const pageNum = parseInt(nextDigits.join(''), 10);
-      onNavigate(pageNum);
-      setDigits([]);
-    }
+  const close = () => {
+    setIsOpen(false);
+    toggle.current?.focus();
   };
 
-  const handleClear = () => {
-    setDigits([]);
-  };
-
-  const handlePageDelta = (delta: number) => {
-    const currentIndex = NAVIGABLE_PAGES.indexOf(currentPage);
-    if (currentIndex !== -1) {
-      const nextIndex = (currentIndex + delta + NAVIGABLE_PAGES.length) % NAVIGABLE_PAGES.length;
-      onNavigate(NAVIGABLE_PAGES[nextIndex]);
-    } else {
-      onNavigate(100);
-    }
+  const stepPage = (delta: number) => {
+    const at = NAVIGABLE_PAGES.indexOf(currentPage);
+    onNavigate(at === -1 ? 100 : NAVIGABLE_PAGES[(at + delta + NAVIGABLE_PAGES.length) % NAVIGABLE_PAGES.length]);
   };
 
   return (
-    <aside className="teletext-remote-control" aria-label="Teletext Remote Handset">
-      <button 
-        type="button" 
+    <div className="teletext-remote-control">
+      <button
+        ref={toggle}
+        type="button"
         className="remote-toggle-btn"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
+        aria-controls={bodyId}
       >
-        📱 {isOpen ? 'HIDE REMOTE HANDSET' : 'SHOW REMOTE HANDSET'}
+        {isOpen ? 'HIDE REMOTE' : 'REMOTE'}
       </button>
 
-      {isOpen && (
-        <div className="remote-handset-body">
-          <div className="remote-header">
-            <span>REMOTE HANDSET</span>
-            <span className="remote-buffer-display">
-              P{digits.length > 0 ? digits.join('').padEnd(3, '-') : currentPage}
-            </span>
-          </div>
-
-          {/* Fastext Quick Color Buttons */}
-          <div className="remote-fastext-row">
-            <button type="button" className="remote-btn bg-red" onClick={() => onNavigate(101)}>101 ABOUT</button>
-            <button type="button" className="remote-btn bg-green" onClick={() => onNavigate(200)}>200 WORK</button>
-            <button type="button" className="remote-btn bg-yellow" onClick={() => onNavigate(300)}>300 STACK</button>
-            <button type="button" className="remote-btn bg-cyan" onClick={() => onNavigate(400)}>400 CONTACT</button>
-          </div>
-
-          {/* Keypad Grid 0-9 */}
-          <div className="remote-keypad-grid">
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
-              <button 
-                key={num} 
-                type="button" 
-                className="remote-num-btn"
-                onClick={() => handleDigitClick(num)}
-              >
-                {num}
-              </button>
-            ))}
-            <button type="button" className="remote-num-btn" onClick={handleClear}>CLR</button>
-            <button type="button" className="remote-num-btn" onClick={() => handleDigitClick('0')}>0</button>
-            <button type="button" className="remote-num-btn" onClick={() => onNavigate(100)}>100</button>
-          </div>
-
-          {/* Navigation Controls */}
-          <div className="remote-nav-row">
-            <button type="button" className="remote-btn nav-btn" onClick={() => handlePageDelta(-1)}>▲ PREV PAGE</button>
-            <button type="button" className="remote-btn nav-btn" onClick={() => handlePageDelta(1)}>▼ NEXT PAGE</button>
-            <button type="button" className="remote-btn nav-btn" onClick={() => onSubpage(-1)}>◀ SUB</button>
-            <button type="button" className="remote-btn nav-btn" onClick={() => onSubpage(1)}>SUB ▶</button>
-            <button type="button" className="remote-btn nav-btn" onClick={() => onNavigate(888)}>888 A11Y</button>
-          </div>
+      <div
+        id={bodyId}
+        role="group"
+        aria-label="Remote handset"
+        className="remote-handset-body"
+        hidden={!isOpen}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') close();
+        }}
+      >
+        <div className="remote-header">
+          <span>REMOTE HANDSET</span>
+          <span className="remote-buffer-display" aria-hidden="true">
+            {buffer}
+          </span>
         </div>
-      )}
-    </aside>
+
+        <div className="remote-fastext-row">
+          {FASTEXT_ORDER.map((color, i) => (
+            <button
+              key={color}
+              type="button"
+              className={`remote-btn bg-${color}`}
+              aria-label={fastextName(i, fastext[i])}
+              onClick={() => onNavigate(fastext[i].page)}
+            >
+              {fastext[i].page} {fastext[i].label}
+            </button>
+          ))}
+        </div>
+
+        <div className="remote-keypad-grid">
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
+            <button key={num} type="button" className="remote-num-btn" onClick={() => onDigit(num)}>
+              {num}
+            </button>
+          ))}
+          <button type="button" className="remote-num-btn" aria-label="CLR: clear" onClick={onClear}>
+            CLR
+          </button>
+          <button type="button" className="remote-num-btn" onClick={() => onDigit('0')}>
+            0
+          </button>
+          <button type="button" className="remote-num-btn" aria-label="100: index" onClick={() => onNavigate(100)}>
+            100
+          </button>
+        </div>
+
+        <div className="remote-nav-row">
+          <button type="button" className="remote-btn nav-btn" onClick={() => stepPage(-1)}>
+            <span aria-hidden="true">▲</span> PREV PAGE
+          </button>
+          <button type="button" className="remote-btn nav-btn" onClick={() => stepPage(1)}>
+            <span aria-hidden="true">▼</span> NEXT PAGE
+          </button>
+          <button type="button" className="remote-btn nav-btn" aria-label="Previous sub-page" onClick={() => onSubpage(-1)}>
+            ◀ SUB
+          </button>
+          <button type="button" className="remote-btn nav-btn" aria-label="Next sub-page" onClick={() => onSubpage(1)}>
+            SUB ▶
+          </button>
+          <button type="button" className="remote-btn nav-btn" aria-label="888 A11Y: accessibility" onClick={() => onNavigate(888)}>
+            888 A11Y
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };

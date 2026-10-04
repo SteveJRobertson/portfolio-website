@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { FastextLink } from '../types/teletext';
-import { FASTEXT_ORDER, fastextLabels, fastextSlotWidths } from '../display/fastext';
+import { FASTEXT_ORDER, fastextLabels, fastextName, fastextSlotWidths } from '../display/fastext';
+import { isPlainClick, pageHref } from '../navigation/paths';
 
 interface FastTextBarProps {
   /** Red, green, yellow, cyan. */
@@ -12,53 +13,36 @@ interface FastTextBarProps {
   row: number;
 }
 
-export const FastTextBar: React.FC<FastTextBarProps> = ({
-  links,
-  onNavigate,
-  cols,
-  row,
-}) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
-      // Ignore shortcut combinations (e.g. Cmd+R, Ctrl+R, Alt+Tab)
-      if (e.metaKey || e.ctrlKey || e.altKey) {
-        return;
-      }
-
-      const key = e.key.toLowerCase();
-      if (key === 'r') onNavigate(links[0].page);
-      if (key === 'g') onNavigate(links[1].page);
-      if (key === 'y') onNavigate(links[2].page);
-      if (key === 'c' || key === 'b') onNavigate(links[3].page);
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [links, onNavigate]);
-
+/**
+ * The Fastext row: four real links drawn in the grid's last row (SPEC §5).
+ * A plain click navigates in place; a modified click opens a new tab as usual.
+ * The R/G/Y/B hotkeys live in useHotkeys.
+ */
+export const FastTextBar: React.FC<FastTextBarProps> = ({ links, onNavigate, cols, row }) => {
   const widths = fastextSlotWidths(cols);
   const labels = fastextLabels(links, widths);
 
   return (
     <nav
       className="tt-line fasttext-bar"
-      aria-label="Teletext Fastext Navigation"
+      aria-label="Fastext"
       style={{ gridRow: `${row} / span 1`, gridColumn: `1 / span ${cols}` }}
     >
       {FASTEXT_ORDER.map((color, i) => (
-        <button
+        <a
           key={color}
-          type="button"
+          href={pageHref(links[i].page)}
+          aria-label={fastextName(i, links[i])}
           className={`fasttext-btn bg-${color}`}
           style={{ width: `calc(${widths[i]} * var(--tt-cell-w))` }}
-          onClick={() => onNavigate(links[i].page)}
+          onClick={(e) => {
+            if (!isPlainClick(e)) return;
+            e.preventDefault();
+            onNavigate(links[i].page);
+          }}
         >
           {labels[i]}
-        </button>
+        </a>
       ))}
     </nav>
   );

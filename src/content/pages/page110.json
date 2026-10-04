@@ -9,7 +9,7 @@
       { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}FanDuel{/}",
+      { "text": "{yellow}FanDuel{/}", "heading": true },
       "{cyan}Senior Software Engineer{/}",
       "Jan 2025 - Present",
       "",
@@ -18,13 +18,13 @@
       "* Changed migration strategy to clear reviewer bottlenecks",
       "* AWS staging environments (Route 53, S3, CloudFront) for new product domains",
       "",
-      "{white}Press ← or → for more roles.{/}"
+      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
       { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}Wood Mackenzie{/}",
+      { "text": "{yellow}Wood Mackenzie{/}", "heading": true },
       "{cyan}Design System Lead (Contract){/}",
       "Dec 2019 - Nov 2024",
       "",
@@ -34,13 +34,13 @@
       "* Onboarded and mentored 10+ teams",
       "* Handed over to internal maintenance",
       "",
-      "{white}Press ← or → for more roles.{/}"
+      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
       { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}Royal Bank of Scotland{/}",
+      { "text": "{yellow}Royal Bank of Scotland{/}", "heading": true },
       "{cyan}Frontend Engineer{/}",
       "Sep 2018 - Dec 2019",
       "",
@@ -48,13 +48,13 @@
       "* Introduced Hooks and Context",
       "* Onboarded new developers on a time-critical project",
       "",
-      "{white}Press ← or → for more roles.{/}"
+      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
       { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}Aegon{/}",
+      { "text": "{yellow}Aegon{/}", "heading": true },
       "{cyan}Frontend Engineer{/}",
       "Apr 2017 - Sep 2018",
       "",
@@ -62,25 +62,25 @@
       "* Championed TDD",
       "* Set up peer code review",
       "",
-      "{white}Press ← or → for more roles.{/}"
+      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
       { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}Royal London{/}",
+      { "text": "{yellow}Royal London{/}", "heading": true },
       "{cyan}Frontend Developer{/}",
       "Nov 2016 - Apr 2017",
       "",
       "* Content-managed customer site on EPiServer, Bootstrap, jQuery and Sass",
       "",
-      "{white}Press ← or → for more roles.{/}"
+      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ],
     [
       { "text": "{red}EXPERIENCE{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}Sopra Steria, Realise, Freelance{/}",
+      { "text": "{yellow}Sopra Steria, Realise, Freelance{/}", "heading": true },
       "{cyan}Earlier career{/}",
       "2009 - 2016",
       "",
@@ -88,7 +88,7 @@
       "* Senior developer at a digital agency",
       "* Led Angular UI toolkit development at Sopra Steria",
       "",
-      "{white}Press ← or → for more roles.{/}"
+      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
     ]
   ]
 }

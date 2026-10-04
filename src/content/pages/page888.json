@@ -8,10 +8,13 @@
     { "text": "{magenta}ACCESSIBILITY{/}", "doubleHeight": true },
     "{blue}{rule}{/}",
     "",
-    "Two switches are coming to this page:",
+    { "text": "The switches are below the screen.", "screenOnly": true },
     "",
-    "* {cyan}Text mode{/}: a plain, high-contrast reader view of every page.",
-    "* {cyan}CRT effect{/}: scanlines and glow, off when you prefer reduced motion.",
+    { "text": "{cyan}TEXT MODE{/}", "heading": true },
+    "A plain, high-contrast reader view of every page. Your choice is remembered.",
+    "",
+    { "text": "{cyan}SHORTCUTS{/}", "heading": true },
+    "Number keys and R, G, Y, B jump between pages. Turn them off if they get in the way of speech input.",
     "",
     "Pinch-zoom always works."
   ]

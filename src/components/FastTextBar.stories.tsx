@@ -34,3 +34,10 @@ type Story = StoryObj<typeof FastTextBar>;
 export const Classic: Story = {};
 export const Widescreen: Story = { args: { cols: 56 } };
 export const Portrait: Story = { args: { cols: 20 } };
+
+/** Keyboard focus inverts the slot inside a white outline, so it never looks like hover. */
+export const Focused: Story = {
+  play: async ({ canvasElement }) => {
+    canvasElement.querySelectorAll('a')[1]?.focus({ focusVisible: true } as FocusOptions);
+  },
+};
