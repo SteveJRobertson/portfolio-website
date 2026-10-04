@@ -16,17 +16,17 @@ describe('FastTextBar', () => {
     const anchors = screen.getAllByRole('link');
     expect(anchors.map((a) => a.getAttribute('href'))).toEqual(['/', '/200', '/300', '/400']);
     expect(anchors.map((a) => a.getAttribute('aria-label'))).toEqual([
-      'Red: INDEX, page 100',
-      'Green: PROJECTS, page 200',
-      'Yellow: SKILLS, page 300',
-      'Cyan: CONTACT, page 400',
+      'Red: Index, page 100',
+      'Green: Projects, page 200',
+      'Yellow: Skills, page 300',
+      'Cyan: Contact, page 400',
     ]);
   });
 
   it('navigates in place on a plain click', () => {
     const onNavigate = vi.fn();
     render(<FastTextBar links={links} onNavigate={onNavigate} cols={56} row={24} />);
-    const link = screen.getByRole('link', { name: /PROJECTS/ });
+    const link = screen.getByRole('link', { name: /Projects/ });
     expect(fireEvent.click(link)).toBe(false); // default prevented
     expect(onNavigate).toHaveBeenCalledWith(200);
   });
@@ -34,7 +34,7 @@ describe('FastTextBar', () => {
   it('leaves modified and middle clicks to the browser (new tab and so on)', () => {
     const onNavigate = vi.fn();
     render(<FastTextBar links={links} onNavigate={onNavigate} cols={56} row={24} />);
-    const link = screen.getByRole('link', { name: /PROJECTS/ });
+    const link = screen.getByRole('link', { name: /Projects/ });
     expect(fireEvent.click(link, { metaKey: true })).toBe(true);
     expect(fireEvent.click(link, { ctrlKey: true })).toBe(true);
     expect(fireEvent.click(link, { button: 1 })).toBe(true);

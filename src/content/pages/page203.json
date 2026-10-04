@@ -1,10 +1,10 @@
 {
   "page": 203,
-  "title": "Steve-Text",
-  "label": "STEVE-TEXT",
-  "fastext": [{ "page": 200 }, { "page": 201 }, { "page": 202 }, { "page": 400 }],
+  "title": "Steevefax",
+  "label": "STEEVEFAX",
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 200 }, { "page": 101 }, { "page": 400 }],
   "rows": [
-    { "banner": "STEVE-TEXT", "bg": "green" },
+    { "banner": "{black}STEEVEFAX{/}", "bg": "green" },
     "",
     "A developer portfolio built as a European Teletext service. You are looking at it.",
     "",

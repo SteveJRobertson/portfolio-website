@@ -4,7 +4,7 @@ import { ColorSpan } from './ColorSpan';
 const meta: Meta<typeof ColorSpan> = {
   title: 'Atoms/ColorSpan',
   component: ColorSpan,
-  args: { children: 'STEVE-TEXT', color: 'yellow' },
+  args: { children: 'STEEVEFAX', color: 'yellow' },
   argTypes: {
     color: { control: 'select', options: ['white', 'yellow', 'cyan', 'green', 'magenta', 'red', 'blue', 'black'] },
     bg: { control: 'select', options: [undefined, 'white', 'yellow', 'cyan', 'green', 'magenta', 'red', 'blue', 'black'] },

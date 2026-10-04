@@ -138,8 +138,8 @@ describe('formatHeader', () => {
 
   it('formats each width', () => {
     const text = (cols: number) => rowText(formatHeader({ bufferText: 'P1--', currentPage: 100, now, cols }));
-    expect(text(56)).toBe('P1-- STEVE-TEXT 100' + ' '.repeat(18) + 'SUN 04 OCT 14:03:22');
-    expect(text(40)).toBe('P1-- STEVE-TEXT 100      04 OCT 14:03:22');
+    expect(text(56)).toBe('P1-- STEEVEFAX 100' + ' '.repeat(19) + 'SUN 04 OCT 14:03:22');
+    expect(text(40)).toBe('P1-- STEEVEFAX 100       04 OCT 14:03:22');
     expect(text(20)).toBe('P1-- STEVE     14:03');
   });
 
@@ -152,7 +152,7 @@ describe('formatHeader', () => {
   it('shows the counter after the page number, or before the name in portrait', () => {
     const text = (cols: number) =>
       rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6 } }));
-    expect(text(40)).toBe('P110 STEVE-TEXT 110 1/6  04 OCT 14:03:22');
+    expect(text(40)).toBe('P110 STEEVEFAX 110 1/6   04 OCT 14:03:22');
     expect(text(20)).toBe('P110 1/6 STEVE 14:03');
   });
 
@@ -165,8 +165,8 @@ describe('formatHeader', () => {
   it('makes room for HOLD by dropping the date at 40 columns and the name at 20', () => {
     const text = (cols: number) =>
       rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6, held: true } }));
-    expect(text(56)).toBe('P110 STEVE-TEXT 110 1/6 HOLD' + ' '.repeat(9) + 'SUN 04 OCT 14:03:22');
-    expect(text(40)).toBe('P110 STEVE-TEXT 110 1/6 HOLD    14:03:22');
+    expect(text(56)).toBe('P110 STEEVEFAX 110 1/6 HOLD' + ' '.repeat(10) + 'SUN 04 OCT 14:03:22');
+    expect(text(40)).toBe('P110 STEEVEFAX 110 1/6 HOLD     14:03:22');
     expect(text(20)).toBe('P110 1/6 HOLD  14:03');
   });
 
@@ -186,16 +186,34 @@ describe('fastext', () => {
   it('shows labels when they all fit, otherwise page numbers', () => {
     const links = [
       { label: 'ABOUT', page: 101 },
+      { label: 'CAREER', page: 110 },
+      { label: 'SKILLS', page: 300 },
+      { label: 'CONTACT', page: 400 },
+    ];
+    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  About   ', '  Career  ', '  Skills  ', ' Contact  ']);
+    expect(fastextLabels(links, [5, 5, 5, 5])).toEqual([' 101 ', ' 110 ', ' 300 ', ' 400 ']);
+  });
+
+  it('falls back to page numbers when a label would touch its neighbour', () => {
+    const links = [
+      { label: 'HOME', page: 100 },
       { label: 'EXPERIENCE', page: 110 },
       { label: 'SKILLS', page: 300 },
       { label: 'CONTACT', page: 400 },
     ];
-    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  ABOUT   ', 'EXPERIENCE', '  SKILLS  ', ' CONTACT  ']);
-    expect(fastextLabels(links, [5, 5, 5, 5])).toEqual([' 101 ', ' 110 ', ' 300 ', ' 400 ']);
+    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['   100    ', '   110    ', '   300    ', '   400    ']);
   });
 
-  it('keeps every real Fastext label within a classic slot', () => {
-    for (const page of PAGES) page.fastext.forEach((link) => expect(link.label.length).toBeLessThanOrEqual(10));
+  it.each(MODES)('never runs labels together at $cols columns', ({ cols }) => {
+    const widths = fastextSlotWidths(cols);
+    for (const page of PAGES) {
+      const row = fastextLabels(page.fastext, widths);
+      row.forEach((slot) => expect(slot.endsWith(' ')).toBe(true));
+    }
+  });
+
+  it('keeps every real Fastext label short enough to show in a classic slot', () => {
+    for (const page of PAGES) page.fastext.forEach((link) => expect(link.label.length).toBeLessThan(10));
   });
 
   it('keeps blank rows blank', () => {

@@ -77,7 +77,7 @@ describe('App', () => {
     renderAt('/');
     press('g');
     expect(window.location.pathname).toBe('/110');
-    fireEvent.click(screen.getByRole('link', { name: 'Yellow: SKILLS, page 300' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Yellow: Skills, page 300' }));
     expect(window.location.pathname).toBe('/300');
   });
 

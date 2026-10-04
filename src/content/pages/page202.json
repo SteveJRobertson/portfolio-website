@@ -2,9 +2,9 @@
   "page": 202,
   "title": "Lighthouse Compare",
   "label": "LIGHTHOUSE",
-  "fastext": [{ "page": 200 }, { "page": 201 }, { "page": 203 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 200 }, { "page": 101 }, { "page": 400 }],
   "rows": [
-    { "banner": "LIGHTHOUSE", "bg": "green" },
+    { "banner": "{black}LIGHTHOUSE{/}", "bg": "green" },
     "",
     "{yellow}Lighthouse Compare{/}: compare Lighthouse reports side by side to track improvements over time.",
     "",

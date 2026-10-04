@@ -2,9 +2,9 @@
   "page": 201,
   "title": "Isolate UI",
   "label": "ISOLATE UI",
-  "fastext": [{ "page": 200 }, { "page": 202 }, { "page": 203 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 200 }, { "page": 101 }, { "page": 400 }],
   "rows": [
-    { "banner": "ISOLATE UI", "bg": "green" },
+    { "banner": "{black}ISOLATE UI{/}", "bg": "green" },
     "",
     "Isolating and testing UI components in a sandboxed environment.",
     "",

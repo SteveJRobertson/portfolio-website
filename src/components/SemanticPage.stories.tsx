@@ -15,7 +15,7 @@ const TextMode = ({ page }: TextModeProps) => {
     <div className="text-mode" style={{ position: 'static' }}>
       <header className="text-mode__bar">
         <span>
-          STEVE-TEXT <span className="c-cyan">P{page}</span>
+          STEEVEFAX <span className="c-cyan">P{page}</span>
         </span>
         <button type="button">TELETEXT VIEW</button>
       </header>

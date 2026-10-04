@@ -64,7 +64,7 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 | 100 | Index / cover |
 | 101 | About |
 | 110 | Experience (sub-pages, one per role) |
-| 200 | Projects index; 201 Isolate UI, 202 Lighthouse Compare, 203 Steve-Text |
+| 200 | Projects index; 201 Isolate UI, 202 Lighthouse Compare, 203 Steevefax |
 | 300 | Skills (sub-pages by group) |
 | 400 | Contact |
 | 888 | Accessibility: Text mode and CRT effect toggles |
