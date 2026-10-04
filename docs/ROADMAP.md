@@ -9,7 +9,7 @@
 
 ```
 [Sprint 1: Foundation] ----> [Sprint 2: Core Engine] ----> [Sprint 3: Content] ----> [Sprint 4: Shader & Mobile] ----> [Sprint 5: CI/CD & Launch]
-       (COMPLETE ✅)                 (COMPLETE ✅)               (COMPLETE ✅)               (PLANNED ⏳)                   (PLANNED ⏳)
+       (COMPLETE ✅)                 (COMPLETE ✅)               (COMPLETE ✅)               (COMPLETE ✅)                  (PLANNED ⏳)
 ```
 
 ---
@@ -49,13 +49,13 @@
 
 ---
 
-### ⚪ Sprint 4: Canvas Shader & Mobile Handset UX
+### 🟢 Sprint 4: Canvas Shader & Mobile Handset UX
 - **Goal**: Canvas image-to-mosaic ditherer, mobile handheld TV remote, Page 888 subtitles.
 - **Deliverables**:
-  - [ ] Real-time Canvas posterizer shader (`<TeletextCanvasImage>`)
-  - [ ] Touch-friendly retro TV keypad remote control overlay (`<MobileKeypad>`)
-  - [ ] Page 888 Subtitle / High-Contrast Reader mode toggle
-- **Status**: **PLANNED** ⏳
+  - [x] Real-time Canvas posterizer shader (`<TeletextCanvasImage>`)
+  - [x] Touch-friendly retro TV keypad remote control overlay (`<MobileKeypad>`)
+  - [x] Page 888 Subtitle / High-Contrast Reader mode toggle
+- **Status**: **COMPLETE** ✅
 
 ---
 

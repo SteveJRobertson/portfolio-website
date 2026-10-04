@@ -4,6 +4,8 @@ import { TeletextScreen } from './components/TeletextScreen';
 import { HeaderTicker } from './components/HeaderTicker';
 import { FastTextBar } from './components/FastTextBar';
 import { ColorSpan } from './components/ColorSpan';
+import { MobileKeypad } from './components/MobileKeypad';
+import { TeletextCanvasImage } from './components/TeletextCanvasImage';
 import { getPageData } from './utils/pageRegistry';
 import type { FastTextLink } from './types/teletext';
 
@@ -36,14 +38,60 @@ export const App: React.FC = () => {
   return (
     <>
       {/* 1. VISUAL TELETEXT CRT DISPLAY */}
-      <div aria-hidden="true" className="teletext-wrapper">
+      <div aria-hidden="true" className="teletext-wrapper" style={{ flexDirection: 'column' }}>
         <TeletextScreen ariaLabel="Ceefax Teletext Screen">
           {/* Top Ticker Row */}
           <HeaderTicker bufferText={bufferText} currentPage={currentPage} />
 
           {/* Teletext Body Grid Container */}
           <div style={{ flex: 1, padding: '0.4em 0', display: 'flex', flexDirection: 'column', gap: '0.15em' }}>
-            {pageData ? (
+            {currentPage === 202 ? (
+              /* Special Case Study Page 202: Real-time Canvas Shader Ditherer */
+              <>
+                <div className={rowClass}>
+                  <div className="teletext-main-col">
+                    <ColorSpan color="yellow">======================================</ColorSpan>
+                  </div>
+                  {isWidescreen && <div className="teletext-sidebar-col"><ColorSpan color="cyan">QUICK INDEX   </ColorSpan></div>}
+                </div>
+                <div className={rowClass}>
+                  <div className="teletext-main-col">
+                    <ColorSpan color="yellow"> P202 TELETEXT CANVAS SHADER ART     </ColorSpan>
+                  </div>
+                  {isWidescreen && <div className="teletext-sidebar-col"><ColorSpan color="red">100 </ColorSpan><ColorSpan color="white">HOME      </ColorSpan></div>}
+                </div>
+                <div className={rowClass}>
+                  <div className="teletext-main-col">
+                    <ColorSpan color="yellow">======================================</ColorSpan>
+                  </div>
+                  {isWidescreen && <div className="teletext-sidebar-col"><ColorSpan color="green">200 </ColorSpan><ColorSpan color="white">WORK      </ColorSpan></div>}
+                </div>
+                <div className={rowClass}>
+                  <div className="teletext-main-col">
+                    <ColorSpan color="white"> Real-time 8-color mosaic posterizer: </ColorSpan>
+                  </div>
+                  {isWidescreen && <div className="teletext-sidebar-col"><ColorSpan color="yellow">300 </ColorSpan><ColorSpan color="white">STACK     </ColorSpan></div>}
+                </div>
+                <TeletextCanvasImage 
+                  src="/favicon.svg" 
+                  alt="Teletext 8-color mosaic canvas image demo"
+                  widthCols={34}
+                  heightRows={6}
+                />
+                <div className={rowClass}>
+                  <div className="teletext-main-col">
+                    <ColorSpan color="green"> Dithers image pixels to SAA5050.     </ColorSpan>
+                  </div>
+                  {isWidescreen && <div className="teletext-sidebar-col"><ColorSpan color="cyan">400 </ColorSpan><ColorSpan color="white">CONTACT   </ColorSpan></div>}
+                </div>
+                <div className={rowClass}>
+                  <div className="teletext-main-col">
+                    <ColorSpan color="yellow"> PRESS [200] OR 'R' TO RETURN LIST    </ColorSpan>
+                  </div>
+                  {isWidescreen && <div className="teletext-sidebar-col"><ColorSpan color="white">              </ColorSpan></div>}
+                </div>
+              </>
+            ) : pageData ? (
               pageData.mainRows.map((row, idx) => (
                 <div key={idx} className={rowClass}>
                   <div className="teletext-main-col">
@@ -115,6 +163,9 @@ export const App: React.FC = () => {
           {/* Fastext 4-Color Action Bar */}
           <FastTextBar links={fastTextLinks} onNavigate={navigateToPage} />
         </TeletextScreen>
+
+        {/* Retro Remote TV Handset Overlay (Mobile & Touch support) */}
+        <MobileKeypad onNavigate={navigateToPage} currentPage={currentPage} />
       </div>
 
       {/* 2. ACCESSIBLE SEMANTIC DOM TREE */}

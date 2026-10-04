@@ -134,6 +134,107 @@ html, body {
   width: 100%;
 }
 
+/* Retro Remote Handset Component */
+.teletext-remote-control {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+}
+
+.remote-toggle-btn {
+  background: #222222;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 0.5rem 1rem;
+  font-family: var(--tt-font);
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.remote-handset-body {
+  margin-top: 0.6rem;
+  background: #181818;
+  border: 2px solid #333333;
+  border-radius: 8px;
+  padding: 0.8rem;
+  width: 280px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.remote-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #888888;
+  border-bottom: 1px solid #333333;
+  padding-bottom: 0.3rem;
+}
+
+.remote-buffer-display {
+  color: #ffff00;
+  font-weight: bold;
+}
+
+.remote-fastext-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+}
+
+.remote-btn {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.4rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.nav-btn {
+  background: #333333;
+  color: #ffffff;
+}
+
+.remote-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.remote-num-btn {
+  background: #282828;
+  color: #ffffff;
+  border: 1px solid #444444;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 0.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.remote-num-btn:hover,
+.remote-btn:hover {
+  filter: brightness(1.3);
+}
+
+.remote-nav-row {
+  display: flex;
+  gap: 4px;
+}
+.remote-nav-row .remote-btn {
+  flex: 1;
+}
+
 .teletext-row-grid {
   display: grid;
   grid-template-columns: 38ch 18ch;
