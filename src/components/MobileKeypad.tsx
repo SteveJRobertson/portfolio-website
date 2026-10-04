@@ -1,7 +1,7 @@
 import React, { useId, useRef, useState } from 'react';
 import type { FastextLink } from '../types/teletext';
 import { NAVIGABLE_PAGES } from '../content/registry';
-import { FASTEXT_ORDER, fastextName } from '../display/fastext';
+import { FASTEXT_ORDER, fastextLabel, fastextName } from '../display/fastext';
 
 interface MobileKeypadProps {
   /** The shared digit buffer's text, e.g. "P1--". */
@@ -85,7 +85,7 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
               aria-label={fastextName(i, fastext[i])}
               onClick={() => onNavigate(fastext[i].page)}
             >
-              {fastext[i].page} {fastext[i].label}
+              {fastext[i].page} {fastextLabel(fastext[i])}
             </button>
           ))}
         </div>

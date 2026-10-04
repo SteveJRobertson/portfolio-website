@@ -190,7 +190,7 @@ describe('fastext', () => {
       { label: 'SKILLS', page: 300 },
       { label: 'CONTACT', page: 400 },
     ];
-    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  ABOUT   ', '  CAREER  ', '  SKILLS  ', ' CONTACT  ']);
+    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  About   ', '  Career  ', '  Skills  ', ' Contact  ']);
     expect(fastextLabels(links, [5, 5, 5, 5])).toEqual([' 101 ', ' 110 ', ' 300 ', ' 400 ']);
   });
 

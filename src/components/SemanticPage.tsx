@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef } from 'react';
 import type { CompiledPage, FastextLink, SemanticBlock, SemanticInline } from '../types/teletext';
-import { FASTEXT_ORDER, fastextName } from '../display/fastext';
+import { FASTEXT_ORDER, fastextLabel, fastextName } from '../display/fastext';
 import { isPlainClick, pageHref } from '../navigation/paths';
 
 /** Where focus is in the semantic mirror, so the grid can outline the same thing. */
@@ -188,7 +188,7 @@ const FastextNav: React.FC<{ links: readonly FastextLink[]; onNavigate: (page: n
   <nav aria-label="Fastext" className="mirror__fastext">
     {FASTEXT_ORDER.map((color, i) => (
       <PageLink key={color} page={links[i].page} onNavigate={onNavigate} label={fastextName(i, links[i])}>
-        <span className={`mirror__swatch bg-${color}`} aria-hidden="true" /> {links[i].page} {links[i].label}
+        <span className={`mirror__swatch bg-${color}`} aria-hidden="true" /> {links[i].page} {fastextLabel(links[i])}
       </PageLink>
     ))}
   </nav>

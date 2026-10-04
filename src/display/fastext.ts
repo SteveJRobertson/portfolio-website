@@ -9,7 +9,13 @@ export const fastextSlotWidths = (cols: number): number[] => {
   return FASTEXT_ORDER.map((_, i) => base + (i < extra ? 1 : 0));
 };
 
-const labelForms = (link: FastextLink): string[] => [link.label.trim(), String(link.page)];
+/** A Fastext label as shown: capitalised ("About"), so the bar sits quietly under the page. */
+export const fastextLabel = (link: FastextLink): string => {
+  const label = link.label.trim().toLowerCase();
+  return label.charAt(0).toUpperCase() + label.slice(1);
+};
+
+const labelForms = (link: FastextLink): string[] => [fastextLabel(link), String(link.page)];
 
 const centre = (label: string, width: number): string => {
   const text = label.slice(0, width);
@@ -19,7 +25,7 @@ const centre = (label: string, width: number): string => {
 
 /**
  * Labels for the four slots, centred and padded to each slot's width. All four
- * use the same form: the label ("ABOUT") if every label fits its slot with a
+ * use the same form: the label ("About") if every label fits its slot with a
  * blank cell to spare, otherwise the page number ("101"). The spare cell keeps
  * neighbouring labels apart, so they never run together.
  */
@@ -31,6 +37,6 @@ export const fastextLabels = (links: readonly FastextLink[], widths: number[]): 
 
 const SLOT_NAMES = ['Red', 'Green', 'Yellow', 'Cyan'];
 
-/** Accessible name for a slot, e.g. "Red: ABOUT, page 101". It contains the visible label or number (WCAG 2.5.3). */
+/** Accessible name for a slot, e.g. "Red: About, page 101". It contains the visible label or number (WCAG 2.5.3). */
 export const fastextName = (slot: number, link: FastextLink): string =>
-  `${SLOT_NAMES[slot]}: ${link.label.trim()}, page ${link.page}`;
+  `${SLOT_NAMES[slot]}: ${fastextLabel(link)}, page ${link.page}`;
