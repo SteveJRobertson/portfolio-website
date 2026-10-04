@@ -49,11 +49,13 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 ## 5. Navigation
 
 - **3-digit buffer**: one shared buffer fed by the keyboard (`0`–`9`) and the on-screen keypad. The header shows `P1--` while you type. The third digit navigates. `Escape` clears.
-- **Routing**: path based (`/100`, `/101`, …; `/` = 100), using the History API so back, forward and bookmarks work.
-- **Unknown pages**: show an authentic "PAGE NOT FOUND" screen that links back to 100.
-- **Fastext**: four slots per page (red, green, yellow, blue/cyan). Rendered as real `<a href>` links with a clear focus style. Hotkeys `R`, `G`, `Y`, `B`, ignored when a modifier key is held.
+- **Routing**: path based (`/100`, `/101`, …; `/` = 100), using the History API so back, forward and bookmarks work. `pageHref()` in `src/navigation/paths.ts` is the only place a page URL is built.
+- **Unknown pages**: show an authentic "PAGE NOT FOUND" screen that links back to 100. Any page number or path that isn't in the registry redirects to `/404` (a replace on load or back/forward, a push when navigating).
+- **Fastext**: four slots per page (red, green, yellow, cyan). Rendered as real `<a href>` links with a focus style distinct from hover; a plain click navigates in place, a modified click opens a new tab. Hotkeys `R`, `G`, `Y`, and `B` or `C` for the fourth.
+- **Hotkeys**: one listener (`useHotkeys`). Keys with a modifier and keys typed into form fields are ignored. The digit and letter shortcuts can be switched off on page 888 (WCAG 2.1.4); `←`/`→` are off in Text mode.
 - **Sub-pages**: long pages can cycle (`01/03`) on a timer, with a way to hold or pause.
-- **Mobile**: the on-screen keypad means the native keyboard never opens.
+- **Mobile**: the on-screen keypad means the native keyboard never opens. Its colour buttons follow the current page's Fastext.
+- **Links in the grid**: inline `{link:NNN}` text, quick-index entries, and email and web addresses (found at build time, `mailto:` or a new tab) respond to a click or tap, but never take keyboard focus. Their real links are in the semantic mirror.
 
 ## 6. Pages
 
@@ -73,7 +75,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 ## 7. Content schema and validation
 
 - Each page is a JSON file `src/content/pages/pageNNN.json` with `page`, `title`, `label` (short name for the quick index and Fastext), `fastext` (four `{ "page": NNN }` entries, red to cyan, with an optional `label`), optional `index` (list it in the quick index), and either `rows` or `subpages`. `mobileRows` / `mobileSubpages` optionally override the portrait layout line for line.
-- A row is one logical line of any length: a string, or `{ "text": …, "doubleHeight": true }`. An empty string is a blank row.
+- A row is one logical line of any length: a string, or an object `{ "text": … }` with optional `"doubleHeight": true`, `"heading": true` (a heading in the semantic mirror) and `"screenOnly": true` (left out of the mirror, for hints like "Press ← or →"). An empty string is a blank row. Any other key is an error.
 - Colour tags: `{red}` `{green}` `{yellow}` `{blue}` `{magenta}` `{cyan}` `{white}` and `{bg:colour}`, closed by `{/}`; `{link:NNN}…{/}` is an inline page link; `{rule}` or `{rule:-}` alone on a row draws a full-width rule; `{{` is a literal brace.
 - A build-time wrapper (a Vite plugin serving `virtual:pages`) lays every row out at **38 columns**, used by both widescreen and classic so their line breaks match, and at **20 columns** for portrait. Rows get a one-cell margin; `* ` bullets and `NNN ` page numbers hang their continuation lines; lines can also break after `/`, `-` and `@`. Dev, build, Storybook and Vitest all use the same plugin.
 - The validator (`npm run validate`, and the plugin on every build) fails when:
@@ -92,9 +94,10 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 
 ## 9. Accessibility
 
-1. **Semantic mirror**: the visual grid is `aria-hidden` and contains **no focusable elements**. The interactive controls and a visually hidden semantic tree (headings, paragraphs, lists, links) present the same content. Page changes are announced through a live region, and focus moves to the page heading.
-2. **Text mode (page 888)**: switches the whole UI to a clean, high-contrast HTML reader view. The choice is remembered.
-3. Pinch-zoom is never blocked. Focus is always visible. Keyboard listeners add to normal navigation and never replace it.
+1. **Semantic mirror**: every grid line is `aria-hidden` and the grid contains **no focusable elements** except the Fastext links. The compiler builds the mirror from the logical rows, before wrapping: the page `title` is the `<h1>`; double-height rows, `{rule}`s, blank and `screenOnly` rows are dropped; `heading` rows become `<h2>`; `* ` rows and page-directory rows (`{link:NNN}NNN  Name`) become lists; other rows become paragraphs; `{link:NNN}` and email or web addresses become real links. Every sub-page is present at once.
+2. **Focus**: after a user-initiated page change, focus moves to the `<h1>` (not on first load). Sub-page steps are announced through a polite live region. A skip link, visible on focus, comes first. While an element in the hidden mirror has keyboard focus, its twin in the grid (the linked text) is outlined; a control with no twin on screen shows itself as a caption at the top of the screen. The `<h1>` is not a control, so it takes focus without an outline.
+3. **Text mode (page 888)**: renders the same mirror as a plain, high-contrast reader view (AAA contrast, normal scroll). The switches sit in the strip under the screen on 888, and every Text mode page has a "Teletext view" button. The choice is remembered in `localStorage`, falling back to off.
+4. Pinch-zoom is never blocked. Focus is always visible. Keyboard listeners add to normal navigation and never replace it.
 
 ## 10. Decision log
 
@@ -111,9 +114,9 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-009 | Page map from [CONTENT.md](./CONTENT.md) approved, including 110 Experience with per-role sub-pages. |
 | DEC-010 | The mode queries live in one TypeScript module (React needs `cols × rows` to render the cells) and CSS keys off `data-mode`. Revisit for pre-rendering in Phase 6. |
 | DEC-011 | Content is wrapped once at 38 columns for widescreen and classic, and at 20 for portrait. Until Phase 5 adds cycling, sub-pages are stepped with ←/→ and the keypad. The old canvas demo on 202 is dropped; 203 gets mosaic graphics in Phase 5. |
+| DEC-012 | Phase 4: the 888 switches live in the strip under the screen; grid links answer clicks but never take focus, with real links in the mirror and a focus outline on the grid twin; mirror headings are marked with `"heading": true` rather than guessed from colour; axe runs in Vitest with jsdom (contrast stays in `contrast.test.ts`), with Playwright left for Phase 6; `B` and `C` both work for the fourth Fastext slot. |
 
 ## 11. Open questions
 
-- Final Fastext hotkey for the fourth button: `B` (matches the original remote) or `C` (matches the colour).
 - Sub-page cycle interval and how to hold or pause.
 - Custom domain vs `github.io` when deployment resumes.

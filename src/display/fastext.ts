@@ -27,3 +27,9 @@ export const fastextLabels = (links: readonly FastextLink[], widths: number[]): 
   const tier = forms.every((f, i) => f[0].length <= widths[i]) ? 0 : 1;
   return forms.map((f, i) => centre(f[tier], widths[i]));
 };
+
+const SLOT_NAMES = ['Red', 'Green', 'Yellow', 'Cyan'];
+
+/** Accessible name for a slot, e.g. "Red: ABOUT, page 101". It contains the visible label or number (WCAG 2.5.3). */
+export const fastextName = (slot: number, link: FastextLink): string =>
+  `${SLOT_NAMES[slot]}: ${link.label.trim()}, page ${link.page}`;

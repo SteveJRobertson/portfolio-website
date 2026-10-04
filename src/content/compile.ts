@@ -1,5 +1,6 @@
 import type { CompiledPage, FastextLink, GridRow } from '../types/teletext.ts';
 import {
+  ROW_KEYS,
   NARROW_BODY_ROWS,
   NARROW_COLS,
   WIDE_BODY_ROWS,
@@ -9,6 +10,7 @@ import {
   type RowSource,
 } from './schema.ts';
 import { layoutRows, slotsUsed } from './wrap.ts';
+import { buildSemantic } from './semantic.ts';
 
 export interface SourceFile {
   /** File name, e.g. `page110.json`. */
@@ -21,9 +23,18 @@ export interface CompileResult {
   errors: string[];
 }
 
-const isRow = (row: unknown): row is RowSource =>
-  typeof row === 'string' ||
-  (typeof row === 'object' && row !== null && typeof (row as { text?: unknown }).text === 'string');
+const BOOLEAN_KEYS = ROW_KEYS.filter((k) => k !== 'text');
+
+const isRow = (row: unknown): row is RowSource => {
+  if (typeof row === 'string') return true;
+  if (typeof row !== 'object' || row === null) return false;
+  const fields = row as Record<string, unknown>;
+  return (
+    typeof fields.text === 'string' &&
+    Object.keys(fields).every((k) => (ROW_KEYS as readonly string[]).includes(k)) &&
+    BOOLEAN_KEYS.every((k) => fields[k] === undefined || typeof fields[k] === 'boolean')
+  );
+};
 
 const isRowList = (rows: unknown): rows is RowSource[] => Array.isArray(rows) && rows.every(isRow);
 
@@ -50,8 +61,8 @@ const shapeErrors = (data: unknown): string[] => {
   if ((page.rows === undefined) === (page.subpages === undefined)) {
     errors.push('needs exactly one of "rows" or "subpages"');
   }
-  if (page.rows !== undefined && !isRowList(page.rows)) errors.push('"rows" must be a list of lines');
-  if (page.subpages !== undefined && !isSubpageList(page.subpages)) errors.push('"subpages" must be a list of line lists');
+  if (page.rows !== undefined && !isRowList(page.rows)) errors.push(`"rows" must be a list of lines (a line object may only have ${ROW_KEYS.join(', ')})`);
+  if (page.subpages !== undefined && !isSubpageList(page.subpages)) errors.push(`"subpages" must be a list of line lists (a line object may only have ${ROW_KEYS.join(', ')})`);
   if (page.mobileRows !== undefined && !isRowList(page.mobileRows)) errors.push('"mobileRows" must be a list of lines');
   if (page.mobileSubpages !== undefined && !isSubpageList(page.mobileSubpages)) {
     errors.push('"mobileSubpages" must be a list of line lists');
@@ -125,6 +136,7 @@ export const compilePages = (files: SourceFile[]): CompileResult => {
       fastext,
       wide: subpages.map((rows, i) => layout(rows, i, 'wide', true)),
       narrow: subpages.map((rows, i) => (mobile?.[i] ? layout(mobile[i], i, 'narrow', false) : layout(rows, i, 'narrow', true))),
+      semantic: subpages.map(buildSemantic),
     };
   });
 

@@ -9,37 +9,37 @@
       { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}FRONTEND ENGINEERING{/}",
+      { "text": "{yellow}FRONTEND ENGINEERING{/}", "heading": true },
       "React, TypeScript, JavaScript, Redux, React Router, HTML, CSS",
       "",
-      "{yellow}DESIGN SYSTEMS{/}",
+      { "text": "{yellow}DESIGN SYSTEMS{/}", "heading": true },
       "Component libraries, design tokens, accessibility, documentation",
       "",
-      "{white}Press ← or → for more skills.{/}"
+      { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
     ],
     [
       { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}TOOLING AND INFRASTRUCTURE{/}",
+      { "text": "{yellow}TOOLING AND INFRASTRUCTURE{/}", "heading": true },
       "Git, CI/CD, Jenkins, GitHub Actions, Docker, AWS, Nx",
       "",
-      "{yellow}DESIGN AND COLLABORATION{/}",
+      { "text": "{yellow}DESIGN AND COLLABORATION{/}", "heading": true },
       "Figma, system architecture, stakeholder engagement, technical docs",
       "",
-      "{white}Press ← or → for more skills.{/}"
+      { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
     ],
     [
       { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
       "{blue}{rule}{/}",
       "",
-      "{yellow}PRACTICES{/}",
+      { "text": "{yellow}PRACTICES{/}", "heading": true },
       "Agile/Scrum, TDD, AI-assisted workflows",
       "",
-      "{yellow}LEADERSHIP{/}",
+      { "text": "{yellow}LEADERSHIP{/}", "heading": true },
       "Mentoring, developer enablement, knowledge sharing",
       "",
-      "{white}Press ← or → for more skills.{/}"
+      { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
     ]
   ]
 }

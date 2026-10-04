@@ -7,8 +7,8 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 | 0. Honest docs | Done |
 | 1. Foundations | Done |
 | 2. Grid engine | Done |
-| 3. Content pipeline | In review |
-| 4. Navigation & accessibility | Not started |
+| 3. Content pipeline | Done |
+| 4. Navigation & accessibility | In review |
 | 5. Graphics & polish | Not started |
 | 6. Ship | Deferred (private repo) |
 
@@ -47,12 +47,12 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [x] Manual sub-page stepping (←/→ and keypad) until Phase 5 cycling
 
 ### Phase 4: Navigation & accessibility
-- [ ] Fastext as `<a href>`; hotkeys R/G/Y/B
-- [ ] Shared digit buffer for keyboard and keypad; fix the side effect inside the state updater
-- [ ] Nothing focusable inside `aria-hidden`; full semantic mirror
-- [ ] Live-region announcements + focus management on navigation
-- [ ] Page 888 Text mode (persisted)
-- [ ] axe checks in CI
+- [x] Fastext as `<a href>`; hotkeys R/G/Y/B (C also works for the fourth)
+- [x] Shared digit buffer for keyboard and keypad; fix the side effect inside the state updater
+- [x] Nothing focusable inside `aria-hidden`; full semantic mirror built from the logical rows
+- [x] Live-region announcements + focus management on navigation; skip link; grid twin outline
+- [x] Page 888 Text mode (persisted) and a shortcuts off switch
+- [x] axe checks in CI (Vitest + axe-core, every page, both views)
 
 ### Phase 5: Graphics & polish
 - [ ] Build-time image → 2×3 mosaic converter (text output)

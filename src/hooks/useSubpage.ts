@@ -1,10 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+
+export interface Subpage {
+  index: number;
+  count: number;
+  /** Steps forward or back, wrapping round. */
+  step: (delta: number) => void;
+  /** Jumps to a sub-page (used when focus moves into that part of the semantic mirror). */
+  show: (index: number) => void;
+}
 
 /**
  * Which sub-page of the current page is showing. Resets to the first sub-page
- * when the page changes; ←/→ step through them. Phase 5 adds timed cycling.
+ * when the page changes. Phase 5 adds timed cycling.
  */
-export const useSubpage = (page: number, count: number) => {
+export const useSubpage = (page: number, count: number): Subpage => {
   const [state, setState] = useState({ page, index: 0 });
   const index = state.page === page ? Math.min(state.index, count - 1) : 0;
 
@@ -16,15 +25,12 @@ export const useSubpage = (page: number, count: number) => {
     [page, index, count],
   );
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
-      if (e.key === 'ArrowLeft') step(-1);
-      if (e.key === 'ArrowRight') step(1);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [step]);
+  const show = useCallback(
+    (target: number) => {
+      if (target >= 0 && target < count) setState({ page, index: target });
+    },
+    [page, count],
+  );
 
-  return { index, count, step };
+  return { index, count, step, show };
 };

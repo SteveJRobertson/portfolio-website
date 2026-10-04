@@ -8,16 +8,16 @@
     { "text": "{cyan}CONTACT{/}", "doubleHeight": true },
     "{blue}{rule}{/}",
     "",
-    "{green}EMAIL{/}",
+    { "text": "{green}EMAIL{/}", "heading": true },
     "steve.robertson80@gmail.com",
     "",
-    "{green}LINKEDIN{/}",
+    { "text": "{green}LINKEDIN{/}", "heading": true },
     "linkedin.com/in/steverobertson80",
     "",
-    "{green}GITHUB{/}",
+    { "text": "{green}GITHUB{/}", "heading": true },
     "github.com/stevejrobertson",
     "",
-    "{green}WEBSITE{/}",
+    { "text": "{green}WEBSITE{/}", "heading": true },
     "steverobertson.dev"
   ]
 }

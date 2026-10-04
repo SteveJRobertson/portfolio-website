@@ -5,6 +5,7 @@ interface ColorSpanProps {
   bg?: TeletextColor;
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
 export const ColorSpan: React.FC<ColorSpanProps> = ({
@@ -12,12 +13,13 @@ export const ColorSpan: React.FC<ColorSpanProps> = ({
   bg,
   children,
   className = '',
+  onClick,
 }) => {
   const colorClass = `c-${color}`;
   const bgClass = bg ? `bg-${bg}` : '';
   
   return (
-    <span className={`${colorClass} ${bgClass} ${className}`.trim()}>
+    <span className={`${colorClass} ${bgClass} ${className}`.trim()} onClick={onClick}>
       {children}
     </span>
   );

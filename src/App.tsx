@@ -1,77 +1,179 @@
-import React from 'react';
-import { usePageBuffer } from './hooks/usePageBuffer';
-import { useSubpage } from './hooks/useSubpage';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TeletextScreen } from './components/TeletextScreen';
 import { HeaderTicker } from './components/HeaderTicker';
 import { FastTextBar } from './components/FastTextBar';
 import { GridLine } from './components/GridLine';
 import { MobileKeypad } from './components/MobileKeypad';
-import { NOT_FOUND_PAGE, QUICK_INDEX, getPage } from './content/registry';
+import { SemanticPage, type MirrorFocus } from './components/SemanticPage';
+import { SettingsControls } from './components/SettingsControls';
+import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage } from './content/registry';
 import { useGridMode } from './display/useGridMode';
 import { layoutBody } from './display/layout';
-import { rowText } from './display/rows';
 import { sidebarRows } from './display/sidebar';
+import { useSubpage } from './hooks/useSubpage';
+import { useDigitBuffer } from './navigation/useDigitBuffer';
+import { useHotkeys } from './navigation/useHotkeys';
+import { useNavigation } from './navigation/useNavigation';
+import { useSettings } from './settings/useSettings';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
+const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
+
+/** Email opens the mail app; web addresses open in a new tab so the Teletext stays put. */
+const openAddress = (href: string) => {
+  if (href.startsWith('mailto:')) window.location.href = href;
+  else window.open(href, '_blank', 'noopener');
+};
 
 export const App: React.FC = () => {
-  const { bufferText, currentPage, navigateToPage } = usePageBuffer(100);
+  const { page: requested, changes, navigate } = useNavigation();
+  const [settings, updateSettings] = useSettings();
   const mode = useGridMode();
 
-  const page = getPage(currentPage) ?? getPage(NOT_FOUND_PAGE)!;
-  const subpage = useSubpage(currentPage, page.wide.length);
+  const page = getPage(requested)!;
+  const heading = page.title;
+  const subpage = useSubpage(requested, page.wide.length);
+  const buffer = useDigitBuffer(requested, navigate);
+
+  useHotkeys({
+    characterKeys: settings.shortcuts,
+    arrowKeys: !settings.textMode,
+    onDigit: buffer.digit,
+    onClear: buffer.clear,
+    onFastext: (slot) => navigate(page.fastext[slot].page),
+    onSubpage: subpage.step,
+  });
+
+  // Focus goes to the page heading after a page change or a switch of view, but not on first load.
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const textMode = useRef(settings.textMode);
+  useEffect(() => {
+    if (changes > 0) headingRef.current?.focus();
+  }, [changes]);
+  useEffect(() => {
+    if (textMode.current === settings.textMode) return;
+    textMode.current = settings.textMode;
+    headingRef.current?.focus();
+  }, [settings.textMode]);
+
+  useEffect(() => {
+    document.title = `P${requested} ${heading} | Steve Robertson`;
+  }, [requested, heading]);
+
+  // Sub-page changes don't move focus, so they're announced. Not when focus itself moved there.
+  const [announcement, setAnnouncement] = useState('');
+  const shown = useRef({ page: requested, index: subpage.index });
+  const followingFocus = useRef(false);
+  useEffect(() => {
+    const before = shown.current;
+    shown.current = { page: requested, index: subpage.index };
+    if (before.page !== requested || before.index === subpage.index) return;
+    if (followingFocus.current) followingFocus.current = false;
+    else setAnnouncement(`Part ${subpage.index + 1} of ${subpage.count}`);
+  }, [requested, subpage.index, subpage.count]);
+
+  // Keyboard focus in the hidden mirror is shown by outlining its twin on screen.
+  const [mirrorFocus, setMirrorFocus] = useState<MirrorFocus | null>(null);
+  const { index: subpageIndex, show: showSubpage } = subpage;
+  const onMirrorFocus = useCallback(
+    (focus: MirrorFocus | null) => {
+      setMirrorFocus(focus);
+      if (focus?.subpage !== undefined && focus.subpage !== subpageIndex) {
+        followingFocus.current = true;
+        showSubpage(focus.subpage);
+      }
+    },
+    [subpageIndex, showSubpage],
+  );
+
+  const liveRegion = (
+    <div role="status" className="sr-only">
+      {announcement}
+    </div>
+  );
+
+  const mirrorProps = { page, heading, headingRef, pages: PAGE_LIST, onNavigate: navigate };
+
+  if (settings.textMode) {
+    return (
+      <div className="text-mode">
+        <header className="text-mode__bar">
+          <span>
+            STEVE-TEXT <span className="c-cyan">P{requested}</span>
+          </span>
+          <button type="button" onClick={() => updateSettings({ textMode: false })}>
+            TELETEXT VIEW
+          </button>
+        </header>
+        <SemanticPage {...mirrorProps} visible>
+          {page.page === 888 && <SettingsControls settings={settings} onChange={updateSettings} />}
+        </SemanticPage>
+        {liveRegion}
+      </div>
+    );
+  }
+
   const bodyRows = (mode.name === 'portrait' ? page.narrow : page.wide)[subpage.index];
   const lines = layoutBody(mode, bodyRows, SIDEBAR_ROWS);
+  const twin = mirrorFocus?.twin;
+  const focusLink = twin?.startsWith('link-') ? Number(twin.slice(5)) : undefined;
+  const focusHref = twin?.startsWith('href:') ? twin.slice(5) : undefined;
+  const twinOnScreen = lines.some((l) =>
+    l.content.segments.some((s) => (focusLink !== undefined && s.link === focusLink) || (focusHref !== undefined && s.href === focusHref)),
+  );
 
   return (
     <>
-      {/* 1. VISUAL TELETEXT CRT DISPLAY */}
-      <div aria-hidden="true" className="teletext-wrapper">
-        <TeletextScreen mode={mode} ariaLabel="Ceefax Teletext Screen">
-          <HeaderTicker bufferText={bufferText} currentPage={currentPage} cols={mode.cols} subpage={subpage} />
+      <a
+        href="#content"
+        className="skip-link"
+        onClick={(e) => {
+          e.preventDefault();
+          headingRef.current?.focus();
+        }}
+      >
+        Skip to page content
+      </a>
+
+      <div className="teletext-wrapper">
+        <TeletextScreen mode={mode}>
+          <HeaderTicker bufferText={buffer.text} currentPage={requested} cols={mode.cols} subpage={subpage} />
 
           {lines.map(({ key, ...line }) => (
-            <GridLine key={key} {...line} />
+            <GridLine
+              key={key}
+              {...line}
+              onLink={navigate}
+              onOpen={openAddress}
+              focusHref={focusHref}
+              focusLink={focusLink}
+            />
           ))}
 
-          <FastTextBar links={page.fastext} onNavigate={navigateToPage} cols={mode.cols} row={mode.rows} />
+          <FastTextBar links={page.fastext} onNavigate={navigate} cols={mode.cols} row={mode.rows} />
         </TeletextScreen>
 
-        {/* Retro Remote TV Handset Overlay (Mobile & Touch support) */}
-        <MobileKeypad onNavigate={navigateToPage} onSubpage={subpage.step} currentPage={currentPage} />
+        <section className="control-strip" aria-label="Screen controls">
+          <MobileKeypad
+            buffer={buffer.text}
+            onDigit={buffer.digit}
+            onClear={buffer.clear}
+            fastext={page.fastext}
+            onNavigate={navigate}
+            onSubpage={subpage.step}
+            currentPage={requested}
+          />
+          {page.page === 888 && <SettingsControls settings={settings} onChange={updateSettings} />}
+        </section>
       </div>
 
-      {/* 2. ACCESSIBLE SEMANTIC DOM TREE (stop-gap until the Phase 4 semantic mirror) */}
-      <div className="sr-only">
-        <header>
-          <h1>{page.title}</h1>
-          <p>Current Page: {currentPage}</p>
-        </header>
-        <main>
-          <article>
-            {page.wide.map((rows, i) => (
-              <section key={i}>
-                {rows
-                  .filter((row) => !row.fill)
-                  .map((row) => rowText(row).trim())
-                  .filter(Boolean)
-                  .map((text, j) => (
-                    <p key={j}>{text}</p>
-                  ))}
-              </section>
-            ))}
-            <ul>
-              {QUICK_INDEX.map(({ page: n, title }) => (
-                <li key={n}>
-                  <a href={n === 100 ? '/' : `/${n}`} onClick={(e) => { e.preventDefault(); navigateToPage(n); }}>
-                    Page {n}: {title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </article>
-        </main>
-      </div>
+      <SemanticPage
+        {...mirrorProps}
+        visible={false}
+        onFocusChange={onMirrorFocus}
+        caption={mirrorFocus !== null && !twinOnScreen}
+      />
+      {liveRegion}
     </>
   );
 };

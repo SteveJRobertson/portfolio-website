@@ -24,7 +24,7 @@ export const HeaderTicker: React.FC<HeaderTickerProps> = ({
   }, []);
 
   return (
-    <header className="tt-header" style={{ display: 'contents' }}>
+    <header className="tt-header" aria-hidden="true" style={{ display: 'contents' }}>
       <GridLine row={1} width={cols} content={formatHeader({ bufferText, currentPage, now, cols, subpage })} />
     </header>
   );
