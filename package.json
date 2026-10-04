@@ -1,11 +1,12 @@
 {
-  "name": "temp-app",
+  "name": "teletext-portfolio",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "validate": "tsx scripts/validatePages.ts",
+    "build": "npm run validate && tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
