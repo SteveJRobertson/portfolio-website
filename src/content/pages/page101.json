@@ -1,0 +1,34 @@
+{
+  "pageNumber": 101,
+  "title": "ABOUT STEVE",
+  "path": "/101",
+  "fastText": {
+    "red": { "label": "Index [100]", "page": 100, "path": "/", "color": "red" },
+    "green": { "label": "Projects [200]", "page": 200, "path": "/200", "color": "green" },
+    "yellow": { "label": "Stack [300]", "page": 300, "path": "/300", "color": "yellow" },
+    "cyan": { "label": "Contact [400]", "page": 400, "path": "/400", "color": "cyan" }
+  },
+  "mainRows": [
+    { "color": "yellow", "text": "======================================" },
+    { "color": "red", "text": " P101 ABOUT STEVE ROBERTSON           " },
+    { "color": "yellow", "text": "======================================" },
+    { "color": "white", "text": " " },
+    { "color": "white", "text": " Senior Solutions Architect & Lead    " },
+    { "color": "white", "text": " Frontend Engineer in Edinburgh, UK.  " },
+    { "color": "white", "text": " " },
+    { "color": "green", "text": " SPECIALITY AREAS:                    " },
+    { "color": "cyan", "text": " * Design Systems Architecture        " },
+    { "color": "cyan", "text": " * Performance & Core Web Vitals      " },
+    { "color": "cyan", "text": " * Accessible & Semantic UI Systems   " },
+    { "color": "cyan", "text": " * Multi-Agent AI & SDK Tooling       " },
+    { "color": "white", "text": " " },
+    { "color": "yellow", "text": " PRESS [100] OR 'R' TO RETURN HOME    " }
+  ],
+  "semanticContent": {
+    "heading": "About Steve Robertson",
+    "body": [
+      "I am a Senior Solutions Architect and Frontend Lead based in Edinburgh, Scotland.",
+      "With over a decade of experience designing web architectures, design systems, and client-side web applications."
+    ]
+  }
+}

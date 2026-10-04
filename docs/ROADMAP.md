@@ -9,7 +9,7 @@
 
 ```
 [Sprint 1: Foundation] ----> [Sprint 2: Core Engine] ----> [Sprint 3: Content] ----> [Sprint 4: Shader & Mobile] ----> [Sprint 5: CI/CD & Launch]
-       (COMPLETE ✅)                 (COMPLETE ✅)               (IN PROGRESS 🔄)             (PLANNED ⏳)                   (PLANNED ⏳)
+       (COMPLETE ✅)                 (COMPLETE ✅)               (COMPLETE ✅)               (PLANNED ⏳)                   (PLANNED ⏳)
 ```
 
 ---
@@ -38,14 +38,14 @@
 
 ---
 
-### 🟡 Sprint 3: Content Pipeline & Page Authoring
+### 🟢 Sprint 3: Content Pipeline & Page Authoring
 - **Goal**: Typed JSON page schemas, Teletext markup parser engine, content for Pages 100-400.
 - **Deliverables**:
-  - [ ] Page JSON schemas in `src/content/pages/*.json`
-  - [ ] Teletext markup parser (auto word-wrapping `{yellow}text{/yellow}`)
-  - [ ] Build-time line length validator script
-  - [ ] Full portfolio content for Index (100), About (101), Projects (200), Stack (300), Contact (400)
-- **Status**: **IN PROGRESS** 🔄
+  - [x] Page JSON schemas in `src/content/pages/*.json`
+  - [x] Dynamic page registry (`src/utils/pageRegistry.ts`)
+  - [x] Build-time line length validator script (`scripts/validatePages.ts`)
+  - [x] Full portfolio content for Index (100), About (101), Projects (200), Case Studies (201-203), Stack (300), Contact (400)
+- **Status**: **COMPLETE** ✅
 
 ---
 

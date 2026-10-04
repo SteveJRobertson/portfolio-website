@@ -1,0 +1,32 @@
+{
+  "pageNumber": 300,
+  "title": "TECH STACK MATRIX",
+  "path": "/300",
+  "fastText": {
+    "red": { "label": "Index [100]", "page": 100, "path": "/", "color": "red" },
+    "green": { "label": "Projects [200]", "page": 200, "path": "/200", "color": "green" },
+    "yellow": { "label": "About [101]", "page": 101, "path": "/101", "color": "yellow" },
+    "cyan": { "label": "Contact [400]", "page": 400, "path": "/400", "color": "cyan" }
+  },
+  "mainRows": [
+    { "color": "yellow", "text": "======================================" },
+    { "color": "yellow", "text": " P300 TECH STACK ARCHITECTURE MATRIX  " },
+    { "color": "yellow", "text": "======================================" },
+    { "color": "white", "text": " " },
+    { "color": "cyan", "text": " CORE:   ", "suffix": "React 19, TypeScript, Vite   " },
+    { "color": "cyan", "text": " STYLING:", "suffix": "Vanilla CSS, Container Query " },
+    { "color": "cyan", "text": " TESTING:", "suffix": "Storybook 8, Vitest          " },
+    { "color": "cyan", "text": " CI/CD:  ", "suffix": "GitHub Actions, GitHub Pages " },
+    { "color": "cyan", "text": " AI SDK: ", "suffix": "Google Antigravity Agent SDK " },
+    { "color": "white", "text": " " },
+    { "color": "yellow", "text": " PRESS [100] OR 'R' TO RETURN HOME    " }
+  ],
+  "semanticContent": {
+    "heading": "Engineering Tech Stack Matrix",
+    "body": [
+      "Core Frameworks: React 19, TypeScript, Vite.",
+      "Styling & UI: Vanilla CSS, Container Queries, Bedstead Mode 7.",
+      "Testing & CI/CD: Storybook 8, GitHub Actions, GitHub Pages."
+    ]
+  }
+}

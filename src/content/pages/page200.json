@@ -1,0 +1,32 @@
+{
+  "pageNumber": 200,
+  "title": "PROJECTS INDEX",
+  "path": "/200",
+  "fastText": {
+    "red": { "label": "Index [100]", "page": 100, "path": "/", "color": "red" },
+    "green": { "label": "Storybook [201]", "page": 201, "path": "/201", "color": "green" },
+    "yellow": { "label": "Canvas [202]", "page": 202, "path": "/202", "color": "yellow" },
+    "cyan": { "label": "Contact [400]", "page": 400, "path": "/400", "color": "cyan" }
+  },
+  "mainRows": [
+    { "color": "yellow", "text": "======================================" },
+    { "color": "green", "text": " P200 FEATURED PROJECTS INDEX         " },
+    { "color": "yellow", "text": "======================================" },
+    { "color": "white", "text": " " },
+    { "color": "cyan", "text": " 201 ", "suffix": "TELETEXT DESIGN STORYBOOK      " },
+    { "color": "cyan", "text": " 202 ", "suffix": "CANVAS SHADER DITHERER         " },
+    { "color": "cyan", "text": " 203 ", "suffix": "HIGH-PERFORMANCE SPA SYSTEM    " },
+    { "color": "white", "text": " " },
+    { "color": "magenta", "text": " SELECT 201-203 TO VIEW CASE STUDY    " },
+    { "color": "white", "text": " " },
+    { "color": "yellow", "text": " PRESS [100] OR 'R' TO RETURN HOME    " }
+  ],
+  "semanticContent": {
+    "heading": "Featured Projects & Case Studies",
+    "body": [
+      "Explore selected engineering projects and case studies:",
+      "Page 201: Teletext Design System with Storybook catalog.",
+      "Page 202: Real-time Canvas Shader Ditherer for retro mosaic art."
+    ]
+  }
+}

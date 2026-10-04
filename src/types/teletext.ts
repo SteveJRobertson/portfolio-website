@@ -19,6 +19,7 @@ export interface TeletextRowData {
   color?: TeletextColor;
   bg?: TeletextColor;
   text: string;
+  suffix?: string;
 }
 
 export interface TeletextPageData {
@@ -31,7 +32,7 @@ export interface TeletextPageData {
     yellow: FastTextLink;
     cyan: FastTextLink;
   };
-  desktopRows: TeletextRowData[];
+  mainRows: TeletextRowData[];
   mobileRows?: TeletextRowData[];
   semanticContent: {
     heading: string;

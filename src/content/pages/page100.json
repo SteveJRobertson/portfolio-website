@@ -1,0 +1,36 @@
+{
+  "pageNumber": 100,
+  "title": "INDEX",
+  "path": "/",
+  "fastText": {
+    "red": { "label": "About [101]", "page": 101, "path": "/101", "color": "red" },
+    "green": { "label": "Projects [200]", "page": 200, "path": "/200", "color": "green" },
+    "yellow": { "label": "Stack [300]", "page": 300, "path": "/300", "color": "yellow" },
+    "cyan": { "label": "Contact [400]", "page": 400, "path": "/400", "color": "cyan" }
+  },
+  "mainRows": [
+    { "color": "yellow", "text": "======================================" },
+    { "color": "cyan", "text": " STEVE ROBERTSON - TELETEXT PORTFOLIO " },
+    { "color": "yellow", "text": "======================================" },
+    { "color": "white", "text": " " },
+    { "color": "white", "text": " WELCOME TO CEEFAX PAGE 100           " },
+    { "color": "green", "text": " SENIOR FRONTEND & SYSTEMS ARCHITECT  " },
+    { "color": "white", "text": " BASED IN EDINBURGH, SCOTLAND         " },
+    { "color": "white", "text": " " },
+    { "color": "yellow", "text": " DIRECT NAVIGATION INDEX:             " },
+    { "color": "red", "text": " 101 ", "suffix": "ABOUT ME & BACKGROUND          " },
+    { "color": "green", "text": " 200 ", "suffix": "FEATURED PROJECTS & WORK         " },
+    { "color": "yellow", "text": " 300 ", "suffix": "TECH STACK ARCHITECTURE MATRIX   " },
+    { "color": "cyan", "text": " 400 ", "suffix": "GET IN TOUCH & CONNECT           " },
+    { "color": "magenta", "text": " 888 ", "suffix": "ACCESSIBILITY / SUBTITLES MODE   " },
+    { "color": "white", "text": " " },
+    { "color": "magenta", "text": " TIP: TYPE 3 DIGITS OR PRESS R,G,Y,C  " }
+  ],
+  "semanticContent": {
+    "heading": "Steve Robertson - Senior Frontend & Systems Architect",
+    "body": [
+      "Welcome to my retro Teletext portfolio. I am a Solutions Architect and Senior Frontend Engineer based in Edinburgh, UK.",
+      "Specialising in resilient design systems, web performance tooling, and high-fidelity interactive user interfaces."
+    ]
+  }
+}
