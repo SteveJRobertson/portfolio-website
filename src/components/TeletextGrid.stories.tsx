@@ -84,9 +84,9 @@ export const SubPages: Story = { args: { page: 110, subpage: 1 } };
 export const Held: Story = { args: { page: 110, subpage: 1, held: true } };
 /** The CRT effect from page 888: scanlines, glow and a vignette. */
 export const CrtEffect: Story = { args: { mode: 'widescreen', page: 110, crt: true } };
-export const CrtEffectOnMosaic: Story = { args: { page: 203, crt: true } };
-export const Mosaic: Story = { args: { page: 203 } };
-export const MosaicPortrait: Story = { args: { mode: 'portrait', page: 203 } };
+export const CrtEffectOnMosaic: Story = { args: { page: 101, crt: true } };
+export const Mosaic: Story = { args: { page: 101 } };
+export const MosaicPortrait: Story = { args: { mode: 'portrait', page: 101 } };
 
 /** Every page and sub-page in the registry, so new content shows up here automatically. */
 export const AllPages: Story = {

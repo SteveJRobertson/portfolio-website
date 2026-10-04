@@ -7,20 +7,11 @@
     { "text": "{green}STEVE-TEXT{/}", "doubleHeight": true },
     "{blue}{rule}{/}",
     "",
-    {
-      "image": "steve",
-      "alt": "A cartoon of Steve in Teletext block graphics: a cyan cap, a white beard and a red jacket.",
-      "rows": 12,
-      "pixelArt": true,
-      "beside": [
-        "A developer portfolio built as a European Teletext service. You are looking at it.",
-        "",
-        "{green}TECH{/} React, TypeScript, Vite",
-        "",
-        "{green}STATUS{/} In progress"
-      ]
-    },
+    "A developer portfolio built as a European Teletext service. You are looking at it.",
     "",
-    "The cartoon is drawn the Teletext way: 2 × 3 blocks a character cell, and two colours a cell."
+    "{green}TECH{/}    React, TypeScript, Vite",
+    "{green}STATUS{/}  In progress",
+    "",
+    "The cartoon on {link:101}101{/} is drawn the Teletext way: 2 × 3 blocks a character cell, and two colours a cell."
   ]
 }

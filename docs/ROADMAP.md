@@ -56,7 +56,7 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 
 ### Phase 5: Graphics & polish
 - [x] Build-time image → 2×3 mosaic converter (PNG in `src/content/images/`, image rows in the page JSON, validated)
-- [x] Page 203: a cartoon portrait of Steve as pixel art, with the project text beside it
+- [x] Page 101: a cartoon portrait of Steve as pixel art, with his summary beside it (101 is now two sub-pages)
 - [ ] Optional edit.tf import (deferred until there's artwork, DEC-013)
 - [x] CRT scanline/glow overlay, off at first with reduced motion or more contrast, with a switch on 888
 - [x] Sub-page cycling every 15 seconds with HOLD (H key, strip button, keypad)

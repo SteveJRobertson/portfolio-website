@@ -132,7 +132,7 @@ describe('App', () => {
   });
 
   it('only shows HOLD on pages with sub-pages', () => {
-    renderAt('/101');
+    renderAt('/100');
     expect(screen.queryByRole('button', { name: /HOLD/ })).toBeNull();
   });
 

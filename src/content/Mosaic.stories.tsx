@@ -28,7 +28,7 @@ interface MosaicProps {
 
 /**
  * The build-time converter (SPEC §8) on test pictures: 2×3 pixels a cell, two
- * colours a cell. The real portrait is on page 203 (Organisms/TeletextGrid, Mosaic).
+ * colours a cell. The real portrait is on page 101 (Organisms/TeletextGrid, Mosaic).
  */
 const Mosaic = ({ pattern, rows, fontSize }: MosaicProps) => {
   const lines = toMosaic(PATTERNS[pattern], { rows });
