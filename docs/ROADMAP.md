@@ -20,6 +20,7 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [x] Rewrite this roadmap with honest status
 - [x] Remove Gemini agent rules (`.agents/`) and Vite template leftovers
 - [x] Replace the template README
+- [x] `docs/CONTENT.md` content brief from the current site
 
 ### Phase 1: Foundations
 - [ ] Self-host Bedstead WOFF2; remove Google Fonts
@@ -40,7 +41,7 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [ ] Colour-tag markup + build-time wrapper (38/40 and 20 columns), `mobileRows` override
 - [ ] Validator: width, row count, link targets, colour tags
 - [ ] Move 202 and 404 into content; add 888 and 203 (or drop 203)
-- [ ] New copy based on steverobertson.dev
+- [ ] New copy from [CONTENT.md](./CONTENT.md) (page map needs sign-off)
 
 ### Phase 4: Navigation & accessibility
 - [ ] Fastext as `<a href>`; hotkeys R/G/Y/B

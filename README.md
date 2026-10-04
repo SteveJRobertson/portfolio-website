@@ -29,3 +29,4 @@ npm run lint
 - [SPEC.md](docs/SPEC.md): requirements and decision log
 - [ROADMAP.md](docs/ROADMAP.md): phased delivery plan
 - [REVIEW.md](docs/REVIEW.md): review of the original build
+- [CONTENT.md](docs/CONTENT.md): content brief and proposed page map

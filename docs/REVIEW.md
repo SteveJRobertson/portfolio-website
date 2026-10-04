@@ -56,7 +56,7 @@ The visual direction is a good starting point: the palette, header, Fastext colo
 
 ## 5. Content
 
-The current copy is placeholder text and partly made up. For example, "Google Antigravity Agent SDK", "Storybook 8, Vitest" (neither is used here) and "over a decade of experience". There's no LinkedIn or email. All content will be rewritten in Phase 3 using https://www.steverobertson.dev as the source. (That domain is currently blocked by this environment's network policy, so it needs allowlisting or the content needs pasting in.)
+The current copy is placeholder text and partly made up. For example, "Google Antigravity Agent SDK", "Storybook 8, Vitest" (neither is used here) and "over a decade of experience". There's no LinkedIn or email. All content will be rewritten in Phase 3 from the current site (https://www.steverobertson.dev). The facts are collected in [CONTENT.md](./CONTENT.md), taken from that site's source repo `SteveJRobertson/portfolio-site-2026`.
 
 ---
 
