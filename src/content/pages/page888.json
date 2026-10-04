@@ -3,10 +3,9 @@
   "title": "Accessibility",
   "label": "A11Y",
   "index": true,
-  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
   "rows": [
-    { "text": "{magenta}ACCESSIBILITY{/}", "doubleHeight": true },
-    "{blue}{rule}{/}",
+    { "banner": "ACCESSIBILITY", "bg": "magenta" },
     "",
     { "text": "The switches are below the screen.", "screenOnly": true },
     { "text": "{cyan}TEXT MODE{/}", "heading": true },

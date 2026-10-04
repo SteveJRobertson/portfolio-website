@@ -1,15 +1,16 @@
 import type { SemanticBlock, SemanticInline } from '../types/teletext.ts';
-import { isImageRow, type RowSource } from './schema.ts';
+import { isBannerRow, isImageRow, type RowSource } from './schema.ts';
 import { parseMarkup } from './markup.ts';
 
 /**
  * Builds the semantic mirror (SPEC §9) from a sub-page's logical rows, before
  * any wrapping, so sentences are never cut at the screen width:
  *
- *   double-height row        dropped (the page title is the <h1>)
+ *   banner, double-height    dropped (the page title is the <h1>)
  *   { "heading": true }      heading
  *   "* " rows                list
  *   rows starting {link:NNN} list of page links ("201 Isolate UI")
+ *   label{dots}{link:NNN}    the same, with the number on the right
  *   indented row after one   continues that list item
  *   {rule}, blank rows       dropped
  *   { "screenOnly": true }   dropped
@@ -34,6 +35,10 @@ export const buildSemantic = (rows: RowSource[]): SemanticBlock[] => {
   };
 
   for (const source of rows) {
+    if (isBannerRow(source)) {
+      endList();
+      continue;
+    }
     if (isImageRow(source)) {
       endList();
       blocks.push({ kind: 'image', alt: source.alt }, ...buildSemantic(source.beside ?? []));
@@ -45,6 +50,8 @@ export const buildSemantic = (rows: RowSource[]): SemanticBlock[] => {
       continue;
     }
     const parsed = parseMarkup(row.text);
+    const hasLeader = parsed.segments.some((s) => s.leader);
+    parsed.segments = parsed.segments.filter((s) => !s.leader);
     const raw = parsed.segments.map((s) => s.text).join('');
     if (parsed.fill !== undefined || raw.trim() === '') {
       endList();
@@ -57,6 +64,11 @@ export const buildSemantic = (rows: RowSource[]): SemanticBlock[] => {
       blocks.push({ kind: 'heading', content });
     } else if (/^\s*[*-] /.test(raw)) {
       addItem(trimStart(content, /^\s*[*-] /));
+    } else if (hasLeader && parsed.segments.at(-1)?.link !== undefined && /\d{3}\s*$/.test(raw)) {
+      // "About me{dots}{link:101}101{/}": the same directory entry, with its number on the right
+      const page = parsed.segments.at(-1)!.link!;
+      const label = collapse(parsed.segments.slice(0, -1).map((s) => s.text).join('')).trim();
+      addItem([{ text: `${page} ${label}`, page }]);
     } else if (/^\s*\d{3}\b/.test(raw) && parsed.segments.find((s) => s.text.trim())?.link !== undefined) {
       const page = parsed.segments.find((s) => s.text.trim())!.link!;
       addItem([{ text: collapse(raw).trim(), page }]);

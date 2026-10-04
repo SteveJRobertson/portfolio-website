@@ -29,14 +29,18 @@ export interface GridSegment {
   href?: string;
   /** Block graphics from a picture: the background uses the full-strength palette so neighbouring cells blend. */
   mosaic?: boolean;
+  /** A `{dots}` leader: stretched with dots to push the rest of the line to the right edge. */
+  leader?: boolean;
 }
 
 export interface GridRow {
   segments: GridSegment[];
   /** Takes two row slots, glyphs stretched from the top row (as on real Teletext). */
   doubleHeight?: boolean;
-  /** Repeat this character across the whole width (a `{rule}` row), whatever the mode. */
+  /** Repeat this character across the rest of the width (a `{rule}` row), whatever the mode. */
   fill?: string;
+  /** Extend this background to the full width when the row is fitted to a wider pane (a banner's band). */
+  fillBg?: TeletextColor;
   /** Lets callers find where a row was placed (e.g. to anchor a graphic). */
   id?: string;
 }

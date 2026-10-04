@@ -1,5 +1,6 @@
 import type { GridRow, GridSegment, TeletextColor } from '../types/teletext.ts';
-import { isImageRow, type ImageRowSource, type RowSource } from './schema.ts';
+import { isBannerRow, isImageRow, type ImageRowSource, type RowSource } from './schema.ts';
+import { layoutBanner } from './banner.ts';
 import { parseMarkup } from './markup.ts';
 import { autolink } from './semantic.ts';
 
@@ -11,6 +12,7 @@ const HANGING_MARKERS = /^(\* |- |\d{3} +)/;
 
 interface StyledChar {
   ch: string;
+  leader?: boolean;
   color?: TeletextColor;
   bg?: TeletextColor;
   link?: number;
@@ -31,7 +33,7 @@ const toStyledChars = (segments: GridSegment[]): StyledChar[] =>
 
 const toSegments = (styled: StyledChar[]): GridSegment[] => {
   const segments: GridSegment[] = [];
-  for (const { ch, ...style } of styled) {
+  for (const { ch, leader: _leader, ...style } of styled) {
     const last = segments[segments.length - 1];
     if (last && last.color === style.color && last.bg === style.bg && last.link === style.link && last.href === style.href) last.text += ch;
     else segments.push({ text: ch, ...style });
@@ -157,6 +159,12 @@ export const layoutRows = (sources: RowSource[], width: number, wrap = true, ren
       errors.push(...image.errors.map((e) => `${where}: ${e}`));
       return;
     }
+    if (isBannerRow(source)) {
+      const banner = layoutBanner(source, width);
+      rows.push(...banner.rows);
+      errors.push(...banner.errors.map((e) => `${where}: ${e}`));
+      return;
+    }
     const { text, doubleHeight } = typeof source === 'string' ? { text: source, doubleHeight: false } : source;
     const parsed = parseMarkup(text);
     errors.push(...parsed.errors.map((e) => `${where}: ${e}`));
@@ -178,6 +186,16 @@ export const layoutRows = (sources: RowSource[], width: number, wrap = true, ren
     const body = styled.slice(lead);
     if (body.length === 0) {
       rows.push({ segments: [], ...extra });
+      return;
+    }
+
+    const leader = body.findIndex((c) => c.leader);
+    if (leader !== -1) {
+      const indent = MARGIN + lead;
+      const dots = width - indent - (body.length - 1);
+      if (dots < 1) errors.push(`${where} is too long for its "{dots}" leader at ${width} columns`);
+      const expanded = [...body.slice(0, leader), ...Array.from({ length: Math.max(1, dots) }, () => ({ ...body[leader], leader: false })), ...body.slice(leader + 1)];
+      rows.push({ segments: toSegments([...spaces(indent), ...expanded]), ...extra });
       return;
     }
 

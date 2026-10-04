@@ -35,12 +35,24 @@ export interface ImageRowSource {
   brightness?: number;
 }
 
-export type RowSource = TextRowSource | ImageRowSource;
+/**
+ * A page banner: the title in mosaic block letters on a band of colour (SPEC §7).
+ * `banner` may use colour tags for the letters; `bg` is the band.
+ */
+export interface BannerRowSource {
+  banner: string;
+  bg: TeletextColor;
+}
+
+export type RowSource = TextRowSource | ImageRowSource | BannerRowSource;
 
 export const ROW_KEYS = ['text', 'doubleHeight', 'heading', 'screenOnly'] as const;
 export const IMAGE_KEYS = ['image', 'alt', 'rows', 'mobileRows', 'pixelArt', 'beside', 'palette', 'contrast', 'saturation', 'brightness'] as const;
 
+export const BANNER_KEYS = ['banner', 'bg'] as const;
+
 export const isImageRow = (row: RowSource): row is ImageRowSource => typeof row === 'object' && 'image' in row;
+export const isBannerRow = (row: RowSource): row is BannerRowSource => typeof row === 'object' && 'banner' in row;
 
 export interface FastextSource {
   page: number;

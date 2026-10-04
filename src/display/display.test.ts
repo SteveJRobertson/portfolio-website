@@ -68,6 +68,13 @@ describe('rows', () => {
     const rule: GridRow = { segments: [{ text: '', color: 'blue' }], fill: '=' };
     expect(fitRow(rule, 40).segments).toEqual([{ text: '='.repeat(40), color: 'blue' }]);
     expect(rowLength(fitRow(rule, 20))).toBe(20);
+    const lip: GridRow = { segments: [{ text: ' ', color: 'red' }], fill: '-' };
+    expect(fitRow(lip, 5).segments).toEqual([{ text: ' ' }, { text: '----', color: 'red' }]);
+  });
+
+  it('extends a banner band to the full width', () => {
+    const band: GridRow = { segments: [{ text: ' ' }, { text: 'AB', bg: 'blue', mosaic: true }], fillBg: 'blue' };
+    expect(fitRow(band, 5).segments.at(-1)).toEqual({ text: '  ', bg: 'blue', mosaic: true });
   });
 });
 

@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { parseMarkup } from './markup';
+import { RULE, parseMarkup } from './markup';
+import { layoutBanner } from './banner';
+import { blockBitmap, unsupportedChars } from './blockFont';
 import { layoutRows, slotsUsed } from './wrap';
 import { compilePages, type SourceFile } from './compile';
 import { compilePageDir } from '../../scripts/lib/pageFiles';
@@ -38,7 +40,7 @@ describe('parseMarkup', () => {
   });
 
   it('reads {rule} and {rule:X} with the enclosing colour', () => {
-    expect(parseMarkup('{blue}{rule}{/}')).toMatchObject({ fill: '=', fillColor: 'blue', segments: [] });
+    expect(parseMarkup('{blue}{rule}{/}')).toMatchObject({ fill: RULE, fillColor: 'blue', segments: [] });
     expect(parseMarkup('{rule:-}')).toMatchObject({ fill: '-', fillColor: 'white' });
   });
 
@@ -119,6 +121,15 @@ describe('layoutRows', () => {
   it('keeps blank lines and rules', () => {
     const { rows } = layoutRows(['', '{blue}{rule:-}{/}'], 10);
     expect(rows).toEqual([{ segments: [] }, { segments: [{ text: '', color: 'blue' }], fill: '-' }]);
+  });
+
+  it('stretches a {dots} leader so the rest of the line meets the right edge', () => {
+    const { rows, errors } = layoutRows(['Skills{dots}{link:300}300{/}'], 20);
+    expect(errors).toEqual([]);
+    expect(texts(rows)).toEqual([' Skills..........300']);
+    expect(rows[0].segments.at(-1)).toEqual({ text: '300', color: 'cyan', link: 300 });
+    expect(layoutRows(['A very long label{dots}300'], 20).errors[0]).toMatch(/too long for its "\{dots\}" leader/);
+    expect(parseMarkup('{dots}A{dots}').errors).toContain('only one "{dots}" fits on a line');
   });
 
   it('counts a mosaic character as one cell', () => {
@@ -312,5 +323,47 @@ describe('buildSemantic', () => {
     const contact = getPage(400)!.semantic[0];
     expect(contact.filter((b) => b.kind === 'heading')).toHaveLength(4);
     expect(JSON.stringify(contact)).toContain('"href":"mailto:steve.robertson80@gmail.com"');
+  });
+});
+
+describe('banners', () => {
+  it('draws block letters six pixels tall, bold or condensed', () => {
+    expect(blockBitmap('HI', 'bold')).toEqual(['##.##.##', '##.##.##', '#####.##', '##.##.##', '##.##.##', '##.##.##']);
+    expect(blockBitmap('E', 'condensed')).toEqual(['####', '##..', '###.', '##..', '##..', '####']);
+    expect(unsupportedChars('Café!')).toEqual(['É']);
+  });
+
+  it('lays out two band rows and a lip, the band starting one cell in', () => {
+    const { rows, errors } = layoutBanner({ banner: 'SKILLS', bg: 'yellow' }, 38);
+    expect(errors).toEqual([]);
+    expect(rows).toHaveLength(3);
+    for (const row of rows.slice(0, 2)) {
+      expect(rowLength(row)).toBe(38);
+      expect(row.segments[0]).toEqual({ text: ' ' });
+      expect(row.segments.slice(1).every((s) => s.bg === 'yellow' && s.mosaic)).toBe(true);
+      expect(row.fillBg).toBe('yellow');
+    }
+    expect(rows[2]).toEqual({ segments: [{ text: ' ', color: 'yellow' }], fill: String.fromCodePoint(0x1fb02) });
+  });
+
+  it('colours each run and falls back to condensed letters, then double height', () => {
+    const name = layoutBanner({ banner: '{white}STEVE{/} {yellow}ROBERTSON{/}', bg: 'blue' }, 38);
+    expect(name.errors).toEqual([]);
+    expect(name.rows[0].segments.map((s) => s.color).filter((c) => c !== 'white')).toContain('yellow');
+    expect(rowLength(name.rows[0])).toBe(38);
+
+    const portrait = layoutBanner({ banner: 'EXPERIENCE', bg: 'red' }, 20);
+    expect(portrait.rows[0].doubleHeight).toBe(true);
+    expect(rowText(portrait.rows[0])).toBe('   EXPERIENCE       ');
+    expect(slotsUsed(portrait.rows)).toBe(3);
+
+    expect(layoutBanner({ banner: 'A TITLE FAR TOO LONG FOR THIS', bg: 'red' }, 20).errors[0]).toMatch(/too long for 20 columns/);
+    expect(layoutBanner({ banner: '{link:101}X{/}', bg: 'red' }, 38).errors).toContain('a banner takes only colour tags');
+  });
+
+  it('leaves banners out of the mirror and reads a dotted directory as a list', () => {
+    expect(
+      buildSemantic([{ banner: 'INDEX', bg: 'blue' }, 'About me{dots}{link:101}101{/}', 'Skills{dots}{link:300}300{/}']),
+    ).toEqual([{ kind: 'list', items: [[{ text: '101 About me', page: 101 }], [{ text: '300 Skills', page: 300 }]] }]);
   });
 });

@@ -1,5 +1,6 @@
 import { TELETEXT_COLORS, type CompiledPage, type FastextLink, type GridRow, type TeletextColor } from '../types/teletext.ts';
 import {
+  BANNER_KEYS,
   IMAGE_KEYS,
   ROW_KEYS,
   NARROW_BODY_ROWS,
@@ -42,7 +43,7 @@ const isImageSource = (fields: Record<string, unknown>): boolean =>
   isFactor(fields.saturation) &&
   isFactor(fields.brightness) &&
   (fields.pixelArt === undefined || typeof fields.pixelArt === 'boolean') &&
-  (fields.beside === undefined || (Array.isArray(fields.beside) && fields.beside.every((r) => isRow(r) && !(typeof r === 'object' && 'image' in r)))) &&
+  (fields.beside === undefined || (Array.isArray(fields.beside) && fields.beside.every((r) => isRow(r) && !(typeof r === 'object' && ('image' in r || 'banner' in r))))) &&
   Object.keys(fields).every((k) => (IMAGE_KEYS as readonly string[]).includes(k));
 
 const isRow = (row: unknown): row is RowSource => {
@@ -50,6 +51,13 @@ const isRow = (row: unknown): row is RowSource => {
   if (typeof row !== 'object' || row === null) return false;
   const fields = row as Record<string, unknown>;
   if ('image' in fields) return isImageSource(fields);
+  if ('banner' in fields) {
+    return (
+      typeof fields.banner === 'string' &&
+      TELETEXT_COLORS.includes(fields.bg as TeletextColor) &&
+      Object.keys(fields).every((k) => (BANNER_KEYS as readonly string[]).includes(k))
+    );
+  }
   return (
     typeof fields.text === 'string' &&
     Object.keys(fields).every((k) => (ROW_KEYS as readonly string[]).includes(k)) &&
@@ -82,7 +90,7 @@ const shapeErrors = (data: unknown): string[] => {
   if ((page.rows === undefined) === (page.subpages === undefined)) {
     errors.push('needs exactly one of "rows" or "subpages"');
   }
-  const lineHelp = `a line object may only have ${ROW_KEYS.join(', ')}; an image needs image, alt and rows, and may have ${IMAGE_KEYS.slice(3).join(', ')}`;
+  const lineHelp = `a line object may only have ${ROW_KEYS.join(', ')}; an image needs image, alt and rows, and may have ${IMAGE_KEYS.slice(3).join(', ')}; a banner needs banner and bg`;
   if (page.rows !== undefined && !isRowList(page.rows)) errors.push(`"rows" must be a list of lines (${lineHelp})`);
   if (page.subpages !== undefined && !isSubpageList(page.subpages)) errors.push(`"subpages" must be a list of line lists (${lineHelp})`);
   if (page.mobileRows !== undefined && !isRowList(page.mobileRows)) errors.push('"mobileRows" must be a list of lines');

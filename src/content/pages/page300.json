@@ -3,11 +3,10 @@
   "title": "Skills",
   "label": "SKILLS",
   "index": true,
-  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 110 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110 }, { "page": 400 }],
   "subpages": [
     [
-      { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
       "",
       { "text": "{yellow}FRONTEND ENGINEERING{/}", "heading": true },
       "React, TypeScript, JavaScript, Redux, React Router, HTML, CSS",
@@ -18,8 +17,7 @@
       { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
     ],
     [
-      { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
       "",
       { "text": "{yellow}TOOLING AND INFRASTRUCTURE{/}", "heading": true },
       "Git, CI/CD, Jenkins, GitHub Actions, Docker, AWS, Nx",
@@ -30,8 +28,7 @@
       { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
     ],
     [
-      { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
+      { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
       "",
       { "text": "{yellow}PRACTICES{/}", "heading": true },
       "Agile/Scrum, TDD, AI-assisted workflows",

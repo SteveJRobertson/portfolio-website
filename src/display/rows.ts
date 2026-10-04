@@ -17,9 +17,17 @@ export const textRow = (text: string, color?: TeletextColor, extra: Partial<Grid
 
 export const blankRow = (): GridRow => ({ segments: [] });
 
-/** Clips or pads a row to exactly `width` cells. A `{rule}` row fills the width. */
+/**
+ * Clips or pads a row to exactly `width` cells. A `{rule}` row fills the width
+ * after any leading text; a banner row extends its band.
+ */
 export const fitRow = (row: GridRow, width: number): GridRow => {
-  if (row.fill) return { ...row, segments: [{ text: row.fill.repeat(width), color: row.segments[0]?.color }] };
+  if (row.fill) {
+    const lead = chars(rowText(row)).slice(0, width).join('');
+    const color = row.segments[0]?.color;
+    const rule: GridSegment = { text: row.fill.repeat(width - chars(lead).length), color };
+    return { ...row, segments: lead ? [{ text: lead }, rule] : [rule] };
+  }
   const segments: GridSegment[] = [];
   let used = 0;
   for (const segment of row.segments) {
@@ -29,6 +37,8 @@ export const fitRow = (row: GridRow, width: number): GridRow => {
     segments.push({ ...segment, text });
     used += chars(text).length;
   }
-  if (used < width) segments.push({ text: ' '.repeat(width - used) });
+  if (used < width) {
+    segments.push(row.fillBg ? { text: ' '.repeat(width - used), bg: row.fillBg, mosaic: true } : { text: ' '.repeat(width - used) });
+  }
   return { ...row, segments };
 };

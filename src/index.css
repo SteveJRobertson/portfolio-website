@@ -209,19 +209,26 @@ html, body {
   white-space: pre;
   cursor: pointer;
   text-decoration: none;
+  background-color: var(--tt-black);
+  color: var(--slot);
 }
+
+.fasttext-btn--red    { --slot: var(--tt-red); }
+.fasttext-btn--green  { --slot: var(--tt-green); }
+.fasttext-btn--yellow { --slot: var(--tt-yellow); }
+.fasttext-btn--cyan   { --slot: var(--tt-cyan); }
 
 .fasttext-btn:hover {
-  filter: brightness(1.2);
+  text-decoration: underline;
 }
 
-/* Focus is not hover: the slot inverts to white on black inside a white outline */
+/* Focus is not hover: the slot inverts to black on its colour inside a white outline */
 .fasttext-btn:focus-visible {
   outline: 2px solid var(--tt-white);
   outline-offset: -2px;
-  background-color: var(--tt-black);
-  color: var(--tt-white);
-  filter: none;
+  background-color: var(--slot);
+  color: var(--tt-black);
+  text-decoration: none;
 }
 
 /* Page links in the grid answer a click or tap, but never take keyboard focus */
