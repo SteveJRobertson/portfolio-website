@@ -186,16 +186,34 @@ describe('fastext', () => {
   it('shows labels when they all fit, otherwise page numbers', () => {
     const links = [
       { label: 'ABOUT', page: 101 },
+      { label: 'CAREER', page: 110 },
+      { label: 'SKILLS', page: 300 },
+      { label: 'CONTACT', page: 400 },
+    ];
+    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  ABOUT   ', '  CAREER  ', '  SKILLS  ', ' CONTACT  ']);
+    expect(fastextLabels(links, [5, 5, 5, 5])).toEqual([' 101 ', ' 110 ', ' 300 ', ' 400 ']);
+  });
+
+  it('falls back to page numbers when a label would touch its neighbour', () => {
+    const links = [
+      { label: 'HOME', page: 100 },
       { label: 'EXPERIENCE', page: 110 },
       { label: 'SKILLS', page: 300 },
       { label: 'CONTACT', page: 400 },
     ];
-    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  ABOUT   ', 'EXPERIENCE', '  SKILLS  ', ' CONTACT  ']);
-    expect(fastextLabels(links, [5, 5, 5, 5])).toEqual([' 101 ', ' 110 ', ' 300 ', ' 400 ']);
+    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['   100    ', '   110    ', '   300    ', '   400    ']);
   });
 
-  it('keeps every real Fastext label within a classic slot', () => {
-    for (const page of PAGES) page.fastext.forEach((link) => expect(link.label.length).toBeLessThanOrEqual(10));
+  it.each(MODES)('never runs labels together at $cols columns', ({ cols }) => {
+    const widths = fastextSlotWidths(cols);
+    for (const page of PAGES) {
+      const row = fastextLabels(page.fastext, widths);
+      row.forEach((slot) => expect(slot.endsWith(' ')).toBe(true));
+    }
+  });
+
+  it('keeps every real Fastext label short enough to show in a classic slot', () => {
+    for (const page of PAGES) page.fastext.forEach((link) => expect(link.label.length).toBeLessThan(10));
   });
 
   it('keeps blank rows blank', () => {

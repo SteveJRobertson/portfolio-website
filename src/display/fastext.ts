@@ -19,12 +19,13 @@ const centre = (label: string, width: number): string => {
 
 /**
  * Labels for the four slots, centred and padded to each slot's width. All four
- * use the same form: the label ("ABOUT") if every label fits its slot, otherwise
- * the page number ("101").
+ * use the same form: the label ("ABOUT") if every label fits its slot with a
+ * blank cell to spare, otherwise the page number ("101"). The spare cell keeps
+ * neighbouring labels apart, so they never run together.
  */
 export const fastextLabels = (links: readonly FastextLink[], widths: number[]): string[] => {
   const forms = links.map(labelForms);
-  const tier = forms.every((f, i) => f[0].length <= widths[i]) ? 0 : 1;
+  const tier = forms.every((f, i) => f[0].length < widths[i]) ? 0 : 1;
   return forms.map((f, i) => centre(f[tier], widths[i]));
 };
 

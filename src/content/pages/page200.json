@@ -3,7 +3,7 @@
   "title": "Projects",
   "label": "PROJECTS",
   "index": true,
-  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 201 }, { "page": 202 }, { "page": 203 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 400 }],
   "rows": [
     { "banner": "PROJECTS", "bg": "green" },
     "",

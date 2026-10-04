@@ -3,7 +3,7 @@
   "title": "About me",
   "label": "ABOUT",
   "index": true,
-  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 110 }, { "page": 300 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 110, "label": "CAREER" }, { "page": 300 }, { "page": 400 }],
   "subpages": [
     [
       { "banner": "ABOUT ME", "bg": "red" },

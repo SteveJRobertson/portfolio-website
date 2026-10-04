@@ -3,7 +3,7 @@
   "title": "Skills",
   "label": "SKILLS",
   "index": true,
-  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110 }, { "page": 400 }],
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 400 }],
   "subpages": [
     [
       { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
