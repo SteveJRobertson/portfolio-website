@@ -23,10 +23,12 @@ npm run build      # validate + typecheck + production build
 
 | Path | Purpose |
 |---|---|
-| `src/content/pages/*.json` | One file per Teletext page |
+| `src/content/pages/*.json` | One file per Teletext page, written with colour tags (see SPEC §7) |
+| `src/content/` | Tag parser, wrapper, validator and the page registry |
+| `src/display/` | Grid modes and screen layout |
 | `src/components/` | Teletext UI components |
 | `src/hooks/usePageBuffer.ts` | 3-digit page entry and routing |
-| `scripts/validatePages.ts` | Build-time content checks |
+| `scripts/` | `validatePages.ts` and the Vite plugin that compiles the pages |
 | `src/design-system/` | Token stories and helpers |
 | `public/fonts/` | Self-hosted Bedstead (CC0) |
 | `docs/` | Spec, roadmap, review and content brief |

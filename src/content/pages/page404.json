@@ -1,0 +1,14 @@
+{
+  "page": 404,
+  "title": "Page not found",
+  "label": "NOT FOUND",
+  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
+  "rows": [
+    { "text": "{red}PAGE NOT FOUND{/}", "doubleHeight": true },
+    "{red}{rule}{/}",
+    "",
+    "The page number you keyed is not in service.",
+    "",
+    "Key {link:100}100{/} for the index, or press a coloured button below."
+  ]
+}

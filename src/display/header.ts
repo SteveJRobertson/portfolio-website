@@ -10,6 +10,8 @@ interface HeaderInput {
   currentPage: number;
   now: Date;
   cols: number;
+  /** Shown as "1/6" after the page number when a page has sub-pages. */
+  subpage?: { index: number; count: number };
 }
 
 /**
@@ -17,20 +19,25 @@ interface HeaderInput {
  *   56: P100 STEVE-TEXT 100 ...... SUN 04 OCT 14:03:22
  *   40: P100 STEVE-TEXT 100 ...... 04 OCT 14:03:22
  *   20: P100 STEVE ..... 14:03
+ * With sub-pages the counter follows the page number: "STEVE-TEXT 110 1/6",
+ * or "1/6 STEVE" at 20 columns.
  */
-export const formatHeader = ({ bufferText, currentPage, now, cols }: HeaderInput): GridRow => {
+export const formatHeader = ({ bufferText, currentPage, now, cols, subpage }: HeaderInput): GridRow => {
   const buffer = bufferText.padEnd(4, ' ').slice(0, 4);
   const page = String(currentPage).padStart(3, '0');
   const time = `${two(now.getHours())}:${two(now.getMinutes())}`;
   const date = `${two(now.getDate())} ${MONTHS[now.getMonth()]}`;
 
+  const counter = subpage && subpage.count > 1 ? [{ text: `${subpage.index + 1}/${subpage.count}`, color: 'white' as const }] : [];
+
   const left =
     cols < 40
-      ? [{ text: 'STEVE', color: 'yellow' as const }]
+      ? [...counter.flatMap((c) => [c, { text: ' ' }]), { text: 'STEVE', color: 'yellow' as const }]
       : [
           { text: 'STEVE-TEXT', color: 'yellow' as const },
           { text: ' ' },
           { text: page, color: 'cyan' as const },
+          ...counter.flatMap((c) => [{ text: ' ' }, c]),
         ];
   const right =
     cols < 40 ? time : cols < 56 ? `${date} ${time}:${two(now.getSeconds())}` : `${DAYS[now.getDay()]} ${date} ${time}:${two(now.getSeconds())}`;

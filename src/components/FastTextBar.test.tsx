@@ -1,27 +1,20 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { FastTextBar } from './FastTextBar';
-import type { FastTextLink } from '../types/teletext';
+import type { FastextLink } from '../types/teletext';
 
-const link = (color: FastTextLink['color'], page: number): FastTextLink => ({
-  label: `${color} [${page}]`,
-  page,
-  path: `/${page}`,
-  color,
-});
-
-const links = {
-  red: link('red', 101),
-  green: link('green', 200),
-  yellow: link('yellow', 300),
-  cyan: link('cyan', 400),
-};
+const links: [FastextLink, FastextLink, FastextLink, FastextLink] = [
+  { page: 101, label: 'ABOUT' },
+  { page: 200, label: 'PROJECTS' },
+  { page: 300, label: 'SKILLS' },
+  { page: 400, label: 'CONTACT' },
+];
 
 describe('FastTextBar', () => {
   it('navigates when a button is clicked', () => {
     const onNavigate = vi.fn();
     render(<FastTextBar links={links} onNavigate={onNavigate} cols={56} row={24} />);
-    fireEvent.click(screen.getByText('green [200]'));
+    fireEvent.click(screen.getByText('PROJECTS', { exact: false }));
     expect(onNavigate).toHaveBeenCalledWith(200);
   });
 

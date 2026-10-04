@@ -1,19 +1,12 @@
-import fs from 'fs';
-import path from 'path';
-import { validatePage } from './lib/validatePage.ts';
+import { compilePageDir } from './lib/pageFiles.ts';
 
-const PAGES_DIR = path.join(process.cwd(), 'src', 'content', 'pages');
-
-const files = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith('.json'));
-
-const errors = files.flatMap((file) =>
-  validatePage(file, JSON.parse(fs.readFileSync(path.join(PAGES_DIR, file), 'utf-8'))),
-);
+const { pages, errors } = compilePageDir();
 
 if (errors.length > 0) {
   errors.forEach((error) => console.error(`❌ ${error}`));
-  console.error('\n❌ Page JSON Validation Failed!');
+  console.error(`\n❌ Teletext content failed validation (${errors.length} error${errors.length === 1 ? '' : 's'}).`);
   process.exit(1);
 } else {
-  console.log('✅ All Teletext Page JSON files validated successfully! Zero line length overflow.');
+  const subpages = pages.reduce((n, p) => n + p.wide.length, 0);
+  console.log(`✅ ${pages.length} pages (${subpages} screens) fit at 38 and 20 columns, with valid tags and links.`);
 }

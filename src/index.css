@@ -166,10 +166,6 @@ html, body {
   transform-origin: top;
 }
 
-.tt-graphic {
-  overflow: hidden;
-}
-
 /* Fastext: the last grid row, four equal slots */
 .fasttext-bar {
   display: flex;
@@ -308,8 +304,9 @@ html, body {
 
 .remote-nav-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .remote-nav-row .remote-btn {
-  flex: 1;
+  flex: 1 1 30%;
 }

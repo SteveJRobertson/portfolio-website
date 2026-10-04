@@ -6,8 +6,8 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 |---|---|
 | 0. Honest docs | Done |
 | 1. Foundations | Done |
-| 2. Grid engine | In review |
-| 3. Content pipeline | Not started |
+| 2. Grid engine | Done |
+| 3. Content pipeline | In review |
 | 4. Navigation & accessibility | Not started |
 | 5. Graphics & polish | Not started |
 | 6. Ship | Deferred (private repo) |
@@ -39,11 +39,12 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [x] Stop-gap portrait word wrap (removed by the Phase 3 build-time wrapper)
 
 ### Phase 3: Content pipeline
-- [ ] Single typed schema + single page registry
-- [ ] Colour-tag markup + build-time wrapper (38/40 and 20 columns), `mobileRows` override
-- [ ] Validator: width, row count, link targets, colour tags
-- [ ] Move 202 and 404 into content; add 888 and 203 (or drop 203)
-- [ ] New copy from [CONTENT.md](./CONTENT.md)
+- [x] Single typed schema + single page registry
+- [x] Colour-tag markup + build-time wrapper (38 and 20 columns, as a Vite plugin), `mobileRows` override
+- [x] Validator: width, row count, link targets, colour tags, file names
+- [x] 404 moved into content; 110, 203 and 888 added; 202 is now Lighthouse Compare (canvas demo dropped)
+- [x] New copy from [CONTENT.md](./CONTENT.md)
+- [x] Manual sub-page stepping (←/→ and keypad) until Phase 5 cycling
 
 ### Phase 4: Navigation & accessibility
 - [ ] Fastext as `<a href>`; hotkeys R/G/Y/B

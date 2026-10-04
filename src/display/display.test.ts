@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { GRID_MODES, MODE_QUERIES, bodyRowCount, resolveGridMode, type GridMode } from './gridModes';
-import { blankRow, fitRow, rowFromData, rowLength, rowText, textRow, wrapRow, type GridRow } from './rows';
+import { blankRow, fitRow, rowLength, rowText, textRow, type GridRow } from './rows';
 import { layoutBody, type PlacedLine } from './layout';
 import { formatHeader } from './header';
 import { fastextLabels, fastextSlotWidths } from './fastext';
-import { SIDEBAR_ROWS } from './sidebar';
-import { PAGE_202_ROWS, PAGE_404_ROWS } from './systemPages';
-import { getPageData, getValidPageNumbers } from '../utils/pageRegistry';
+import { sidebarRows } from './sidebar';
+import { PAGES, QUICK_INDEX } from '../content/registry';
+
+const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 
 const MODES = Object.values(GRID_MODES);
 
@@ -63,30 +64,10 @@ describe('rows', () => {
     expect(rowLength(fitRow(textRow(mosaic), 5))).toBe(5);
   });
 
-  it('adapts page JSON rows, keeping the suffix white', () => {
-    const row = rowFromData({ color: 'red', text: ' 101 ', suffix: 'ABOUT', doubleHeight: true });
-    expect(row.segments).toEqual([
-      { text: ' 101 ', color: 'red', bg: undefined },
-      { text: 'ABOUT', color: 'white' },
-    ]);
-    expect(row.doubleHeight).toBe(true);
-  });
-
-  it('word-wraps to the portrait width, keeping colours and the indent', () => {
-    const row: GridRow = { segments: [{ text: ' 101 ', color: 'red' }, { text: 'ABOUT ME & BACKGROUND', color: 'white' }] };
-    const lines = wrapRow(row, 20);
-    expect(lines.map(rowText)).toEqual([' 101 ABOUT ME &', ' BACKGROUND']);
-    expect(lines[0].segments[1]).toMatchObject({ text: '101 ', color: 'red' });
-    lines.forEach((line) => expect(rowLength(line)).toBeLessThanOrEqual(20));
-  });
-
-  it('clips rules instead of wrapping them', () => {
-    expect(wrapRow(textRow('='.repeat(38)), 20)).toHaveLength(1);
-  });
-
-  it('hard-splits words longer than the line', () => {
-    const word = 'ABCDEFGHIJ'.repeat(3);
-    expect(wrapRow(textRow(' ' + word), 20).map(rowText)).toEqual([' ' + word.slice(0, 19), ' ' + word.slice(19)]);
+  it('fills a rule row to whatever width it is fitted to', () => {
+    const rule: GridRow = { segments: [{ text: '', color: 'blue' }], fill: '=' };
+    expect(fitRow(rule, 40).segments).toEqual([{ text: '='.repeat(40), color: 'blue' }]);
+    expect(rowLength(fitRow(rule, 20))).toBe(20);
   });
 });
 
@@ -131,16 +112,12 @@ describe('layoutBody', () => {
     expect(layoutBody(GRID_MODES.classic, [], SIDEBAR_ROWS)).toEqual([]);
   });
 
-  it.each(MODES)('fits every current page on the $name grid', (mode) => {
-    const pages = [
-      ...getValidPageNumbers().map((n) => getPageData(n)!.mainRows.map(rowFromData)),
-      PAGE_202_ROWS,
-      PAGE_404_ROWS,
-    ];
-    for (const rows of pages) {
-      const placed = layoutBody(mode, rows).filter((l) => l.key.startsWith('main'));
-      const needed = (mode.name === 'portrait' ? rows.flatMap((r) => wrapRow(r, mode.mainCols)) : rows).length;
-      expect(placed).toHaveLength(needed);
+  it.each(MODES)('fits every page and sub-page on the $name grid', (mode) => {
+    for (const page of PAGES) {
+      for (const rows of mode.name === 'portrait' ? page.narrow : page.wide) {
+        const placed = layoutBody(mode, rows).filter((l) => l.key.startsWith('main'));
+        expect(placed).toHaveLength(rows.length);
+      }
     }
   });
 });
@@ -158,6 +135,24 @@ describe('formatHeader', () => {
     expect(text(40)).toBe('P1-- STEVE-TEXT 100      04 OCT 14:03:22');
     expect(text(20)).toBe('P1-- STEVE     14:03');
   });
+
+  it.each(MODES)('fits a sub-page counter in $name', ({ cols }) => {
+    const row = formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 1, count: 6 } });
+    expect(rowLength(row)).toBe(cols);
+    expect(rowText(row)).toContain('2/6');
+  });
+
+  it('shows the counter after the page number, or before the name in portrait', () => {
+    const text = (cols: number) =>
+      rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6 } }));
+    expect(text(40)).toBe('P110 STEVE-TEXT 110 1/6  04 OCT 14:03:22');
+    expect(text(20)).toBe('P110 1/6 STEVE 14:03');
+  });
+
+  it('hides the counter on single pages', () => {
+    const row = formatHeader({ bufferText: 'P100', currentPage: 100, now, cols: 40, subpage: { index: 0, count: 1 } });
+    expect(rowText(row)).not.toContain('1/1');
+  });
 });
 
 describe('fastext', () => {
@@ -167,12 +162,19 @@ describe('fastext', () => {
     expect(widths.reduce((a, b) => a + b, 0)).toBe(cols);
   });
 
-  it('uses the longest label form that fits every slot', () => {
-    const link = (label: string, page: number) => ({ label, page, path: `/${page}`, color: 'red' as const });
-    const links = [link('About [101]', 101), link('Projects [200]', 200), link('Stack [300]', 300), link('Contact [400]', 400)];
-    expect(fastextLabels(links, [14, 14, 14, 14])).toEqual([' About [101]  ', 'Projects [200]', ' Stack [300]  ', 'Contact [400] ']);
-    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  About   ', ' Projects ', '  Stack   ', ' Contact  ']);
-    expect(fastextLabels(links, [5, 5, 5, 5])).toEqual([' 101 ', ' 200 ', ' 300 ', ' 400 ']);
+  it('shows labels when they all fit, otherwise page numbers', () => {
+    const links = [
+      { label: 'ABOUT', page: 101 },
+      { label: 'EXPERIENCE', page: 110 },
+      { label: 'SKILLS', page: 300 },
+      { label: 'CONTACT', page: 400 },
+    ];
+    expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['  ABOUT   ', 'EXPERIENCE', '  SKILLS  ', ' CONTACT  ']);
+    expect(fastextLabels(links, [5, 5, 5, 5])).toEqual([' 101 ', ' 110 ', ' 300 ', ' 400 ']);
+  });
+
+  it('keeps every real Fastext label within a classic slot', () => {
+    for (const page of PAGES) page.fastext.forEach((link) => expect(link.label.length).toBeLessThanOrEqual(10));
   });
 
   it('keeps blank rows blank', () => {

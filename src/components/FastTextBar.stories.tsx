@@ -10,12 +10,12 @@ const meta: Meta<typeof FastTextBar> = {
     onNavigate: fn(),
     cols: 40,
     row: 1,
-    links: {
-      red: { label: 'About [101]', page: 101, path: '/101', color: 'red' },
-      green: { label: 'Projects [200]', page: 200, path: '/200', color: 'green' },
-      yellow: { label: 'Skills [300]', page: 300, path: '/300', color: 'yellow' },
-      cyan: { label: 'Contact [400]', page: 400, path: '/400', color: 'cyan' },
-    },
+    links: [
+      { page: 101, label: 'ABOUT' },
+      { page: 200, label: 'PROJECTS' },
+      { page: 300, label: 'SKILLS' },
+      { page: 400, label: 'CONTACT' },
+    ],
   },
   decorators: [
     (Story, { args }) => (

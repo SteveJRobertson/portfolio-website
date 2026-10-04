@@ -1,32 +1,45 @@
 {
-  "pageNumber": 300,
-  "title": "TECH STACK MATRIX",
-  "path": "/300",
-  "fastText": {
-    "red": { "label": "Index [100]", "page": 100, "path": "/", "color": "red" },
-    "green": { "label": "Projects [200]", "page": 200, "path": "/200", "color": "green" },
-    "yellow": { "label": "About [101]", "page": 101, "path": "/101", "color": "yellow" },
-    "cyan": { "label": "Contact [400]", "page": 400, "path": "/400", "color": "cyan" }
-  },
-  "mainRows": [
-    { "color": "yellow", "text": "======================================" },
-    { "color": "yellow", "text": " P300 TECH STACK ARCHITECTURE MATRIX  " },
-    { "color": "yellow", "text": "======================================" },
-    { "color": "white", "text": " " },
-    { "color": "cyan", "text": " CORE:   ", "suffix": "React 19, TypeScript, Vite   " },
-    { "color": "cyan", "text": " STYLING:", "suffix": "Vanilla CSS, Container Query " },
-    { "color": "cyan", "text": " TESTING:", "suffix": "Storybook 8, Vitest          " },
-    { "color": "cyan", "text": " CI/CD:  ", "suffix": "GitHub Actions, GitHub Pages " },
-    { "color": "cyan", "text": " AI SDK: ", "suffix": "Google Antigravity Agent SDK " },
-    { "color": "white", "text": " " },
-    { "color": "yellow", "text": " PRESS [100] OR 'R' TO RETURN HOME    " }
-  ],
-  "semanticContent": {
-    "heading": "Engineering Tech Stack Matrix",
-    "body": [
-      "Core Frameworks: React 19, TypeScript, Vite.",
-      "Styling & UI: Vanilla CSS, Container Queries, Bedstead Mode 7.",
-      "Testing & CI/CD: Storybook 8, GitHub Actions, GitHub Pages."
+  "page": 300,
+  "title": "Skills",
+  "label": "SKILLS",
+  "index": true,
+  "fastext": [{ "page": 100 }, { "page": 101 }, { "page": 110 }, { "page": 400 }],
+  "subpages": [
+    [
+      { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
+      "{blue}{rule}{/}",
+      "",
+      "{yellow}FRONTEND ENGINEERING{/}",
+      "React, TypeScript, JavaScript, Redux, React Router, HTML, CSS",
+      "",
+      "{yellow}DESIGN SYSTEMS{/}",
+      "Component libraries, design tokens, accessibility, documentation",
+      "",
+      "{white}Press ← or → for more skills.{/}"
+    ],
+    [
+      { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
+      "{blue}{rule}{/}",
+      "",
+      "{yellow}TOOLING AND INFRASTRUCTURE{/}",
+      "Git, CI/CD, Jenkins, GitHub Actions, Docker, AWS, Nx",
+      "",
+      "{yellow}DESIGN AND COLLABORATION{/}",
+      "Figma, system architecture, stakeholder engagement, technical docs",
+      "",
+      "{white}Press ← or → for more skills.{/}"
+    ],
+    [
+      { "text": "{yellow}SKILLS{/}", "doubleHeight": true },
+      "{blue}{rule}{/}",
+      "",
+      "{yellow}PRACTICES{/}",
+      "Agile/Scrum, TDD, AI-assisted workflows",
+      "",
+      "{yellow}LEADERSHIP{/}",
+      "Mentoring, developer enablement, knowledge sharing",
+      "",
+      "{white}Press ← or → for more skills.{/}"
     ]
-  }
+  ]
 }
