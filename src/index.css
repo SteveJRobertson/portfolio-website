@@ -2,7 +2,7 @@
    TELETEXT DESIGN SYSTEM TOKENS (ETS 300 706 Standard)
    ============================================================ */
 
-/* Bedstead Font Definition */
+/* Bedstead (bjh21, CC0) — self-hosted; see public/fonts/bedstead.LICENSE.txt */
 @font-face {
   font-family: 'Bedstead';
   src: url('/fonts/bedstead.woff2') format('woff2');
@@ -23,7 +23,7 @@
   --tt-white: #ffffff;
 
   /* Fonts */
-  --tt-font: 'Bedstead', 'VT323', 'Share Tech Mono', monospace;
+  --tt-font: 'Bedstead', monospace;
 
   /* Core Teletext Aspect & Grid Ratios */
   --tt-cols-classic: 40;

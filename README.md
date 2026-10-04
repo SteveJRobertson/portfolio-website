@@ -6,12 +6,17 @@ Steve Robertson's developer portfolio, built as a Ceefax / ORACLE-style Teletext
 
 ## Getting started
 
+Requires Node 22 (see `.nvmrc`).
+
 ```sh
 npm ci
 npm run dev        # http://localhost:5173
+npm run storybook  # design system at http://localhost:6006
+npm test           # unit tests (Vitest)
 npm run validate   # check page content fits the grid
-npm run build      # validate + typecheck + production build
+npm run typecheck
 npm run lint
+npm run build      # validate + typecheck + production build
 ```
 
 ## Project layout
@@ -22,7 +27,9 @@ npm run lint
 | `src/components/` | Teletext UI components |
 | `src/hooks/usePageBuffer.ts` | 3-digit page entry and routing |
 | `scripts/validatePages.ts` | Build-time content checks |
-| `docs/` | Spec, roadmap and review |
+| `src/design-system/` | Token stories and helpers |
+| `public/fonts/` | Self-hosted Bedstead (CC0) |
+| `docs/` | Spec, roadmap, review and content brief |
 
 ## Docs
 
