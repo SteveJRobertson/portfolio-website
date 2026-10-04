@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PALETTE_RGB, mosaicCols, mosaicRowsFor, sextant, toMosaic, type RgbaImage } from './mosaic';
+import { PALETTE_RGB, mosaicCols, mosaicRowsFor, overfullCells, sextant, toMosaic, type RgbaImage } from './mosaic';
 import { compilePages, type SourceFile } from './compile';
 import { buildSemantic } from './semantic';
 import type { PageSource } from './schema';
@@ -107,7 +107,52 @@ describe('image rows', () => {
     ]);
   });
 
-  const errorsFor = (rows: PageSource['rows']) => compilePages([page(rows)], { square }).errors.join('\n');
+  // 8 × 6 pixels: 4 cells by 2 rows, drawn as is.
+  const art = image(8, 6, (x, y) => (y < 3 ? (x < 4 ? 'red' : 'cyan') : x % 2 ? 'white' : null));
+
+  it('uses pixel art as drawn, with no scaling', () => {
+    const { pages, errors } = compilePages([page([{ image: 'art', alt: 'Art.', rows: 2, pixelArt: true }])], { art });
+    expect(errors).toEqual([]);
+    const rows = pages[0].wide[0];
+    expect(rows).toHaveLength(2);
+    expect(rowText(rows[0]).trim()).toBe('');
+    expect(rows[0].segments.filter((s) => s.bg).map((s) => s.bg)).toEqual(['red', 'cyan']);
+    expect(rowText(rows[1]).trim()).toBe('▐▐▐▐');
+  });
+
+  it('puts text beside a picture on wide screens and below it in portrait', () => {
+    const beside = ['{green}TECH{/} React', 'Hello there'];
+    // The square is 10 cells wide at 6 rows: room for text beside it at 38 columns, not at 20.
+    const { pages, errors } = compilePages([page([{ image: 'square', alt: 'Square.', rows: 6, beside }])], { square });
+    expect(errors).toEqual([]);
+    const wide = pages[0].wide[0].map(rowText);
+    expect(wide).toHaveLength(6);
+    expect(wide[0]).toMatch(/^ .{10}  TECH React$/u); // margin, 10 cells of picture, a gap, the text with its margin
+    expect(wide[1]).toMatch(/^ .{10}  Hello there$/u);
+    const narrow = pages[0].narrow[0].map(rowText);
+    expect(narrow.slice(-3)).toEqual(['', ' TECH React', ' Hello there']);
+    expect(pages[0].semantic[0].map((b) => b.kind)).toEqual(['image', 'paragraph', 'paragraph']);
+  });
+
+  it('finds pixel-art cells with more than two colours (transparent counts as black)', () => {
+    expect(overfullCells(art)).toEqual([]);
+    const three = image(2, 3, (x, y) => (y === 0 ? 'red' : y === 1 ? 'white' : x ? 'blue' : null));
+    expect(overfullCells(three)).toEqual(['1,1']);
+  });
+
+  const errorsFor = (rows: PageSource['rows']) => compilePages([page(rows)], { square, art }).errors.join('\n');
+
+  it('rejects pixel art of the wrong size, the wrong height or too many colours a cell', () => {
+    const odd = image(3, 3, () => 'white');
+    expect(compilePages([page([{ image: 'odd', alt: 'x', rows: 1, pixelArt: true }])], { odd }).errors.join()).toContain(
+      'must be 2 pixels a column and 3 a row',
+    );
+    expect(errorsFor([{ image: 'art', alt: 'x', rows: 3, pixelArt: true }])).toContain('is 2 rows tall, so "rows" must be 2');
+    const three = image(2, 3, (_, y) => (['red', 'white', 'blue'] as const)[y]);
+    expect(compilePages([page([{ image: 'three', alt: 'x', rows: 1, pixelArt: true }])], { three }).errors.join()).toContain(
+      'more than two colours in cell(s) 1,1',
+    );
+  });
 
   it('rejects missing pictures, empty alt text, pictures that are too big and bad options', () => {
     expect(errorsFor([{ image: 'nope', alt: 'x', rows: 4 }])).toContain('image "nope" isn\'t in src/content/images');

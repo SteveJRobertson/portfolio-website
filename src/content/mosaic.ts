@@ -15,6 +15,8 @@ export interface RgbaImage {
 export interface MosaicOptions {
   /** Height in grid rows. The width follows the picture's shape. */
   rows: number;
+  /** Width in cells, when it's fixed rather than following the shape (pixel art). */
+  cols?: number;
   /** Colours the picture may use. Black is the screen background. */
   palette?: readonly TeletextColor[];
   /** 1 leaves the picture as it is; above 1 strengthens it. */
@@ -183,11 +185,33 @@ const toSegments = (cells: Cell[]): GridSegment[] => {
   return segments;
 };
 
+/**
+ * Pixel art is drawn at 2 × 3 pixels a cell, so it needs no scaling. Like a
+ * real set, a cell can only show two colours (foreground and background);
+ * this lists the cells that use more, by column and row from 1.
+ */
+export const overfullCells = (image: RgbaImage): string[] => {
+  const found: string[] = [];
+  const key = (x: number, y: number) => {
+    const i = (y * image.width + x) * 4;
+    return image.data[i + 3] < 128 ? 'clear' : `${image.data[i]},${image.data[i + 1]},${image.data[i + 2]}`;
+  };
+  for (let r = 0; r < Math.floor(image.height / 3); r++) {
+    for (let c = 0; c < Math.floor(image.width / 2); c++) {
+      const colours = new Set([0, 1, 2].flatMap((dy) => [key(c * 2, r * 3 + dy), key(c * 2 + 1, r * 3 + dy)]));
+      // Transparent pixels are the black screen.
+      if (colours.delete('clear')) colours.add(PALETTE_RGB.black.join(','));
+      if (colours.size > 2) found.push(`${c + 1},${r + 1}`);
+    }
+  }
+  return found;
+};
+
 /** Converts a picture to `rows` rows of mosaic cells, as wide as its shape needs. */
 export const toMosaic = (image: RgbaImage, options: MosaicOptions): GridRow[] => {
   const palette = options.palette?.length ? options.palette : ALL_COLOURS;
   const rows = options.rows;
-  const cols = mosaicCols(image, rows);
+  const cols = options.cols ?? mosaicCols(image, rows);
   const w = cols * 2;
   const h = rows * 3;
   const px = shrink(prepare(image, options), image.width, image.height, w, h);

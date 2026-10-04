@@ -13,7 +13,7 @@ import { parseMarkup } from './markup.ts';
  *   indented row after one   continues that list item
  *   {rule}, blank rows       dropped
  *   { "screenOnly": true }   dropped
- *   { "image": … }           image, with its alt text
+ *   { "image": … }           image, with its alt text, then any text beside it
  *   anything else            paragraph
  *
  * Email and web addresses in plain text become links.
@@ -36,7 +36,7 @@ export const buildSemantic = (rows: RowSource[]): SemanticBlock[] => {
   for (const source of rows) {
     if (isImageRow(source)) {
       endList();
-      blocks.push({ kind: 'image', alt: source.alt });
+      blocks.push({ kind: 'image', alt: source.alt }, ...buildSemantic(source.beside ?? []));
       continue;
     }
     const row = typeof source === 'string' ? { text: source } : source;

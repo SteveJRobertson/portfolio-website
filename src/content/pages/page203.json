@@ -3,32 +3,24 @@
   "title": "Steve-Text",
   "label": "STEVE-TEXT",
   "fastext": [{ "page": 200 }, { "page": 201 }, { "page": 202 }, { "page": 400 }],
-  "subpages": [
-    [
-      { "text": "{green}STEVE-TEXT{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
-      {
-        "image": "steve",
-        "alt": "Steve Robertson in a grey cap and a dark fleece jacket, drawn in red, yellow and white block graphics.",
-        "rows": 16,
-        "palette": ["black", "red", "yellow", "white"],
-        "contrast": 1.4,
-        "saturation": 1.5,
-        "brightness": 1.15
-      },
-      "",
-      "{yellow}A photo, converted at build time.{/}"
-    ],
-    [
-      { "text": "{green}STEVE-TEXT{/}", "doubleHeight": true },
-      "{blue}{rule}{/}",
-      "",
-      "A developer portfolio built as a European Teletext service. You are looking at it.",
-      "",
-      "{green}TECH{/}    React, TypeScript, Vite",
-      "{green}STATUS{/}  In progress",
-      "",
-      "The portrait on part 1 started as a photo. A build step turns pictures into Teletext block graphics: each cell holds 2 × 3 pixels in two of the eight colours."
-    ]
+  "rows": [
+    { "text": "{green}STEVE-TEXT{/}", "doubleHeight": true },
+    "{blue}{rule}{/}",
+    "",
+    {
+      "image": "steve",
+      "alt": "A cartoon of Steve in Teletext block graphics: a cyan cap, a white beard and a red jacket.",
+      "rows": 12,
+      "pixelArt": true,
+      "beside": [
+        "A developer portfolio built as a European Teletext service. You are looking at it.",
+        "",
+        "{green}TECH{/} React, TypeScript, Vite",
+        "",
+        "{green}STATUS{/} In progress"
+      ]
+    },
+    "",
+    "The cartoon is drawn the Teletext way: 2 × 3 blocks a character cell, and two colours a cell."
   ]
 }

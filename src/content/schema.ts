@@ -24,6 +24,10 @@ export interface ImageRowSource {
   alt: string;
   rows: number;
   mobileRows?: number;
+  /** The PNG is drawn at 2 × 3 pixels a cell in palette colours, two a cell: used as drawn, never scaled. */
+  pixelArt?: boolean;
+  /** Text laid out to the right of the picture, as on a Ceefax page; below it in portrait. */
+  beside?: TextRowSource[];
   /** Colours it may use (all eight when left out). */
   palette?: TeletextColor[];
   contrast?: number;
@@ -34,7 +38,7 @@ export interface ImageRowSource {
 export type RowSource = TextRowSource | ImageRowSource;
 
 export const ROW_KEYS = ['text', 'doubleHeight', 'heading', 'screenOnly'] as const;
-export const IMAGE_KEYS = ['image', 'alt', 'rows', 'mobileRows', 'palette', 'contrast', 'saturation', 'brightness'] as const;
+export const IMAGE_KEYS = ['image', 'alt', 'rows', 'mobileRows', 'pixelArt', 'beside', 'palette', 'contrast', 'saturation', 'brightness'] as const;
 
 export const isImageRow = (row: RowSource): row is ImageRowSource => typeof row === 'object' && 'image' in row;
 

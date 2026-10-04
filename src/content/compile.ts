@@ -12,7 +12,7 @@ import {
   type RowSource,
 } from './schema.ts';
 import { layoutRows, slotsUsed, type ImageRenderer } from './wrap.ts';
-import { mosaicCols, mosaicRowsFor, toMosaic, type RgbaImage } from './mosaic.ts';
+import { mosaicCols, mosaicRowsFor, overfullCells, toMosaic, type RgbaImage } from './mosaic.ts';
 import { buildSemantic } from './semantic.ts';
 
 export interface SourceFile {
@@ -31,7 +31,7 @@ const BOOLEAN_KEYS = ROW_KEYS.filter((k) => k !== 'text');
 const isCount = (v: unknown) => Number.isInteger(v) && (v as number) > 0;
 const isFactor = (v: unknown) => v === undefined || (typeof v === 'number' && v > 0);
 
-const isImageSource = (fields: Record<string, unknown>) =>
+const isImageSource = (fields: Record<string, unknown>): boolean =>
   typeof fields.image === 'string' &&
   typeof fields.alt === 'string' &&
   isCount(fields.rows) &&
@@ -41,6 +41,8 @@ const isImageSource = (fields: Record<string, unknown>) =>
   isFactor(fields.contrast) &&
   isFactor(fields.saturation) &&
   isFactor(fields.brightness) &&
+  (fields.pixelArt === undefined || typeof fields.pixelArt === 'boolean') &&
+  (fields.beside === undefined || (Array.isArray(fields.beside) && fields.beside.every((r) => isRow(r) && !(typeof r === 'object' && 'image' in r)))) &&
   Object.keys(fields).every((k) => (IMAGE_KEYS as readonly string[]).includes(k));
 
 const isRow = (row: unknown): row is RowSource => {
@@ -94,25 +96,38 @@ const subpagesOf = (rows?: RowSource[], subpages?: RowSource[][]): RowSource[][]
   subpages ?? (rows ? [rows] : undefined);
 
 /**
- * Converts image rows to mosaic cells, centred in the pane. Wide layouts use
- * the row's `rows`; portrait fits the picture to the width unless
- * `mobileRows` says otherwise.
+ * Converts image rows to mosaic cells. Wide layouts use the row's `rows`;
+ * portrait fits the picture to the width unless `mobileRows` says otherwise.
+ * Pixel art is used as drawn, so its size is fixed by the PNG.
  */
 const imageRenderer =
   (images: Readonly<Record<string, RgbaImage>>): ImageRenderer =>
   (source: ImageRowSource, width: number) => {
+    const fail = (error: string) => ({ rows: [], cols: 0, errors: [error] });
     const picture = images[source.image];
-    if (!picture) return { rows: [], errors: [`image "${source.image}" isn't in src/content/images (expected ${source.image}.png)`] };
-    if (!source.alt.trim()) return { rows: [], errors: [`image "${source.image}" needs "alt" text`] };
+    if (!picture) return fail(`image "${source.image}" isn't in src/content/images (expected ${source.image}.png)`);
+    if (!source.alt.trim()) return fail(`image "${source.image}" needs "alt" text`);
+
+    if (source.pixelArt) {
+      if (picture.width % 2 || picture.height % 3) {
+        return fail(`pixel art "${source.image}" is ${picture.width} × ${picture.height}; it must be 2 pixels a column and 3 a row`);
+      }
+      const rows = picture.height / 3;
+      const cols = picture.width / 2;
+      if (source.rows !== rows) return fail(`pixel art "${source.image}" is ${rows} rows tall, so "rows" must be ${rows}`);
+      if (cols > width) return fail(`image "${source.image}" is ${cols} cells wide; the limit is ${width}`);
+      const overfull = overfullCells(picture);
+      if (overfull.length) {
+        return fail(`pixel art "${source.image}" uses more than two colours in cell(s) ${overfull.join('; ')} (column,row); a cell can show two`);
+      }
+      return { rows: toMosaic(picture, { rows, cols }), cols, errors: [] };
+    }
+
     const narrow = width < WIDE_COLS;
     const rows = narrow ? (source.mobileRows ?? Math.min(source.rows, mosaicRowsFor(picture, width))) : source.rows;
     const cols = mosaicCols(picture, rows);
-    if (cols > width) {
-      return { rows: [], errors: [`image "${source.image}" is ${cols} cells wide at ${rows} rows; the limit is ${width}`] };
-    }
-    const pad = Math.floor((width - cols) / 2);
-    const mosaic = toMosaic(picture, { ...source, rows });
-    return { rows: mosaic.map((row) => ({ segments: pad ? [{ text: ' '.repeat(pad) }, ...row.segments] : row.segments })), errors: [] };
+    if (cols > width) return fail(`image "${source.image}" is ${cols} cells wide at ${rows} rows; the limit is ${width}`);
+    return { rows: toMosaic(picture, { ...source, rows }), cols, errors: [] };
   };
 
 /**

@@ -76,7 +76,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 
 - Each page is a JSON file `src/content/pages/pageNNN.json` with `page`, `title`, `label` (short name for the quick index and Fastext), `fastext` (four `{ "page": NNN }` entries, red to cyan, with an optional `label`), optional `index` (list it in the quick index), and either `rows` or `subpages`. `mobileRows` / `mobileSubpages` optionally override the portrait layout line for line.
 - A row is one logical line of any length: a string, or an object `{ "text": … }` with optional `"doubleHeight": true`, `"heading": true` (a heading in the semantic mirror) and `"screenOnly": true` (left out of the mirror, for hints like "Press ← or →"). An empty string is a blank row. Any other key is an error.
-- An image row is `{ "image": "steve", "alt": "…", "rows": 16 }`, for `src/content/images/steve.png`, with optional `mobileRows`, `palette` (the colours it may use), `contrast`, `saturation` and `brightness`. `rows` is its height at 38 columns and the width follows the picture's shape; portrait fits it into 20 columns unless `mobileRows` is set. It's centred in the pane (see §8).
+- An image row is `{ "image": "steve", "alt": "…", "rows": 12 }`, for `src/content/images/steve.png`, with optional `mobileRows`, `palette` (the colours it may use), `contrast`, `saturation` and `brightness`. `rows` is its height at 38 columns and the width follows the picture's shape; portrait fits it into 20 columns unless `mobileRows` is set. `"pixelArt": true` uses a PNG drawn at 2 × 3 pixels a cell as it is (see §8). `"beside": [rows]` lays text out to the right of the picture, as on a Ceefax page, when that leaves at least 12 columns; otherwise (portrait) the text goes under it. A picture on its own is centred (see §8).
 - Colour tags: `{red}` `{green}` `{yellow}` `{blue}` `{magenta}` `{cyan}` `{white}` and `{bg:colour}`, closed by `{/}`; `{link:NNN}…{/}` is an inline page link; `{rule}` or `{rule:-}` alone on a row draws a full-width rule; `{{` is a literal brace.
 - A build-time wrapper (a Vite plugin serving `virtual:pages`) lays every row out at **38 columns**, used by both widescreen and classic so their line breaks match, and at **20 columns** for portrait. Rows get a one-cell margin; `* ` bullets and `NNN ` page numbers hang their continuation lines; lines can also break after `/`, `-` and `@`. Dev, build, Storybook and Vitest all use the same plugin.
 - The validator (`npm run validate`, and the plugin on every build) fails when:
@@ -85,7 +85,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
   3. a Fastext or inline link points at a page that doesn't exist;
   4. an unknown or unclosed tag is used;
   5. a file name doesn't match its page number, or two files define the same page;
-  6. an image is missing from `src/content/images`, has no `alt` text, or is wider than the pane at its height.
+  6. an image is missing from `src/content/images`, has no `alt` text, or is wider than the pane at its height; pixel art isn't 2 × 3 pixels a cell, its `rows` doesn't match its height, or a cell uses more than two colours.
 
 ## 8. Graphics
 
@@ -95,7 +95,8 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
   2. The picture is scaled down by area averaging to 2 pixels across and 3 down per cell. Those pixels are almost square (0.3em × 0.33em), so a picture keeps its shape with `cols = rows × aspect × 5/3`.
   3. Each cell takes the pair of palette colours (foreground and background) that matches its six pixels best, and each pixel takes the nearer of the two. There's no dithering: at 2×3 pixels a cell it only adds speckle.
   4. The six bits pick the character: space, `█`, `▌`, `▐`, or U+1FB00–U+1FB3B. A cell of one colour is a space on that background, so neighbouring cells have no seams. Mosaic backgrounds use the full-strength palette (`m-bg-*`), not the darker text backgrounds.
-- Photos convert best cropped to the subject with the background removed. Each cell has its own two colours, rather than Teletext's rule that a colour change costs a cell, so faces keep their detail.
+- **Pixel art** is the better choice for people: Teletext faces read as caricatures, with flat colour, strong shapes and a black background, and a converted photo at this size turns to mush. A pixel-art PNG is drawn at exactly 2 × 3 pixels a cell in palette colours, with transparent pixels as the black screen, and used without scaling. Each cell may use only two colours, as on a real set, and the validator says which cells break that.
+- Photos convert best cropped to the subject with the background removed. Each cell has its own two colours, rather than Teletext's rule that a colour change costs a cell.
 - PNGs are decoded with `pngjs` at build time only; nothing ships to the browser but the cells.
 - edit.tf import is left out until there's artwork to import (DEC-013).
 - All graphics are `aria-hidden`, with a text alternative in the semantic tree: an image row's `alt` becomes `role="img"` in the mirror and an "Image: …" caption in Text mode.
@@ -123,7 +124,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-010 | The mode queries live in one TypeScript module (React needs `cols × rows` to render the cells) and CSS keys off `data-mode`. Revisit for pre-rendering in Phase 6. |
 | DEC-011 | Content is wrapped once at 38 columns for widescreen and classic, and at 20 for portrait. Until Phase 5 adds cycling, sub-pages are stepped with ←/→ and the keypad. The old canvas demo on 202 is dropped; 203 gets mosaic graphics in Phase 5. |
 | DEC-012 | Phase 4: the 888 switches live in the strip under the screen; grid links answer clicks but never take focus, with real links in the mirror and a focus outline on the grid twin; mirror headings are marked with `"heading": true` rather than guessed from colour; axe runs in Vitest with jsdom (contrast stays in `contrast.test.ts`), with Playwright left for Phase 6; `B` and `C` both work for the fourth Fastext slot. |
-| DEC-013 | Phase 5: sub-pages cycle every 15 seconds and a manual step restarts the countdown (rather than holding the page); HOLD is the `H` key, a strip button and the keypad; pages open held with reduced motion. Images are PNGs converted at build time with each cell choosing its own two colours and no dithering. Page 203's portrait is a cut-out of Steve's photo in black, red, yellow and white on its own sub-page. The CRT effect is static and on by default, off at first with reduced motion or more contrast. edit.tf import is deferred. |
+| DEC-013 | Phase 5: sub-pages cycle every 15 seconds and a manual step restarts the countdown (rather than holding the page); HOLD is the `H` key, a strip button and the keypad; pages open held with reduced motion. Images are PNGs converted at build time with each cell choosing its own two colours and no dithering. Page 203's portrait was first a converted photo, which Steve found too big and too soft; it's now a 16 × 12-cell cartoon of Steve drawn as pixel art from his photo, with the project text beside it on one page. The CRT effect is static and on by default, off at first with reduced motion or more contrast. edit.tf import is deferred. |
 
 ## 11. Open questions
 
