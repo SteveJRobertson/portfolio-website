@@ -10,7 +10,7 @@
   },
   "mainRows": [
     { "color": "yellow", "text": "======================================" },
-    { "color": "cyan", "text": " STEVE ROBERTSON - TELETEXT PORTFOLIO " },
+    { "color": "cyan", "text": " STEVE ROBERTSON - TELETEXT PORTFOLIO ", "doubleHeight": true },
     { "color": "yellow", "text": "======================================" },
     { "color": "white", "text": " " },
     { "color": "white", "text": " WELCOME TO CEEFAX PAGE 100           " },

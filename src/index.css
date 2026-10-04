@@ -25,11 +25,15 @@
   /* Fonts */
   --tt-font: 'Bedstead', monospace;
 
-  /* Core Teletext Aspect & Grid Ratios */
-  --tt-cols-classic: 40;
-  --tt-cols-wide: 56;
-  --tt-rows: 24;
-  --tt-line-height: 1.25;
+  /* Character cell: Bedstead glyphs are 600 x 1000 units, so a cell is 0.6em x 1em
+     and mosaic characters tile with no gaps. Grid sizes live in src/display/gridModes.ts. */
+  --tt-cell-w: 0.6em;
+  --tt-cell-h: 1em;
+
+  /* Space around the screen, and the strip reserved for the remote toggle */
+  --tt-gutter: 0.5rem;
+  --tt-border: 3px;
+  --tt-remote-h: 2.5rem;
 }
 
 /* Global Reset & Scroll Lock */
@@ -73,72 +77,145 @@ html, body {
 .bg-white   { background-color: #ffffff; color: #000000; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
 
-/* Teletext Wrapper & CRT TV Chassis Frame */
+/* ============================================================
+   DISPLAY ENGINE (SPEC §3)
+   The mode (cols x rows) comes from src/display/gridModes.ts via
+   --cols / --rows and data-mode; CSS never repeats the media queries.
+   ============================================================ */
+
 .teletext-wrapper {
+  position: fixed;
+  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100vw;
-  height: 100dvh;
   background-color: #000000;
   box-sizing: border-box;
-  padding: 1rem;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + var(--tt-gutter))
+    calc(env(safe-area-inset-right, 0px) + var(--tt-gutter))
+    calc(env(safe-area-inset-bottom, 0px) + var(--tt-gutter))
+    calc(env(safe-area-inset-left, 0px) + var(--tt-gutter));
 }
 
-/* Teletext Container & Aspect Ratio Engine */
+/* CRT frame: one cell of margin left and right, half a row top and bottom */
 .teletext-screen {
   --cols: 40;
   --rows: 24;
-  --line-height-ratio: 1.25;
+  --frame-cols: calc(var(--cols) + 2);
+  --frame-rows: calc(var(--rows) + 1);
+  --avail-w: calc(
+    100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 2 * var(--tt-gutter) - 2 * var(--tt-border)
+  );
+  --avail-h: calc(
+    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 2 * var(--tt-gutter) - 2 * var(--tt-border) -
+      var(--tt-remote-h)
+  );
+  --font-from-w: calc(var(--avail-w) / (var(--frame-cols) * 0.6));
+  --font-from-h: calc(var(--avail-h) / var(--frame-rows));
+
+  /* The whole grid always fits; whole pixels where supported, so glyphs stay crisp */
+  font-size: min(var(--font-from-w), var(--font-from-h));
+  font-size: round(down, min(var(--font-from-w), var(--font-from-h)), 1px);
+  line-height: 1;
 
   font-family: var(--tt-font);
   -webkit-font-smoothing: none;
   font-smooth: never;
   white-space: pre;
   user-select: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex: none;
+  box-sizing: content-box;
+  padding: calc(var(--tt-cell-h) / 2) var(--tt-cell-w);
   background-color: var(--tt-black);
   color: var(--tt-white);
-  box-sizing: border-box;
-  padding: 0.6em 0.8em;
-  border: 3px solid #222222;
+  border: var(--tt-border) solid #222222;
   border-radius: 6px;
   box-shadow: 0 0 50px rgba(0, 255, 0, 0.08), 0 0 25px rgba(0, 0, 0, 0.95);
-  
-  /* Calculate font size so --cols characters fill 100% of the screen width exactly */
-  --font-from-w: calc((100vw - 3rem) / var(--cols) / 0.6);
-  --font-from-h: calc((100dvh - 3rem) / var(--rows) / var(--line-height-ratio));
-  font-size: min(var(--font-from-w), var(--font-from-h));
-  line-height: var(--line-height-ratio);
-  
-  width: calc(var(--cols) * 1ch);
-  height: calc(var(--rows) * var(--line-height-ratio) * 1em);
-  max-width: calc(100vw - 2rem);
-  max-height: calc(100dvh - 2rem);
 }
 
-/* Widescreen Desktop Mode (56 Columns with Sidebar Index) */
-@media (min-width: 1024px) and (min-aspect-ratio: 16/10) {
-  .teletext-screen {
-    --cols: 56; /* 38 cols content + 1 col separator + 17 cols sidebar */
-  }
-}
-
-.teletext-row {
-  display: flex;
-  height: 1.25em;
-  line-height: 1.25em;
+/* Exact cols x rows character cells */
+.tt-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--tt-cell-w));
+  grid-template-rows: repeat(var(--rows), var(--tt-cell-h));
+  width: calc(var(--cols) * var(--tt-cell-w));
+  height: calc(var(--rows) * var(--tt-cell-h));
   overflow: hidden;
-  width: 100%;
+  font-family: var(--tt-font);
+  line-height: 1;
+  white-space: pre;
+  /* Stops Chrome rounding glyph advances to whole pixels, which would push text past its cells */
+  text-rendering: geometricPrecision;
+  background-color: var(--tt-black);
+  color: var(--tt-white);
+}
+
+.tt-line {
+  display: block;
+  overflow: hidden;
+  white-space: pre;
+  line-height: 1;
+}
+
+/* Double height: the row spans two slots and the glyphs stretch down from the top */
+.tt-line--double .tt-line__text {
+  display: inline-block;
+  transform: scaleY(2);
+  transform-origin: top;
+}
+
+.tt-graphic {
+  overflow: hidden;
+}
+
+/* Fastext: the last grid row, four equal slots */
+.fasttext-bar {
+  display: flex;
+}
+
+.fasttext-btn {
+  flex: none;
+  height: var(--tt-cell-h);
+  padding: 0;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  white-space: pre;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.fasttext-btn:hover {
+  filter: brightness(1.2);
+}
+
+.fasttext-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Retro Remote Handset Component */
 .teletext-remote-control {
-  margin-top: 1rem;
+  position: relative;
+  height: var(--tt-remote-h);
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
   z-index: 100;
 }
@@ -147,15 +224,17 @@ html, body {
   background: #222222;
   color: #00ff00;
   border: 1px solid #00ff00;
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 1rem;
   font-family: var(--tt-font);
   font-size: 0.9rem;
   border-radius: 4px;
   cursor: pointer;
 }
 
+/* Opens over the screen so the grid never resizes */
 .remote-handset-body {
-  margin-top: 0.6rem;
+  position: absolute;
+  bottom: calc(100% + 0.25rem);
   background: #181818;
   border: 2px solid #333333;
   border-radius: 8px;
@@ -233,62 +312,4 @@ html, body {
 }
 .remote-nav-row .remote-btn {
   flex: 1;
-}
-
-.teletext-row-grid {
-  display: grid;
-  grid-template-columns: 38ch 18ch;
-  height: 1.25em;
-  line-height: 1.25em;
-  width: 100%;
-}
-
-.teletext-main-col {
-  width: 38ch;
-  overflow: hidden;
-  white-space: pre;
-}
-
-.teletext-sidebar-col {
-  width: 18ch;
-  border-left: 1px solid var(--tt-blue);
-  padding-left: 1ch;
-  overflow: hidden;
-  white-space: pre;
-  box-sizing: border-box;
-}
-
-.teletext-row {
-  display: flex;
-  height: 1.25em;
-  line-height: 1.25em;
-  overflow: hidden;
-  width: 100%;
-}
-
-/* FastText Navigation Bar */
-.fasttext-bar {
-  display: flex;
-  width: 100%;
-  height: 1.25em;
-  gap: 2px;
-}
-
-.fasttext-btn {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  border: none;
-  cursor: pointer;
-  padding: 0 0.5ch;
-  flex: 1;
-  text-align: center;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.fasttext-btn:focus-visible,
-.fasttext-btn:hover {
-  outline: 2px solid #ffffff;
-  filter: brightness(1.2);
 }

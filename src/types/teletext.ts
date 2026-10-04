@@ -20,6 +20,8 @@ export interface TeletextRowData {
   bg?: TeletextColor;
   text: string;
   suffix?: string;
+  /** Temporary until the Phase 3 schema: the row takes two row slots. */
+  doubleHeight?: boolean;
 }
 
 export interface TeletextPageData {

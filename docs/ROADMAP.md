@@ -4,9 +4,9 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 
 | Phase | Status |
 |---|---|
-| 0. Honest docs | In review |
-| 1. Foundations | In review |
-| 2. Grid engine | Not started |
+| 0. Honest docs | Done |
+| 1. Foundations | Done |
+| 2. Grid engine | In review |
 | 3. Content pipeline | Not started |
 | 4. Navigation & accessibility | Not started |
 | 5. Graphics & polish | Not started |
@@ -30,11 +30,13 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [x] Fix the CI typecheck (`tsc -b`), add lint and test steps (`ci.yml` on every PR); deploy made manual-only
 
 ### Phase 2: Grid engine
-- [ ] `<TeletextGrid cols rows>` that renders exact cells
-- [ ] One CSS aspect-ratio switch: 56×24 / 40×24 / 20×36; remove the JS widescreen check
-- [ ] `min()` font sizing, zero scroll, safe-area insets
-- [ ] Header and Fastext as fixed grid rows; data-driven sidebar
-- [ ] Double-height rows
+- [x] `<TeletextGrid cols rows>` that renders exact cells
+- [x] One aspect-ratio switch (`src/display/gridModes.ts`, applied through `data-mode`): 56×24 / 40×24 / 20×36; JS width check removed
+- [x] `min()` font sizing, zero scroll, safe-area insets
+- [x] Header and Fastext as fixed grid rows; data-driven sidebar
+- [x] Double-height rows
+- [x] Pages 202 and 404 render through the grid (still in code until Phase 3)
+- [x] Stop-gap portrait word wrap (removed by the Phase 3 build-time wrapper)
 
 ### Phase 3: Content pipeline
 - [ ] Single typed schema + single page registry

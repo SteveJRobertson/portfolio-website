@@ -23,7 +23,7 @@ A developer portfolio built as an authentic European Teletext (Ceefax / ORACLE) 
 
 ## 3. Display engine
 
-The viewport is always locked to `100dvh` with no window scroll. The grid mode is chosen by **aspect ratio only**, from one place in CSS:
+The viewport is always locked to `100dvh` with no window scroll. The grid mode is chosen by **aspect ratio only**, from one place: `src/display/gridModes.ts` holds the queries and grid sizes, and CSS follows it through `data-mode` and `--cols`/`--rows` (DEC-010):
 
 | Mode | Query | Grid | Layout |
 |---|---|---|---|
@@ -32,6 +32,7 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 | Portrait | `max-aspect-ratio: 1/1` | 20 × 36 | Tall phone matrix, no scroll, safe-area insets |
 
 - Every screen renders exactly `cols × rows` character cells. Row 1 is the header and the last row is the Fastext bar.
+- Each cell is one Bedstead glyph, 0.6em × 1em, so mosaic characters tile with no gaps.
 - Font size is `min(font-from-width, font-from-height)`, so the whole grid always fits.
 - `white-space: pre`, font smoothing disabled.
 - Double-height rows take up two row slots.
@@ -105,6 +106,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-007 | Deployment deferred while the repo is private. |
 | DEC-008 | Deliver as one PR per phase, on stacked branches (see [ROADMAP.md](./ROADMAP.md)). |
 | DEC-009 | Page map from [CONTENT.md](./CONTENT.md) approved, including 110 Experience with per-role sub-pages. |
+| DEC-010 | The mode queries live in one TypeScript module (React needs `cols × rows` to render the cells) and CSS keys off `data-mode`. Revisit for pre-rendering in Phase 6. |
 
 ## 11. Open questions
 

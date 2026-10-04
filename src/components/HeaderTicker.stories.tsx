@@ -1,14 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { HeaderTicker } from './HeaderTicker';
+import { TeletextGrid } from './TeletextGrid';
 
 const meta: Meta<typeof HeaderTicker> = {
   title: 'Molecules/HeaderTicker',
   component: HeaderTicker,
-  args: { bufferText: 'P100', currentPage: 100 },
+  args: { bufferText: 'P100', currentPage: 100, cols: 40 },
   decorators: [
-    (Story) => (
-      <div style={{ background: 'var(--tt-black)', padding: '1rem', fontFamily: 'var(--tt-font)', fontSize: 24, width: '40ch', whiteSpace: 'pre' }}>
-        <Story />
+    (Story, { args }) => (
+      <div style={{ fontSize: 24 }}>
+        <TeletextGrid cols={args.cols} rows={1}>
+          <Story />
+        </TeletextGrid>
       </div>
     ),
   ],
@@ -17,5 +20,7 @@ const meta: Meta<typeof HeaderTicker> = {
 export default meta;
 type Story = StoryObj<typeof HeaderTicker>;
 
-export const Idle: Story = {};
+export const Classic: Story = {};
+export const Widescreen: Story = { args: { cols: 56 } };
+export const Portrait: Story = { args: { cols: 20 } };
 export const TypingPageNumber: Story = { args: { bufferText: 'P30-' } };

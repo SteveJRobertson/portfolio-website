@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import type { FastTextLink } from '../types/teletext';
+import { FASTEXT_ORDER, fastextLabels, fastextSlotWidths } from '../display/fastext';
 
 interface FastTextBarProps {
   links: {
@@ -9,11 +10,17 @@ interface FastTextBarProps {
     cyan: FastTextLink;
   };
   onNavigate: (page: number) => void;
+  /** Grid width; the bar fills the last row in four equal slots. */
+  cols: number;
+  /** 1-based grid row (the last row of the screen). */
+  row: number;
 }
 
 export const FastTextBar: React.FC<FastTextBarProps> = ({
   links,
   onNavigate,
+  cols,
+  row,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -37,39 +44,26 @@ export const FastTextBar: React.FC<FastTextBarProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [links, onNavigate]);
 
+  const widths = fastextSlotWidths(cols);
+  const labels = fastextLabels(FASTEXT_ORDER.map((color) => links[color]), widths);
+
   return (
-    <nav className="fasttext-bar" aria-label="Teletext Fastext Navigation">
-      <button 
-        type="button" 
-        className="fasttext-btn bg-red"
-        onClick={() => onNavigate(links.red.page)}
-      >
-        {links.red.label}
-      </button>
-
-      <button 
-        type="button" 
-        className="fasttext-btn bg-green"
-        onClick={() => onNavigate(links.green.page)}
-      >
-        {links.green.label}
-      </button>
-
-      <button 
-        type="button" 
-        className="fasttext-btn bg-yellow"
-        onClick={() => onNavigate(links.yellow.page)}
-      >
-        {links.yellow.label}
-      </button>
-
-      <button 
-        type="button" 
-        className="fasttext-btn bg-cyan"
-        onClick={() => onNavigate(links.cyan.page)}
-      >
-        {links.cyan.label}
-      </button>
+    <nav
+      className="tt-line fasttext-bar"
+      aria-label="Teletext Fastext Navigation"
+      style={{ gridRow: `${row} / span 1`, gridColumn: `1 / span ${cols}` }}
+    >
+      {FASTEXT_ORDER.map((color, i) => (
+        <button
+          key={color}
+          type="button"
+          className={`fasttext-btn bg-${color}`}
+          style={{ width: `calc(${widths[i]} * var(--tt-cell-w))` }}
+          onClick={() => onNavigate(links[color].page)}
+        >
+          {labels[i]}
+        </button>
+      ))}
     </nav>
   );
 };

@@ -89,21 +89,18 @@ export const TeletextCanvasImage: React.FC<TeletextCanvasImageProps> = ({
   }, [src, widthCols, heightRows]);
 
   return (
-    <div className="teletext-image-container" style={{ margin: '0.4em 0' }}>
-      <canvas 
-        ref={canvasRef} 
-        width={widthCols * 10} 
-        height={heightRows * 10}
-        aria-label={alt}
-        style={{
-          width: `${widthCols}ch`,
-          height: `${heightRows * 1.2}em`,
-          imageRendering: 'pixelated',
-          display: 'block',
-          border: '1px solid #333333',
-          backgroundColor: '#0c0c0c',
-        }}
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      width={widthCols * 10}
+      height={heightRows * 10}
+      aria-label={alt}
+      style={{
+        width: '100%',
+        height: '100%',
+        imageRendering: 'pixelated',
+        display: 'block',
+        backgroundColor: '#0c0c0c',
+      }}
+    />
   );
 };
