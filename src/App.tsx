@@ -19,6 +19,12 @@ import { useSettings } from './settings/useSettings';
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
 
+/** Email opens the mail app; web addresses open in a new tab so the Teletext stays put. */
+const openAddress = (href: string) => {
+  if (href.startsWith('mailto:')) window.location.href = href;
+  else window.open(href, '_blank', 'noopener');
+};
+
 export const App: React.FC = () => {
   const { page: requested, changes, navigate } = useNavigation();
   const [settings, updateSettings] = useSettings();
@@ -111,7 +117,10 @@ export const App: React.FC = () => {
   const lines = layoutBody(mode, bodyRows, SIDEBAR_ROWS);
   const twin = mirrorFocus?.twin;
   const focusLink = twin?.startsWith('link-') ? Number(twin.slice(5)) : undefined;
-  const twinOnScreen = focusLink !== undefined && lines.some((l) => l.content.segments.some((s) => s.link === focusLink));
+  const focusHref = twin?.startsWith('href:') ? twin.slice(5) : undefined;
+  const twinOnScreen = lines.some((l) =>
+    l.content.segments.some((s) => (focusLink !== undefined && s.link === focusLink) || (focusHref !== undefined && s.href === focusHref)),
+  );
 
   return (
     <>
@@ -135,6 +144,8 @@ export const App: React.FC = () => {
               key={key}
               {...line}
               onLink={navigate}
+              onOpen={openAddress}
+              focusHref={focusHref}
               focusLink={focusLink}
             />
           ))}

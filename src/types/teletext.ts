@@ -25,6 +25,8 @@ export interface GridSegment {
   bg?: TeletextColor;
   /** Target of an inline `{link:NNN}` tag: clickable in the grid, a real link in the semantic mirror. */
   link?: number;
+  /** An email or web address found in the text (mailto: or https:), clickable in the grid. */
+  href?: string;
 }
 
 export interface GridRow {

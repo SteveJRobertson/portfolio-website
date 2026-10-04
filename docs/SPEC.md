@@ -55,7 +55,7 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 - **Hotkeys**: one listener (`useHotkeys`). Keys with a modifier and keys typed into form fields are ignored. The digit and letter shortcuts can be switched off on page 888 (WCAG 2.1.4); `←`/`→` are off in Text mode.
 - **Sub-pages**: long pages can cycle (`01/03`) on a timer, with a way to hold or pause.
 - **Mobile**: the on-screen keypad means the native keyboard never opens. Its colour buttons follow the current page's Fastext.
-- **Links in the grid**: inline `{link:NNN}` text and quick-index entries respond to a click or tap, but never take keyboard focus.
+- **Links in the grid**: inline `{link:NNN}` text, quick-index entries, and email and web addresses (found at build time, `mailto:` or a new tab) respond to a click or tap, but never take keyboard focus. Their real links are in the semantic mirror.
 
 ## 6. Pages
 

@@ -5,7 +5,7 @@ import { isPlainClick, pageHref } from '../navigation/paths';
 
 /** Where focus is in the semantic mirror, so the grid can outline the same thing. */
 export interface MirrorFocus {
-  /** "link-NNN" for a page link. Null when the focused element has no twin on screen. */
+  /** "link-NNN" for a page link, "href:…" for an address. Null when the focused element has no twin on screen. */
   twin: string | null;
   /** The sub-page the focused element belongs to. */
   subpage?: number;
@@ -57,7 +57,7 @@ const Inline: React.FC<{ content: SemanticInline[]; onNavigate: (page: number) =
           {run.text}
         </PageLink>
       ) : run.href ? (
-        <a key={i} href={run.href} data-twin="none">
+        <a key={i} href={run.href} data-twin={`href:${run.href}`}>
           {run.text}
         </a>
       ) : (

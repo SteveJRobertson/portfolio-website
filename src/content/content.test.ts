@@ -78,6 +78,16 @@ describe('layoutRows', () => {
     ]);
   });
 
+  it('links email and web addresses, with the full target on every wrapped piece', () => {
+    const rows = layoutRows(['{cyan}github.com/SteveJRobertson/isolate-ui{/}'], 20).rows;
+    expect(rows.length).toBeGreaterThan(1);
+    for (const row of rows) {
+      expect(row.segments.filter((s) => s.text.trim()).every((s) => s.href === 'https://github.com/SteveJRobertson/isolate-ui')).toBe(true);
+    }
+    const [mail] = layoutRows(['Mail me@example.com now'], 38).rows;
+    expect(mail.segments.find((s) => s.href)).toEqual({ text: 'me@example.com', color: 'white', href: 'mailto:me@example.com' });
+  });
+
   it('keeps leading spaces as an indent on every line', () => {
     expect(texts(layoutRows(['   aaa bbb ccc'], 12).rows)).toEqual(['    aaa bbb', '    ccc']);
   });

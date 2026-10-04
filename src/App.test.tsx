@@ -68,6 +68,14 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/300');
   });
 
+  it('opens email and web addresses clicked on the screen', () => {
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    const { container } = renderAt('/400');
+    const github = [...container.querySelectorAll('.teletext-screen .tt-link')].find((el) => el.textContent === 'github.com/stevejrobertson')!;
+    fireEvent.click(github);
+    expect(open).toHaveBeenCalledWith('https://github.com/stevejrobertson', '_blank', 'noopener');
+  });
+
   it('redirects an unknown page to 404, from the URL or the digits', () => {
     renderAt('/512');
     expect(window.location.pathname).toBe('/404');

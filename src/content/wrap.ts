@@ -1,6 +1,7 @@
 import type { GridRow, GridSegment, TeletextColor } from '../types/teletext.ts';
 import type { RowSource } from './schema.ts';
 import { parseMarkup } from './markup.ts';
+import { autolink } from './semantic.ts';
 
 /** Every text row starts one cell in from the screen edge. */
 export const MARGIN = 1;
@@ -13,6 +14,7 @@ interface StyledChar {
   color?: TeletextColor;
   bg?: TeletextColor;
   link?: number;
+  href?: string;
 }
 
 export interface LaidOutRows {
@@ -31,7 +33,7 @@ const toSegments = (styled: StyledChar[]): GridSegment[] => {
   const segments: GridSegment[] = [];
   for (const { ch, ...style } of styled) {
     const last = segments[segments.length - 1];
-    if (last && last.color === style.color && last.bg === style.bg && last.link === style.link) last.text += ch;
+    if (last && last.color === style.color && last.bg === style.bg && last.link === style.link && last.href === style.href) last.text += ch;
     else segments.push({ text: ch, ...style });
   }
   return segments;
@@ -119,7 +121,11 @@ export const layoutRows = (sources: RowSource[], width: number, wrap = true): La
       return;
     }
 
-    const styled = toStyledChars(parsed.segments);
+    // Email and web addresses keep their full target on every wrapped piece, so each piece opens it.
+    const segments = parsed.segments.flatMap((seg) =>
+      seg.link !== undefined ? [seg] : autolink(seg.text).map(({ text, href }) => (href ? { ...seg, text, href } : { ...seg, text })),
+    );
+    const styled = toStyledChars(segments);
     let lead = 0;
     while (lead < styled.length && styled[lead].ch === ' ' && !styled[lead].bg) lead++;
     const body = styled.slice(lead);
