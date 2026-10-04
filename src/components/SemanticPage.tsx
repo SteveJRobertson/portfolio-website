@@ -5,7 +5,7 @@ import { isPlainClick, pageHref } from '../navigation/paths';
 
 /** Where focus is in the semantic mirror, so the grid can outline the same thing. */
 export interface MirrorFocus {
-  /** "title", or "link-NNN" for a page link. Null when the focused element has no twin on screen. */
+  /** "link-NNN" for a page link. Null when the focused element has no twin on screen. */
   twin: string | null;
   /** The sub-page the focused element belongs to. */
   subpage?: number;
@@ -130,7 +130,9 @@ export const SemanticPage: React.FC<SemanticPageProps> = ({
 
   const onFocus = (e: React.FocusEvent) => {
     const el = e.target as HTMLElement;
-    if (!onFocusChange || !isFocusVisible(el)) return;
+    if (!onFocusChange) return;
+    // The heading takes focus after navigation so screen readers announce it; it isn't a control, so nothing is outlined.
+    if (el.tagName === 'H1' || !isFocusVisible(el)) return onFocusChange(null);
     const twin = el.closest('[data-twin]')?.getAttribute('data-twin');
     const subpage = (el.closest('[data-subpage]') as HTMLElement | null)?.dataset.subpage;
     onFocusChange({ twin: twin && twin !== 'none' ? twin : null, subpage: subpage === undefined ? undefined : Number(subpage) });
@@ -143,7 +145,7 @@ export const SemanticPage: React.FC<SemanticPageProps> = ({
   return (
     <div ref={root} className={visible ? 'mirror mirror--visible' : 'mirror mirror--hidden'} onFocus={onFocus} onBlur={onBlur}>
       <main id="content">
-        <h1 ref={headingRef} tabIndex={-1} data-twin="title">
+        <h1 ref={headingRef} tabIndex={-1}>
           {heading}
         </h1>
         {page.semantic.map((blocks, i) => (

@@ -306,10 +306,14 @@ html, body {
 .control-strip button:focus-visible,
 .remote-handset-body button:focus-visible,
 .text-mode a:focus-visible,
-.text-mode button:focus-visible,
-.text-mode h1:focus-visible {
+.text-mode button:focus-visible {
   outline: 3px solid var(--tt-yellow);
   outline-offset: 2px;
+}
+
+/* The heading takes focus after navigation for screen readers; it isn't a control, so no outline */
+.text-mode h1:focus {
+  outline: none;
 }
 
 /* Retro Remote Handset Component */

@@ -109,13 +109,9 @@ export const App: React.FC = () => {
 
   const bodyRows = (mode.name === 'portrait' ? page.narrow : page.wide)[subpage.index];
   const lines = layoutBody(mode, bodyRows, SIDEBAR_ROWS);
-  const titleKey = `main-${Math.max(0, bodyRows.findIndex((row) => row.doubleHeight))}`;
   const twin = mirrorFocus?.twin;
   const focusLink = twin?.startsWith('link-') ? Number(twin.slice(5)) : undefined;
-  const twinOnScreen =
-    twin === 'title'
-      ? lines.some((l) => l.key === titleKey)
-      : focusLink !== undefined && lines.some((l) => l.content.segments.some((s) => s.link === focusLink));
+  const twinOnScreen = focusLink !== undefined && lines.some((l) => l.content.segments.some((s) => s.link === focusLink));
 
   return (
     <>
@@ -139,7 +135,6 @@ export const App: React.FC = () => {
               key={key}
               {...line}
               onLink={navigate}
-              focused={twin === 'title' && key === titleKey}
               focusLink={focusLink}
             />
           ))}
