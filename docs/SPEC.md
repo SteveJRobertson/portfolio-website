@@ -60,8 +60,9 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 |---|---|
 | 100 | Index / cover |
 | 101 | About |
+| 110 | Experience (sub-pages, one per role) |
 | 200 | Projects index; 201–20x individual projects |
-| 300 | Skills / stack |
+| 300 | Skills (sub-pages by group) |
 | 400 | Contact |
 | 888 | Accessibility: Text mode and CRT effect toggles |
 | 404 | Page not found |
@@ -102,7 +103,8 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-005 | Write content once with colour tags and wrap it at build time. Per-page `mobileRows` override. |
 | DEC-006 | Path-based routing. |
 | DEC-007 | Deployment deferred while the repo is private. |
-| DEC-008 | Deliver as one PR per phase (see [ROADMAP.md](./ROADMAP.md)). |
+| DEC-008 | Deliver as one PR per phase, on stacked branches (see [ROADMAP.md](./ROADMAP.md)). |
+| DEC-009 | Page map from [CONTENT.md](./CONTENT.md) approved, including 110 Experience with per-role sub-pages. |
 
 ## 11. Open questions
 

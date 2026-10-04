@@ -47,9 +47,9 @@ The source material for the Phase 3 content rewrite. Facts are taken from the cu
 | Lighthouse Compare | Compare Lighthouse reports side by side to track improvements over time. github.com/SteveJRobertson/lighthouse-compare | JavaScript | In progress |
 | Steve-Text (this site) | Teletext portfolio | React, TypeScript, Vite | In progress |
 
-## Proposed page map (needs PO sign-off)
+## Page map (signed off by PO, 4 Oct 2026)
 
-The current site has a large **Experience** section that the original page map didn't cover. Proposal:
+The current site has a large **Experience** section that the original page map didn't cover, so it gets its own page:
 
 | Page | Content |
 |---|---|

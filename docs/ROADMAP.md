@@ -41,7 +41,7 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [ ] Colour-tag markup + build-time wrapper (38/40 and 20 columns), `mobileRows` override
 - [ ] Validator: width, row count, link targets, colour tags
 - [ ] Move 202 and 404 into content; add 888 and 203 (or drop 203)
-- [ ] New copy from [CONTENT.md](./CONTENT.md) (page map needs sign-off)
+- [ ] New copy from [CONTENT.md](./CONTENT.md)
 
 ### Phase 4: Navigation & accessibility
 - [ ] Fastext as `<a href>`; hotkeys R/G/Y/B
