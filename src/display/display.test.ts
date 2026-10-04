@@ -138,8 +138,8 @@ describe('formatHeader', () => {
 
   it('formats each width', () => {
     const text = (cols: number) => rowText(formatHeader({ bufferText: 'P1--', currentPage: 100, now, cols }));
-    expect(text(56)).toBe('P1-- STEVE-TEXT 100' + ' '.repeat(18) + 'SUN 04 OCT 14:03:22');
-    expect(text(40)).toBe('P1-- STEVE-TEXT 100      04 OCT 14:03:22');
+    expect(text(56)).toBe('P1-- STEEVEFAX 100' + ' '.repeat(19) + 'SUN 04 OCT 14:03:22');
+    expect(text(40)).toBe('P1-- STEEVEFAX 100       04 OCT 14:03:22');
     expect(text(20)).toBe('P1-- STEVE     14:03');
   });
 
@@ -152,7 +152,7 @@ describe('formatHeader', () => {
   it('shows the counter after the page number, or before the name in portrait', () => {
     const text = (cols: number) =>
       rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6 } }));
-    expect(text(40)).toBe('P110 STEVE-TEXT 110 1/6  04 OCT 14:03:22');
+    expect(text(40)).toBe('P110 STEEVEFAX 110 1/6   04 OCT 14:03:22');
     expect(text(20)).toBe('P110 1/6 STEVE 14:03');
   });
 
@@ -165,8 +165,8 @@ describe('formatHeader', () => {
   it('makes room for HOLD by dropping the date at 40 columns and the name at 20', () => {
     const text = (cols: number) =>
       rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6, held: true } }));
-    expect(text(56)).toBe('P110 STEVE-TEXT 110 1/6 HOLD' + ' '.repeat(9) + 'SUN 04 OCT 14:03:22');
-    expect(text(40)).toBe('P110 STEVE-TEXT 110 1/6 HOLD    14:03:22');
+    expect(text(56)).toBe('P110 STEEVEFAX 110 1/6 HOLD' + ' '.repeat(10) + 'SUN 04 OCT 14:03:22');
+    expect(text(40)).toBe('P110 STEEVEFAX 110 1/6 HOLD     14:03:22');
     expect(text(20)).toBe('P110 1/6 HOLD  14:03');
   });
 

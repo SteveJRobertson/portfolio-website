@@ -1,4 +1,4 @@
-# Steve-Text: Teletext Portfolio
+# Steevefax: Teletext Portfolio
 
 Steve Robertson's developer portfolio, built as a Ceefax / ORACLE-style Teletext service: 3-digit page numbers, Fastext colour links, Mode 7 typography.
 

@@ -112,7 +112,7 @@ export const App: React.FC = () => {
       <div className="text-mode">
         <header className="text-mode__bar">
           <span>
-            STEVE-TEXT <span className="c-cyan">P{requested}</span>
+            STEEVEFAX <span className="c-cyan">P{requested}</span>
           </span>
           <button type="button" onClick={() => updateSettings({ textMode: false })}>
             TELETEXT VIEW
