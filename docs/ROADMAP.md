@@ -1,69 +1,63 @@
-# Delivery Plan & Sprint Roadmap: Teletext Portfolio
+# Roadmap: Teletext Portfolio
 
-**Project**: Steve Robertson - Teletext Portfolio  
-**Status**: Active Development  
+Remediation of the Gemini build. Each phase ships as its own PR. Background is in [REVIEW.md](./REVIEW.md) and requirements are in [SPEC.md](./SPEC.md).
 
----
-
-## 📅 Sprint Overview & Progress Tracker
-
-```
-[Sprint 1: Foundation] ----> [Sprint 2: Core Engine] ----> [Sprint 3: Content] ----> [Sprint 4: Shader & Mobile] ----> [Sprint 5: CI/CD & Launch]
-       (COMPLETE ✅)                 (COMPLETE ✅)               (COMPLETE ✅)               (COMPLETE ✅)                  (COMPLETE ✅)
-```
-
----
-
-### 🟢 Sprint 1: Foundation & Design System Setup
-- **Goal**: Scaffolding, typography, Teletext SAA5050 8-color tokens, primitive components.
-- **Deliverables**:
-  - [x] Vite + React + TypeScript setup
-  - [x] SAA5050 8-color palette tokens (`src/index.css`)
-  - [x] `<ColorSpan>` and `<TeletextChar>` primitive components
-  - [x] Bedstead Mode 7 font definition
-  - [x] Build compilation check (`npm run build`)
-- **Status**: **COMPLETE** ✅
+| Phase | Status |
+|---|---|
+| 0. Honest docs | In review |
+| 1. Foundations | Not started |
+| 2. Grid engine | Not started |
+| 3. Content pipeline | Not started |
+| 4. Navigation & accessibility | Not started |
+| 5. Graphics & polish | Not started |
+| 6. Ship | Deferred (private repo) |
 
 ---
 
-### 🟢 Sprint 2: Core Teletext Engine & Navigation State Machine
-- **Goal**: 40×24 aspect-ratio grid container, 3-digit buffer hook, live clock, Fastext bar.
-- **Deliverables**:
-  - [x] `usePageBuffer` custom hook (3-digit routing for `100`, `101`, `200`, `300`, `400`, `888`, `404`)
-  - [x] `<HeaderTicker>` live ticking clock & channel identifier
-  - [x] `<FastTextBar>` 4-color action bar with `R`, `G`, `Y`, `C` keyboard listeners
-  - [x] `<TeletextScreen>` aspect-ratio locked container (`100dvh` zero window scroll)
-  - [x] Dual-Tree accessibility DOM (`aria-hidden` visual CRT + `.sr-only` semantic DOM)
-- **Status**: **COMPLETE** ✅
+### Phase 0: Honest docs
+- [x] `docs/REVIEW.md` (findings + plan)
+- [x] Rewrite `docs/SPEC.md` to match the brief and the PO decisions
+- [x] Rewrite this roadmap with honest status
+- [x] Remove Gemini agent rules (`.agents/`) and Vite template leftovers
+- [x] Replace the template README
 
----
+### Phase 1: Foundations
+- [ ] Self-host Bedstead WOFF2; remove Google Fonts
+- [ ] Remove `user-scalable=no` / `maximum-scale` from the viewport meta
+- [ ] Add Vitest with an `npm test` script
+- [ ] Add Storybook with token and primitive stories
+- [ ] Fix the CI typecheck (`tsc -b`), add lint and test steps
 
-### 🟢 Sprint 3: Content Pipeline & Page Authoring
-- **Goal**: Typed JSON page schemas, Teletext markup parser engine, content for Pages 100-400.
-- **Deliverables**:
-  - [x] Page JSON schemas in `src/content/pages/*.json`
-  - [x] Dynamic page registry (`src/utils/pageRegistry.ts`)
-  - [x] Build-time line length validator script (`scripts/validatePages.ts`)
-  - [x] Full portfolio content for Index (100), About (101), Projects (200), Case Studies (201-203), Stack (300), Contact (400)
-- **Status**: **COMPLETE** ✅
+### Phase 2: Grid engine
+- [ ] `<TeletextGrid cols rows>` that renders exact cells
+- [ ] One CSS aspect-ratio switch: 56×24 / 40×24 / 20×36; remove the JS widescreen check
+- [ ] `min()` font sizing, zero scroll, safe-area insets
+- [ ] Header and Fastext as fixed grid rows; data-driven sidebar
+- [ ] Double-height rows
 
----
+### Phase 3: Content pipeline
+- [ ] Single typed schema + single page registry
+- [ ] Colour-tag markup + build-time wrapper (38/40 and 20 columns), `mobileRows` override
+- [ ] Validator: width, row count, link targets, colour tags
+- [ ] Move 202 and 404 into content; add 888 and 203 (or drop 203)
+- [ ] New copy based on steverobertson.dev
 
-### 🟢 Sprint 4: Canvas Shader & Mobile Handset UX
-- **Goal**: Canvas image-to-mosaic ditherer, mobile handheld TV remote, Page 888 subtitles.
-- **Deliverables**:
-  - [x] Real-time Canvas posterizer shader (`<TeletextCanvasImage>`)
-  - [x] Touch-friendly retro TV keypad remote control overlay (`<MobileKeypad>`)
-  - [x] Page 888 Subtitle / High-Contrast Reader mode toggle
-- **Status**: **COMPLETE** ✅
+### Phase 4: Navigation & accessibility
+- [ ] Fastext as `<a href>`; hotkeys R/G/Y/B
+- [ ] Shared digit buffer for keyboard and keypad; fix the side effect inside the state updater
+- [ ] Nothing focusable inside `aria-hidden`; full semantic mirror
+- [ ] Live-region announcements + focus management on navigation
+- [ ] Page 888 Text mode (persisted)
+- [ ] axe checks in CI
 
----
+### Phase 5: Graphics & polish
+- [ ] Build-time image → 2×3 mosaic converter (text output)
+- [ ] Optional edit.tf import
+- [ ] Scanline/glow overlay that respects reduced motion, with a toggle on 888
+- [ ] Sub-page cycling with hold
 
-### 🟢 Sprint 5: CI/CD & GitHub Pages Launch
-- **Goal**: Automated deployment pipeline, WCAG audit, cross-device testing, launch.
-- **Deliverables**:
-  - [x] GitHub Actions workflow (`.github/workflows/deploy.yml`)
-  - [x] Build-time line length validation & TypeScript verification pipeline
-  - [x] Responsive cross-browser verification
-  - [x] Production deployment configuration for GitHub Pages
-- **Status**: **COMPLETE** ✅
+### Phase 6: Ship (deferred)
+- [ ] Per-page pre-rendered HTML + meta tags
+- [ ] Vite `base`, `404.html` SPA fallback
+- [ ] Storybook published at `/storybook`
+- [ ] Playwright visual tests at four viewports

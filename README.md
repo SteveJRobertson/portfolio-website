@@ -1,32 +1,31 @@
-# React + TypeScript + Vite
+# Steve-Text: Teletext Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Steve Robertson's developer portfolio, built as a Ceefax / ORACLE-style Teletext service: 3-digit page numbers, Fastext colour links, Mode 7 typography.
 
-Currently, two official plugins are available:
+> **Status:** being fixed up after an AI-generated first draft. See [docs/REVIEW.md](docs/REVIEW.md) for the findings and [docs/ROADMAP.md](docs/ROADMAP.md) for progress.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Getting started
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm ci
+npm run dev        # http://localhost:5173
+npm run validate   # check page content fits the grid
+npm run build      # validate + typecheck + production build
+npm run lint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Project layout
+
+| Path | Purpose |
+|---|---|
+| `src/content/pages/*.json` | One file per Teletext page |
+| `src/components/` | Teletext UI components |
+| `src/hooks/usePageBuffer.ts` | 3-digit page entry and routing |
+| `scripts/validatePages.ts` | Build-time content checks |
+| `docs/` | Spec, roadmap and review |
+
+## Docs
+
+- [SPEC.md](docs/SPEC.md): requirements and decision log
+- [ROADMAP.md](docs/ROADMAP.md): phased delivery plan
+- [REVIEW.md](docs/REVIEW.md): review of the original build
