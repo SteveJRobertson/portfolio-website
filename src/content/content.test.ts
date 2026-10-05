@@ -261,7 +261,7 @@ describe('real content', () => {
 
   it('has the approved page map', () => {
     expect(PAGES.map((p) => p.page)).toEqual([100, 101, 110, 200, 201, 202, 203, 300, 400, 404, 888]);
-    expect(getPage(110)?.wide).toHaveLength(6);
+    expect(getPage(110)?.wide).toHaveLength(7);
     expect(getPage(300)?.wide).toHaveLength(3);
   });
 });

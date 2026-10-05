@@ -1,11 +1,24 @@
 {
   "page": 110,
   "title": "Experience",
-  "description": "Steve Robertson's experience: Senior Software Engineer at FanDuel, Design System Lead at Wood Mackenzie, and frontend roles at Royal Bank of Scotland, Aegon and Royal London.",
+  "description": "Steve Robertson's experience: Senior Software Engineer at Motability Operations and FanDuel, Design System Lead at Wood Mackenzie, and frontend roles at Royal Bank of Scotland, Aegon and Royal London.",
   "label": "EXPERIENCE",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 300 }, { "page": 400 }],
   "subpages": [
+    [
+      { "banner": "EXPERIENCE", "bg": "red" },
+      "",
+      { "text": "{yellow}Motability Operations{/}", "heading": true },
+      "{cyan}Senior Software Engineer{/}",
+      "Sep 2025 - Present",
+      "",
+      "* Website migration",
+      "* Design system",
+      "* AI orchestration",
+      "",
+      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
+    ],
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
@@ -14,7 +27,7 @@
         "alt": "The FanDuel logo: a blue shield, split to form an F.",
         "rows": 4,
         "pixelArt": true,
-        "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Present"]
+        "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Aug 2025"]
       },
       "",
       "* Large-scale migrations (company-wide design system, routing infrastructure) for high-traffic apps",

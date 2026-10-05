@@ -104,31 +104,31 @@ describe('App', () => {
 
   it('puts every sub-page in the mirror and announces sub-page steps', () => {
     renderAt('/110');
-    expect(screen.getAllByRole('region', { name: /^Part \d of 6$/ })).toHaveLength(6);
+    expect(screen.getAllByRole('region', { name: /^Part \d of 7$/ })).toHaveLength(7);
     expect(screen.getByRole('heading', { level: 2, name: 'Aegon' })).toBeTruthy();
     press('ArrowRight');
-    expect(screen.getByRole('status').textContent).toBe('Part 2 of 6');
+    expect(screen.getByRole('status').textContent).toBe('Part 2 of 7');
   });
 
   it('cycles sub-pages on a timer without announcing them, and holds them', () => {
     renderAt('/110');
-    expect(header()).toContain('1/6');
+    expect(header()).toContain('1/7');
     cycle();
-    expect(header()).toContain('2/6');
+    expect(header()).toContain('2/7');
     expect(screen.getByRole('status').textContent).toBe('');
 
     const hold = screen.getByRole('button', { name: /HOLD/ });
     fireEvent.click(hold);
     expect(hold.getAttribute('aria-pressed')).toBe('true');
-    expect(header()).toContain('2/6 HOLD');
-    expect(screen.getByRole('status').textContent).toBe('Held on part 2 of 6');
+    expect(header()).toContain('2/7 HOLD');
+    expect(screen.getByRole('status').textContent).toBe('Held on part 2 of 7');
     cycle();
-    expect(header()).toContain('2/6');
+    expect(header()).toContain('2/7');
 
     press('h');
     expect(screen.getByRole('status').textContent).toBe('Cycling');
     cycle();
-    expect(header()).toContain('3/6');
+    expect(header()).toContain('3/7');
   });
 
   it('only shows HOLD on pages with sub-pages', () => {
@@ -158,7 +158,7 @@ describe('App', () => {
     stubMedia('(prefers-reduced-motion: reduce)');
     renderAt('/110');
     cycle();
-    expect(header()).toContain('1/6 HOLD');
+    expect(header()).toContain('1/7 HOLD');
     expect(document.querySelector('.crt-overlay')).toBeNull();
   });
 
