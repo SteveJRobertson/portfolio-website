@@ -240,6 +240,18 @@ html, body {
   text-decoration: underline;
 }
 
+/* A directory line is one link; hovering it joins its leader dots into a solid line (Bedstead's dot sits 0.71–0.81em down) */
+.tt-line-link {
+  cursor: pointer;
+}
+
+.tt-line-link:hover .tt-leader {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 100% 0.1em;
+  background-position: 0 0.71em;
+}
+
 /* The grid twin of whatever has keyboard focus in the hidden semantic mirror */
 .tt-twin-focus {
   outline: 2px solid var(--tt-white);
@@ -369,9 +381,9 @@ html, body {
   outline: none;
 }
 
-/* Retro Remote Handset Component */
+/* Retro Remote Handset Component. Not positioned itself, so the handset centres on the
+   control strip (which stays centred under the screen) wherever the REMOTE button sits. */
 .teletext-remote-control {
-  position: relative;
   display: flex;
   justify-content: center;
 }
@@ -390,7 +402,7 @@ html, body {
   border: 2px solid #333333;
   border-radius: 8px;
   padding: 0.8rem;
-  width: 280px;
+  width: 320px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
@@ -413,8 +425,13 @@ html, body {
 
 .remote-fastext-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.remote-fastext-btn {
+  min-height: 2.75rem;
+  border-radius: 4px;
 }
 
 .remote-btn {
@@ -431,6 +448,8 @@ html, body {
 .nav-btn {
   background: #333333;
   color: #ffffff;
+  font-size: 0.85rem;
+  min-height: 2.75rem;
 }
 
 .remote-keypad-grid {
@@ -444,9 +463,10 @@ html, body {
   color: #ffffff;
   border: 1px solid #444444;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  padding: 0.4rem;
+  padding: 0.6rem;
+  min-height: 2.75rem;
   border-radius: 4px;
   cursor: pointer;
   text-align: center;
@@ -464,6 +484,19 @@ html, body {
 }
 .remote-nav-row .remote-btn {
   flex: 1 1 30%;
+}
+
+/* Phones: the handset spans the screen inside the gutters and safe areas, just above the control strip */
+@media (max-width: 480px) {
+  .remote-handset-body {
+    position: fixed;
+    box-sizing: border-box;
+    width: auto;
+    transform: none;
+    left: calc(env(safe-area-inset-left, 0px) + var(--tt-gutter));
+    right: calc(env(safe-area-inset-right, 0px) + var(--tt-gutter));
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tt-gutter) + var(--tt-remote-h) + 0.25rem);
+  }
 }
 
 /* ============================================================

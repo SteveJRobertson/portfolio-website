@@ -1,7 +1,7 @@
 import React, { useId, useRef, useState } from 'react';
 import type { FastextLink } from '../types/teletext';
 import { NAVIGABLE_PAGES } from '../content/registry';
-import { FASTEXT_ORDER, fastextLabel, fastextName } from '../display/fastext';
+import { FASTEXT_ORDER, fastextName } from '../display/fastext';
 
 interface MobileKeypadProps {
   /** The shared digit buffer's text, e.g. "P1--". */
@@ -76,20 +76,6 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
           </span>
         </div>
 
-        <div className="remote-fastext-row">
-          {FASTEXT_ORDER.map((color, i) => (
-            <button
-              key={color}
-              type="button"
-              className={`remote-btn bg-${color}`}
-              aria-label={fastextName(i, fastext[i])}
-              onClick={() => onNavigate(fastext[i].page)}
-            >
-              {fastext[i].page} {fastextLabel(fastext[i])}
-            </button>
-          ))}
-        </div>
-
         <div className="remote-keypad-grid">
           {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
             <button key={num} type="button" className="remote-num-btn" onClick={() => onDigit(num)}>
@@ -128,6 +114,19 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
           <button type="button" className="remote-btn nav-btn" aria-label="888 A11Y: accessibility" onClick={() => onNavigate(888)}>
             888 A11Y
           </button>
+        </div>
+
+        {/* The coloured keys, as on a TV remote: no text, named for screen readers */}
+        <div className="remote-fastext-row">
+          {FASTEXT_ORDER.map((color, i) => (
+            <button
+              key={color}
+              type="button"
+              className={`remote-btn remote-fastext-btn bg-${color}`}
+              aria-label={fastextName(i, fastext[i])}
+              onClick={() => onNavigate(fastext[i].page)}
+            />
+          ))}
         </div>
       </div>
     </div>

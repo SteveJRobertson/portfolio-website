@@ -132,6 +132,19 @@ describe('layoutRows', () => {
     expect(parseMarkup('{dots}A{dots}').errors).toContain('only one "{dots}" fits on a line');
   });
 
+  it('links a whole directory line, dots included, when the link wraps it', () => {
+    const { rows } = layoutRows(['{link:300}{white}Skills{dots}{/}300{/}'], 20);
+    expect(texts(rows)).toEqual([' Skills..........300']);
+    expect(rows[0].segments.slice(1)).toEqual([
+      { text: 'Skills', color: 'white', link: 300 },
+      { text: '..........', color: 'white', link: 300, leaderDots: true },
+      { text: '300', color: 'cyan', link: 300 },
+    ]);
+    expect(buildSemantic(['{link:300}{white}Skills{dots}{/}300{/}'])).toEqual([
+      { kind: 'list', items: [[{ text: '300 Skills', page: 300 }]] },
+    ]);
+  });
+
   it('counts a mosaic character as one cell', () => {
     const mosaic = String.fromCodePoint(0x1fb00).repeat(9);
     expect(rowLength(layoutRows([mosaic], 10).rows[0])).toBe(10);
