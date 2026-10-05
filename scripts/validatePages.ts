@@ -1,4 +1,5 @@
 import { compilePageDir } from './lib/pageFiles.ts';
+import { NARROW_COLS, WIDE_COLS } from '../src/content/schema.ts';
 
 const { pages, errors } = compilePageDir();
 
@@ -8,5 +9,5 @@ if (errors.length > 0) {
   process.exit(1);
 } else {
   const subpages = pages.reduce((n, p) => n + p.wide.length, 0);
-  console.log(`✅ ${pages.length} pages (${subpages} screens) fit at 38 and 20 columns, with valid tags and links.`);
+  console.log(`✅ ${pages.length} pages (${subpages} screens) fit at ${WIDE_COLS} and ${NARROW_COLS} columns, with valid tags and links.`);
 }

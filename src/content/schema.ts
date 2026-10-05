@@ -16,7 +16,7 @@ export type TextRowSource = string | { text: string; doubleHeight?: boolean; hea
 /**
  * A picture from `src/content/images/<image>.png`, converted to mosaic cells
  * at build time (SPEC §8). `rows` is its height in the 38-column layout; the
- * width follows its shape. Portrait fits it into 20 columns, or uses
+ * width follows its shape. Portrait fits it into 32 columns, or uses
  * `mobileRows`. `alt` is its text in the semantic mirror and Text mode.
  */
 export interface ImageRowSource {

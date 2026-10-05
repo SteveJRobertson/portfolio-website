@@ -18,10 +18,12 @@ interface HeaderInput {
  * Row 1, exactly `cols` wide:
  *   56: P100 STEEVEFAX 100 ...... SUN 04 OCT 14:03:22
  *   40: P100 STEEVEFAX 100 ...... 04 OCT 14:03:22
+ *   32: P100 STEEVEFAX ........... 14:03
  *   20: P100 STEVE ..... 14:03
  * With sub-pages the counter follows the page number: "STEEVEFAX 110 1/6",
- * or "1/6 STEVE" at 20 columns. While HOLD is on it follows the counter, as on
- * a TV set: "STEEVEFAX 110 1/6 HOLD", with the date dropped at 40 columns to
+ * or the name at 32 columns, where the buffer already shows the page
+ * ("STEEVEFAX 1/6"), or comes first at 20 ("1/6 STEVE"). While HOLD is on it
+ * follows the counter, as on a TV set: "STEEVEFAX 110 1/6 HOLD", with the date dropped at 40 columns to
  * make room, or "1/6 HOLD" in place of the name at 20.
  */
 export const formatHeader = ({ bufferText, currentPage, now, cols, subpage }: HeaderInput): GridRow => {
@@ -36,14 +38,13 @@ export const formatHeader = ({ bufferText, currentPage, now, cols, subpage }: He
   const hold = held ? [{ text: ' ' }, { text: 'HOLD', color: 'red' as const }] : [];
 
   const left =
-    cols < 40
+    cols < 30
       ? held
         ? [...counter, ...hold]
         : [...counter.flatMap((c) => [c, { text: ' ' }]), { text: 'STEVE', color: 'yellow' as const }]
       : [
           { text: 'STEEVEFAX', color: 'yellow' as const },
-          { text: ' ' },
-          { text: page, color: 'cyan' as const },
+          ...(cols < 40 ? [] : [{ text: ' ' }, { text: page, color: 'cyan' as const }]),
           ...counter.flatMap((c) => [{ text: ' ' }, c]),
           ...hold,
         ];

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { PALETTE_RGB, mosaicCols, mosaicRowsFor, overfullCells, sextant, toMosaic, type RgbaImage } from './mosaic';
 import { compilePages, type SourceFile } from './compile';
 import { buildSemantic } from './semantic';
-import type { PageSource } from './schema';
+import { NARROW_COLS, type PageSource } from './schema';
 import { rowLength, rowText } from '../display/rows';
 import type { TeletextColor } from '../types/teletext';
 
@@ -86,13 +86,13 @@ const page = (rows: PageSource['rows']): SourceFile => ({
 const square = image(30, 30, (x, y) => (x > 5 && x < 24 && y > 5 && y < 24 ? 'white' : null));
 
 describe('image rows', () => {
-  it('centres the picture in both layouts and fits portrait to 20 columns', () => {
+  it('centres the picture in both layouts and fits portrait to its width', () => {
     const { pages, errors } = compilePages([page([{ image: 'square', alt: 'A white square.', rows: 18 }])], { square });
     expect(errors).toEqual([]);
     expect(pages[0].wide[0]).toHaveLength(18);
     expect(rowText(pages[0].wide[0][0]).length).toBe(4 + 30); // 30 wide, centred in 38
-    expect(pages[0].narrow[0]).toHaveLength(12); // 20 columns of a square
-    pages[0].narrow[0].forEach((row) => expect(rowLength(row)).toBeLessThanOrEqual(20));
+    expect(pages[0].narrow[0]).toHaveLength(18); // 30 columns of a square fit the portrait width
+    pages[0].narrow[0].forEach((row) => expect(rowLength(row)).toBeLessThanOrEqual(NARROW_COLS));
   });
 
   it('uses mobileRows for the portrait height', () => {
@@ -122,13 +122,13 @@ describe('image rows', () => {
 
   it('puts text beside a picture on wide screens and below it in portrait', () => {
     const beside = ['{green}TECH{/} React', 'Hello there'];
-    // The square is 10 cells wide at 6 rows: room for text beside it at 38 columns, not at 20.
-    const { pages, errors } = compilePages([page([{ image: 'square', alt: 'Square.', rows: 6, beside }])], { square });
+    // The square is 20 cells wide at 12 rows: room for text beside it at 38 columns, not at 32.
+    const { pages, errors } = compilePages([page([{ image: 'square', alt: 'Square.', rows: 12, beside }])], { square });
     expect(errors).toEqual([]);
     const wide = pages[0].wide[0].map(rowText);
-    expect(wide).toHaveLength(6);
-    expect(wide[0]).toMatch(/^ .{10}  TECH React$/u); // margin, 10 cells of picture, a gap, the text with its margin
-    expect(wide[1]).toMatch(/^ .{10}  Hello there$/u);
+    expect(wide).toHaveLength(12);
+    expect(wide[0]).toMatch(/^ .{20}  TECH React$/u); // margin, 20 cells of picture, a gap, the text with its margin
+    expect(wide[1]).toMatch(/^ .{20}  Hello there$/u);
     const narrow = pages[0].narrow[0].map(rowText);
     expect(narrow.slice(-3)).toEqual(['', ' TECH React', ' Hello there']);
     expect(pages[0].semantic[0].map((b) => b.kind)).toEqual(['image', 'paragraph', 'paragraph']);

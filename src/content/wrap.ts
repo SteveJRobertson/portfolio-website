@@ -43,7 +43,7 @@ const toSegments = (styled: StyledChar[]): GridSegment[] => {
 
 const spaces = (n: number): StyledChar[] => Array.from({ length: n }, () => ({ ch: ' ' }));
 
-/** A line may also break straight after these, so URLs and emails wrap at 20 columns. */
+/** A line may also break straight after these, so URLs and emails wrap in portrait. */
 const BREAK_AFTER = new Set(['/', '-', '@']);
 
 /**

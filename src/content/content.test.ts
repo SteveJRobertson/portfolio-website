@@ -8,7 +8,7 @@ import { layoutRows, slotsUsed } from './wrap';
 import { compilePages, type SourceFile } from './compile';
 import { compilePageDir } from '../../scripts/lib/pageFiles';
 import { autolink, buildSemantic } from './semantic';
-import { NARROW_BODY_ROWS, WIDE_BODY_ROWS, type PageSource } from './schema';
+import { NARROW_BODY_ROWS, NARROW_COLS, WIDE_BODY_ROWS, type PageSource } from './schema';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage, isValidPage } from './registry';
 import { sidebarRows } from '../display/sidebar';
 import { rowLength, rowText } from '../display/rows';
@@ -185,15 +185,17 @@ describe('compilePages', () => {
     expect(errorsFor(file(source({ rows: Array(WIDE_BODY_ROWS + 1).fill('x') })))).toContain(
       `page100.json (38 columns): needs ${WIDE_BODY_ROWS + 1} rows; the limit is ${WIDE_BODY_ROWS}`,
     );
-    const long = 'word '.repeat(140); // 20 lines at 38 columns, 35 in portrait
+    const long = 'word '.repeat(200); // 29 lines at 38 columns, 34 in portrait
     expect(errorsFor(file(source({ rows: [long] })))).toContain('(portrait): needs');
     expect(errorsFor(file(source({ mobileRows: Array(NARROW_BODY_ROWS + 1).fill('x') })))).toContain(
       `the limit is ${NARROW_BODY_ROWS}`,
     );
   });
 
-  it('rejects a mobile row wider than 20 columns', () => {
-    expect(errorsFor(file(source({ mobileRows: ['x'.repeat(20)] })))).toContain('is 21 cells wide; the limit is 20');
+  it('rejects a mobile row wider than the portrait grid', () => {
+    expect(errorsFor(file(source({ mobileRows: ['x'.repeat(NARROW_COLS)] })))).toContain(
+      `is ${NARROW_COLS + 1} cells wide; the limit is ${NARROW_COLS}`,
+    );
   });
 
   it('rejects links to pages that do not exist', () => {
@@ -233,7 +235,7 @@ describe('real content', () => {
     for (const page of PAGES) {
       page.wide.forEach((rows) => expect(slotsUsed(rows)).toBeLessThanOrEqual(WIDE_BODY_ROWS));
       page.narrow.forEach((rows) => expect(slotsUsed(rows)).toBeLessThanOrEqual(NARROW_BODY_ROWS));
-      page.narrow.forEach((rows) => rows.forEach((r) => expect(r.fill || rowLength(r) <= 20).toBeTruthy()));
+      page.narrow.forEach((rows) => rows.forEach((r) => expect(r.fill || rowLength(r) <= NARROW_COLS).toBeTruthy()));
     }
   });
 
