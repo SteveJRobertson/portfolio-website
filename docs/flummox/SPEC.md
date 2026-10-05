@@ -106,9 +106,54 @@ Steve asked for a way to share your score on social media at the end of a game.
   | Email | `mailto:?subject=…&body=…` | Yes |
 
   **Copy** (yellow Fastext, `Y`) copies the message and link to the clipboard and says "COPIED" on screen and in the live region; if the clipboard isn't available it says so and the message stays on screen to select.
-- **Link previews**: Facebook and LinkedIn take only a link and show its preview, so `/152/` gets its own pre-rendered title, description ("Can you flummox Felix? A Teletext quiz on STEEVEFAX page 152") and a share image of the Flummox! intro screen, taken the way `public/share.png` is now. The preview can't show a score, because the site is static (open question Q7).
+- **The shared link is a score page**, `/152/score/9/`, so every network's preview shows the score, including Facebook and LinkedIn, which take only a link (Q7, agreed 5 Oct). See "Share images and link previews" below.
 - **Privacy**: plain links only. No share buttons, scripts or tracking pixels from the networks are loaded, and nothing is sent anywhere until the visitor picks a network.
 - **Accessibility**: in the mirror the Share screen is a heading, the message as a paragraph, and a list of real links named "Share on Bluesky (opens in a new tab)"; Copy is a button. The score in the message is the same number the Finished screen shows.
+- **Save picture**: a last line on the Share screen downloads the score picture (below), for networks with no share link, such as Instagram. On a phone that can share files (`navigator.canShare({ files })`), a "Share picture" line opens the share sheet with the picture attached as well. The Share key itself sends the message and link only, because some apps drop the link when a picture is attached.
+
+### Share images and link previews
+
+Every network that shows a link preview (Bluesky, X, Threads, Facebook, LinkedIn, WhatsApp, iMessage, Slack, Discord) reads the same Open Graph tags, so one set of images covers them all.
+
+**Images** (all 1200 × 630 PNG, the size every network above uses for a large preview, and under 300 KB each so WhatsApp shows them):
+
+| Image | Used for | What it shows |
+|---|---|---|
+| `public/share/flummox.png` | `/152/`, when someone shares the page itself | The Flummox! intro: banner, Felix, "Can you flummox Felix?" |
+| `public/share/flummox-0.png` to `flummox-12.png` | `/152/score/N/`, the link in every shared score | A score card (below) |
+| `public/share.png` | Every other page | Unchanged |
+
+**The score card** is a Teletext screen in widescreen mode (1200 × 630 is wider than 16:10, so it's 56 × 24), drawn by the real grid so it looks like the site:
+
+```
+P152 STEEVEFAX 152                         MON 05 OCT
+ FLUMMOX!  banner, red band
+                                      ┌──────────┐
+  I SCORED                            │  Felix   │
+   9 / 12      ← block letters        │ 12 × 9   │
+                                      └──────────┘
+  Felix is impressed. Nearly perfect.  ← the verdict
+
+  Can you flummox Felix? Key 152 on STEEVEFAX
+```
+
+- The score is in block letters, the biggest thing on the card. Felix is in the mood that matches: the yellow "flummoxed" face for 9 and over (you beat him), his normal face otherwise.
+- Everything that matters sits in the middle 630 × 630, because WhatsApp and some chat apps crop the preview to a square.
+- No quick index, remote or CRT effect on the card. The header shows the date but not the time, so the 13 cards don't go stale by the minute.
+- The block font needs a `/` glyph for "9/12".
+
+**Score pages** (`/152/score/0/` to `/152/score/12/`): pre-rendered pages that only exist for link previews.
+
+- Each has its own title ("I scored 9/12 on Flummox!"), description (the verdict, then "Can you flummox Felix?"), `og:image` (its card), `og:image:alt` ("A Teletext screen: Flummox! score 9 out of 12, with Felix Flummox looking flummoxed.") and `og:url` set to the score page itself. If `og:url` pointed at `/152/`, Facebook and LinkedIn would fetch that page's tags instead and lose the score.
+- `<link rel="canonical">` points at `/152/`, and the pages carry `noindex`, so search engines list only /152/.
+- A visitor who opens one is sent on to `/152/` by the app (a `replace`, so Back doesn't loop). There is no meta refresh, because some crawlers would follow it and read /152/'s tags. Without JavaScript the page shows the score and a link to /152/.
+- The router treats `/152/score/N/` as page 152; any other path under /152/ goes to 404 as now.
+
+**Per-page alt text**: `og:image:alt` is hard-coded to the index picture today. It becomes per page: the index text for the existing pages, and the texts above for /152/ and the score pages. `twitter:card` stays `summary_large_image` on all of them.
+
+**How the images are made**: a Storybook story renders each card and the intro, and `npm run share-images` captures them with Playwright, as `e2e/shareImage.ts` does for `public/share.png` now. They are committed, and made in CI's Playwright image by an "Update share images" workflow (the baseline workflow's twin) so the font matches. A Vitest check stores a hash of what the cards are made from (the verdicts, Felix's PNGs, the card layout) and fails with "run Update share images" when they change, so a verdict edit can't leave old wording in the previews.
+
+**Checking the previews**: GitHub Pages is the only place crawlers can reach them, so they're checked after the first deploy with Facebook's Sharing Debugger, LinkedIn's Post Inspector and by posting a test link to Bluesky. LinkedIn keeps a preview for about a week, and the Post Inspector is how to refresh it.
 
 ## 7. Question content file
 
@@ -194,8 +239,8 @@ Each has a default the plan uses if you don't say otherwise.
 | Q4 | Add a Bambette-style consolation question? | No, not in this version. |
 | Q5 | Show the right answer after a wrong one? | No, as in Bamboozle!: you have to get it right next time round. |
 | Q6 | List 152 on the index page and quick index? | Yes. |
-| Q7 | Should link previews on Facebook and LinkedIn show the score? It needs 13 extra pre-rendered pages (`/152/score/0/` to `/152/score/12/`), each with its own preview image and title, that send visitors on to `/152/`. | No for now: the score is in the message on networks that take text, and the preview is the Flummox! intro. |
-| Q8 | Which networks? | Bluesky, X, Threads, Facebook, LinkedIn, WhatsApp and email, plus Copy and the phone's own share sheet. |
+| Q7 | Should link previews on Facebook and LinkedIn show the score? | **Agreed 5 Oct: yes**, with score pages and score cards. |
+| Q8 | Which networks? | **Agreed 5 Oct**: Bluesky, X, Threads, Facebook, LinkedIn, WhatsApp and email, plus Copy and the phone's own share sheet. |
 
 ## 12. Sources
 
@@ -214,3 +259,4 @@ These came from search summaries; the sandbox couldn't open the pages themselves
 | FLX-004 | The fourth answer key is cyan, matching the site's Fastext, with `B` and `C` both accepted. |
 | FLX-005 | Scoring: a point per question right at the first try; a wrong answer sends you back to the last checkpoint (after questions 4 and 8). |
 | FLX-006 | Sharing uses the native share sheet where there is one, otherwise plain share links to each network and Copy. No third-party scripts. |
+| FLX-007 | Shared links go to a pre-rendered score page (`/152/score/N/`) with its own 1200 × 630 score card, so every network's preview shows the score. Cards are drawn by the Teletext grid, captured by Playwright, committed, and checked for staleness in Vitest. |

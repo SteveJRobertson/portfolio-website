@@ -44,7 +44,10 @@ One branch and one PR for the build, squash-merged after Steve approves, as with
 - `src/flummox/share.ts`: builds the message from `quiz.json`'s wording and the score, and the share URL for each network (SPEC §6, Sharing). Pure functions, unit tested, URL-encoded.
 - The Share action tries `navigator.share` and falls back to the Share screen; Copy uses `navigator.clipboard.writeText` with a fallback message.
 - The Share screen's network lines are grid links to external addresses, reusing the `href` segments that email and web addresses already use (they open in a new tab and have real links in the mirror).
-- `scripts/prerender.ts` gives /152/ its own Open Graph image, `public/share-152.png`, taken by `e2e/shareImage.ts` like the site's share image.
+- `scripts/prerender.ts` writes `/152/score/0/` to `/152/score/12/` and takes per-page Open Graph image, alt text and `og:url` (SPEC §6, Share images and link previews). `src/prerender.tsx` returns the score pages alongside the real ones.
+- `src/navigation/paths.ts`: `pageFromPath` reads `/152/score/N/` as 152, and the app replaces the URL with `/152/`.
+- `src/content/blockFont.ts` gains `/`.
+- A `FlummoxCard` Storybook story renders the intro card and each score card at 1200 × 630; `scripts/shareImages.ts` (`npm run share-images`) captures them into `public/share/`, and `.github/workflows/update-share-images.yml` runs it in the Playwright image and commits the result. `public/share/manifest.json` holds the input hash that the Vitest staleness check compares.
 
 ### 7. Tests
 
