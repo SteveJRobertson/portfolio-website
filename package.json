@@ -9,17 +9,22 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "npm run validate && tsc -b && vite build",
+    "build": "npm run validate && tsc -b && vite build && npm run prerender",
     "lint": "oxlint",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "prerender": "vite build --ssr src/prerender.tsx --outDir dist-ssr && tsx scripts/prerender.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots"
   },
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "1.63.0",
     "@storybook/react-vite": "^10.6.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

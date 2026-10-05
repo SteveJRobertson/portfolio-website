@@ -13,11 +13,22 @@ const press = (key: string, init: KeyboardEventInit = {}, target: EventTarget = 
 describe('paths', () => {
   it('builds and reads page URLs', () => {
     expect(pageHref(100)).toBe('/');
-    expect(pageHref(110)).toBe('/110');
+    expect(pageHref(110)).toBe('/110/');
     expect(pageFromPath('/')).toBe(100);
     expect(pageFromPath('/110')).toBe(110);
     expect(pageFromPath('/512/')).toBe(512);
     expect(pageFromPath('/about')).toBe(404);
+  });
+
+  it('adds and removes the base path the site is served from', () => {
+    const base = '/portfolio-website/';
+    expect(pageHref(100, base)).toBe('/portfolio-website/');
+    expect(pageHref(110, base)).toBe('/portfolio-website/110/');
+    expect(pageFromPath('/portfolio-website/', base)).toBe(100);
+    expect(pageFromPath('/portfolio-website', base)).toBe(404);
+    expect(pageFromPath('/portfolio-website/110', base)).toBe(110);
+    expect(pageFromPath('/portfolio-website/110/', base)).toBe(110);
+    expect(pageFromPath('/portfolio-website/nope/', base)).toBe(404);
   });
 
   it('only treats an unmodified left click as plain', () => {
@@ -41,7 +52,7 @@ describe('useNavigation', () => {
     window.history.replaceState(null, '', '/942');
     const length = window.history.length;
     expect(renderHook(() => useNavigation()).result.current.page).toBe(404);
-    expect(window.location.pathname).toBe('/404');
+    expect(window.location.pathname).toBe('/404/');
     expect(window.history.length).toBe(length);
   });
 
@@ -49,13 +60,13 @@ describe('useNavigation', () => {
     const { result } = renderHook(() => useNavigation());
     act(() => result.current.navigate(512));
     expect(result.current.page).toBe(404);
-    expect(window.location.pathname).toBe('/404');
+    expect(window.location.pathname).toBe('/404/');
   });
 
   it('pushes history on navigate and follows back and forward', () => {
     const { result } = renderHook(() => useNavigation());
     act(() => result.current.navigate(300));
-    expect(window.location.pathname).toBe('/300');
+    expect(window.location.pathname).toBe('/300/');
     expect(result.current).toMatchObject({ page: 300, changes: 1 });
 
     act(() => {

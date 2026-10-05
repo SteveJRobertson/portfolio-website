@@ -1,6 +1,7 @@
 {
   "page": 300,
   "title": "Skills",
+  "description": "Steve Robertson's skills: React, TypeScript and JavaScript, design systems and accessibility, CI/CD and AWS, Figma and stakeholder engagement, mentoring and developer enablement.",
   "label": "SKILLS",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 400 }],

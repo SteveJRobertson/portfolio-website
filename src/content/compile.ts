@@ -78,6 +78,9 @@ const shapeErrors = (data: unknown): string[] => {
   if (!Number.isInteger(page.page)) errors.push('"page" must be a whole number');
   if (typeof page.title !== 'string' || !page.title) errors.push('"title" is required');
   if (typeof page.label !== 'string' || !page.label) errors.push('"label" is required');
+  if (page.description !== undefined && (typeof page.description !== 'string' || !page.description)) {
+    errors.push('"description" must be some text');
+  }
   if (page.index !== undefined && typeof page.index !== 'boolean') errors.push('"index" must be true or false');
   const fastext = page.fastext;
   if (
@@ -199,6 +202,7 @@ export const compilePages = (files: SourceFile[], images: Readonly<Record<string
     return {
       page: page.page,
       title: page.title,
+      ...(page.description ? { description: page.description } : {}),
       label: page.label,
       index: page.index ?? false,
       fastext,

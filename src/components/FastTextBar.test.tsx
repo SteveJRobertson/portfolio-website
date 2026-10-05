@@ -14,7 +14,7 @@ describe('FastTextBar', () => {
   it('renders four real links with full accessible names', () => {
     render(<FastTextBar links={links} onNavigate={vi.fn()} cols={56} row={24} />);
     const anchors = screen.getAllByRole('link');
-    expect(anchors.map((a) => a.getAttribute('href'))).toEqual(['/', '/200', '/300', '/400']);
+    expect(anchors.map((a) => a.getAttribute('href'))).toEqual(['/', '/200/', '/300/', '/400/']);
     expect(anchors.map((a) => a.getAttribute('aria-label'))).toEqual([
       'Red: Index, page 100',
       'Green: Projects, page 200',

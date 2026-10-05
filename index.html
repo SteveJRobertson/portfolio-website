@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Steve Robertson | Teletext Portfolio (P100)</title>
+    <!-- page-meta: replaced per page by scripts/prerender.ts -->
+    <title>Steve Robertson | Teletext Portfolio</title>
     <meta name="description" content="Steve Robertson's developer portfolio presented as an authentic 1980s Ceefax/Teletext terminal system with 3-digit page navigation." />
-    <!-- OpenGraph Tags -->
-    <meta property="og:title" content="Steve Robertson | Teletext Portfolio" />
-    <meta property="og:description" content="Developer portfolio engineered as an interactive Teletext system." />
-    <meta property="og:type" content="website" />
+    <!-- /page-meta -->
+    <meta name="theme-color" content="#000000" />
     <link rel="preload" href="/fonts/bedstead.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- The pre-rendered page in #root is for visitors without JavaScript; with it, the app replaces it -->
+    <script>document.documentElement.classList.add('js')</script>
   </head>
   <body>
     <div id="root"></div>

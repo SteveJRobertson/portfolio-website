@@ -67,7 +67,7 @@ describe('App', () => {
     fireEvent.click(within(remote).getByRole('button', { name: '1' }));
     fireEvent.click(within(remote).getByRole('button', { name: '0' }));
     act(() => vi.advanceTimersByTime(DIGIT_DELAY_MS));
-    expect(window.location.pathname).toBe('/110');
+    expect(window.location.pathname).toBe('/110/');
     expect(pushState).toHaveBeenCalledTimes(1);
     expect(heading().textContent).toBe('Experience');
     expect(document.activeElement).toBe(heading());
@@ -76,9 +76,9 @@ describe('App', () => {
   it('follows the Fastext hotkeys and links', () => {
     renderAt('/');
     press('g');
-    expect(window.location.pathname).toBe('/110');
+    expect(window.location.pathname).toBe('/110/');
     fireEvent.click(screen.getByRole('link', { name: 'Yellow: Skills, page 300' }));
-    expect(window.location.pathname).toBe('/300');
+    expect(window.location.pathname).toBe('/300/');
   });
 
   it('opens email and web addresses clicked on the screen', () => {
@@ -91,14 +91,14 @@ describe('App', () => {
 
   it('redirects an unknown page to 404, from the URL or the digits', () => {
     renderAt('/512');
-    expect(window.location.pathname).toBe('/404');
+    expect(window.location.pathname).toBe('/404/');
     expect(heading().textContent).toBe('Page not found');
 
     press('5');
     press('1');
     press('3');
     act(() => vi.advanceTimersByTime(DIGIT_DELAY_MS));
-    expect(window.location.pathname).toBe('/404');
+    expect(window.location.pathname).toBe('/404/');
     expect(heading().textContent).toBe('Page not found');
   });
 
@@ -205,7 +205,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: /SHORTCUTS/ }));
     press('r');
     press('1');
-    expect(window.location.pathname).toBe('/888');
+    expect(window.location.pathname).toBe('/888/');
     expect(screen.getByRole('button', { name: /SHORTCUTS/ }).getAttribute('aria-pressed')).toBe('false');
   });
 });
