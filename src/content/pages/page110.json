@@ -18,9 +18,9 @@
         "beside": [{ "text": "{yellow}Motability Operations{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Sep 2026 - Present"]
       },
       "",
-      "* Website migration",
-      "* Design system",
-      "* AI orchestration"
+      "* Migrating the website from WordPress to Contentful",
+      "* Shaping a new AI-orchestrated design system as it launches",
+      "* Rolling the design system out across the company"
     ],
     [
       { "banner": "EXPERIENCE", "bg": "red" },
