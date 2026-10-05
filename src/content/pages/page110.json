@@ -15,7 +15,7 @@
         "alt": "The Motability Operations logo: the letters MO in blue.",
         "rows": 4,
         "pixelArt": true,
-        "beside": [{ "text": "{yellow}Motability Operations{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Sep 2025 - Present"]
+        "beside": [{ "text": "{yellow}Motability Operations{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Sep 2026 - Present"]
       },
       "",
       "* Website migration",
@@ -30,7 +30,7 @@
         "alt": "The FanDuel logo: a blue shield, split to form an F.",
         "rows": 4,
         "pixelArt": true,
-        "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Aug 2025"]
+        "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Aug 2026"]
       },
       "",
       "* Large-scale migrations (company-wide design system, routing infrastructure) for high-traffic apps",
