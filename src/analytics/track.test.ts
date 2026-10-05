@@ -1,7 +1,16 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { optedOut, outboundName, resetAnalytics, scriptSource, startAnalytics, track } from './track';
+import { isLocal, optedOut, outboundName, resetAnalytics, startAnalytics, track, websiteId } from './track';
 
-const SRC = 'https://plausible.io/js/pa-abc123.js';
+const ID = '94db1cb1-74f4-4a40-ad6c-962362670409';
+const HOST = 'steverobertson.dev';
+const SCRIPT = 'script[src="https://cloud.umami.is/script.js"]';
+
+/** Stands in for the loaded script, recording what it's sent. */
+const fakeUmami = () => {
+  const sent: unknown[][] = [];
+  window.umami = { track: (...args: unknown[]) => void sent.push(args) };
+  return sent;
+};
 
 afterEach(() => {
   resetAnalytics();
@@ -9,13 +18,20 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('scriptSource', () => {
-  it('accepts a Plausible script URL', () => expect(scriptSource(` ${SRC} `)).toBe(SRC));
-  it('is off when unset or not Plausible', () => {
-    expect(scriptSource(undefined)).toBeUndefined();
-    expect(scriptSource('')).toBeUndefined();
-    expect(scriptSource('https://evil.example/js/pa-1.js')).toBeUndefined();
-    expect(scriptSource('http://plausible.io/js/pa-1.js')).toBeUndefined();
+describe('websiteId', () => {
+  it('accepts an Umami website ID', () => expect(websiteId(` ${ID} `)).toBe(ID));
+  it('is off when unset or not an ID', () => {
+    expect(websiteId(undefined)).toBeUndefined();
+    expect(websiteId('')).toBeUndefined();
+    expect(websiteId('not-an-id')).toBeUndefined();
+  });
+});
+
+describe('isLocal', () => {
+  it('spots local previews', () => {
+    expect(isLocal('localhost')).toBe(true);
+    expect(isLocal('127.0.0.1')).toBe(true);
+    expect(isLocal('steverobertson.dev')).toBe(false);
   });
 });
 
@@ -31,33 +47,40 @@ describe('track', () => {
   it('does nothing while analytics is off', () => {
     expect(startAnalytics(undefined)).toBe(false);
     track('Navigate', { method: 'digits' });
-    expect(window.plausible).toBeUndefined();
     expect(document.head.querySelector('script')).toBeNull();
   });
 
-  it('loads the script once and queues events as strings until it arrives', () => {
-    expect(startAnalytics(SRC)).toBe(true);
-    expect(startAnalytics(SRC)).toBe(true);
-    expect(document.head.querySelectorAll(`script[src="${SRC}"]`)).toHaveLength(1);
+  it('loads the script once and sends events with string values', () => {
+    expect(startAnalytics(ID, HOST)).toBe(true);
+    expect(startAnalytics(ID, HOST)).toBe(true);
+    const scripts = document.head.querySelectorAll<HTMLScriptElement>(SCRIPT);
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0].dataset.websiteId).toBe(ID);
+    const sent = fakeUmami();
     track('Setting', { name: 'crt', on: false });
-    expect(window.plausible?.q).toEqual([['Setting', { props: { name: 'crt', on: 'false' } }]]);
+    expect(sent).toEqual([['Setting', { name: 'crt', on: 'false' }]]);
+  });
+
+  it('stays off on a local preview', () => {
+    expect(startAnalytics(ID, 'localhost')).toBe(false);
   });
 
   it('stays off for visitors who opt out', () => {
     vi.stubGlobal('navigator', { ...navigator, globalPrivacyControl: true });
-    expect(startAnalytics(SRC)).toBe(false);
+    expect(startAnalytics(ID, HOST)).toBe(false);
     expect(document.head.querySelector('script')).toBeNull();
   });
 
   it('counts clicks on email and web links outside the site', () => {
-    startAnalytics(SRC);
+    startAnalytics(ID, HOST);
+    const sent = fakeUmami();
     document.body.innerHTML = '<a href="mailto:a@b.c">mail</a><a href="/110/">here</a>';
     const [mail, local] = document.body.querySelectorAll('a');
     local.addEventListener('click', (e) => e.preventDefault());
     mail.addEventListener('click', (e) => e.preventDefault());
     local.click();
     mail.click();
-    expect(window.plausible?.q).toEqual([['Outbound', { props: { to: 'email' } }]]);
+    expect(sent).toEqual([['Outbound', { to: 'email' }]]);
   });
 });
 

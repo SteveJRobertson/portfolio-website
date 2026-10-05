@@ -56,15 +56,15 @@ jobs:
             echo "url=https://stevejrobertson.github.io" >> "$GITHUB_OUTPUT"
           fi
 
-      # Set the repository variable PLAUSIBLE_SCRIPT to the site's script URL from
-      # the Plausible dashboard (https://plausible.io/js/pa-….js) to count visits;
-      # unset, the site loads no analytics (docs/seo-analytics/ANALYTICS.md).
+      # Set the repository variable UMAMI_WEBSITE_ID to the site's website ID from
+      # Umami Cloud to count visits; unset, the site loads no analytics
+      # (docs/seo-analytics/ANALYTICS.md).
       - name: Build and pre-render the site
         env:
           GITHUB_PAGES: 'true'
           BASE_PATH: ${{ steps.site.outputs.base }}
           SITE_URL: ${{ steps.site.outputs.url }}
-          VITE_PLAUSIBLE_SRC: ${{ vars.PLAUSIBLE_SCRIPT }}
+          VITE_UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
         run: npm run build
 
       - name: Build Storybook into /storybook

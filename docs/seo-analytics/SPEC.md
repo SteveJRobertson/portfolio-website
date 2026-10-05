@@ -115,4 +115,4 @@ One module, `src/analytics/track.ts`, with a typed `track(event, props)` that do
 |---|---|
 | SEO-001 | Keep three-digit page numbers in URLs. |
 | SEO-002 | Analytics must be cookieless and not identify visitors, so there is no consent banner. |
-| SEO-003 | Analytics uses Plausible (Q3), loaded from plausible.io (Q4: no), with no public dashboard (Q5: no), switched on by the `PLAUSIBLE_SCRIPT` repo variable. Built 5 Oct 2026, ahead of Flummox!. |
+| SEO-003 | Analytics uses Umami Cloud's free plan (Q3: Steve preferred free to Plausible's monthly fee), loaded from cloud.umami.is (Q4: no), with no public dashboard (Q5: no), switched on by the `UMAMI_WEBSITE_ID` repo variable. Built 5 Oct 2026, ahead of Flummox!. |

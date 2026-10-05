@@ -1,13 +1,14 @@
 /**
- * Cookieless visit counting with Plausible (docs/seo-analytics/SPEC.md §4).
+ * Cookieless visit counting with Umami Cloud (docs/seo-analytics/SPEC.md §4, ANALYTICS.md).
  *
  * Nothing else in the app knows which tool is behind `track`, so it can change.
- * It's off unless the build sets `VITE_PLAUSIBLE_SRC` to the site's script from
- * the Plausible dashboard (`https://plausible.io/js/pa-….js`), which only the
- * deploy does, and it stays off for visitors whose browser sends Global Privacy
- * Control or Do Not Track. Off, `track` does nothing: local dev, tests,
- * Storybook and pre-rendering never count.
+ * It's off unless the build sets `VITE_UMAMI_WEBSITE_ID` to the site's ID from
+ * the Umami dashboard, which only the deploy does, and it stays off for
+ * visitors whose browser sends Global Privacy Control or Do Not Track. Off,
+ * `track` does nothing: local dev, tests, Storybook and pre-rendering never count.
  */
+
+const SCRIPT_SRC = 'https://cloud.umami.is/script.js';
 
 /** The custom events and their properties (SPEC §4.2). Page views are counted by the script itself. */
 export interface Events {
@@ -24,50 +25,47 @@ export interface Events {
 /** Typed or keyed-in digits, a coloured Fastext button or key, a link on the page, or the remote's other buttons. */
 export type NavigateMethod = 'digits' | 'fastext' | 'link' | 'remote';
 
-type Plausible = ((event: string, options?: { props?: Record<string, string> }) => void) & {
-  q?: unknown[][];
-  o?: Record<string, unknown>;
-  init?: (options?: Record<string, unknown>) => void;
-};
+interface Umami {
+  track: (event: string, data?: Record<string, string>) => void;
+}
 
 declare global {
   interface Window {
-    plausible?: Plausible;
+    umami?: Umami;
   }
   interface Navigator {
     globalPrivacyControl?: boolean;
   }
 }
 
-/** Only Plausible's own https scripts, so a mistyped variable can't load something else. */
-export const scriptSource = (src: string | undefined): string | undefined =>
-  src && /^https:\/\/plausible\.io\/js\/[\w.-]+\.js$/.test(src.trim()) ? src.trim() : undefined;
+/** Umami website IDs are UUIDs; anything else (unset, mistyped) leaves analytics off. */
+export const websiteId = (id: string | undefined): string | undefined =>
+  id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id.trim()) ? id.trim() : undefined;
 
 /** The visitor has asked not to be tracked. */
 export const optedOut = (nav: Navigator = navigator): boolean =>
   nav.globalPrivacyControl === true || nav.doNotTrack === '1';
 
+/** A local preview of a deploy build isn't a visit. */
+export const isLocal = (host: string): boolean => host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+
 let enabled = false;
 
 /**
- * Loads the script once, at start-up. Plausible's stub queues calls made before
- * the script arrives; the script then counts a page view now and on every
- * History API page change, so client-side navigation is counted too.
+ * Loads the script once, at start-up. It counts a page view when it arrives and
+ * on every History API page change, so client-side navigation is counted too.
+ * Events sent before it arrives are dropped, which only loses the odd click.
  */
-export const startAnalytics = (src = scriptSource(import.meta.env.VITE_PLAUSIBLE_SRC as string | undefined)): boolean => {
-  if (enabled || !src || typeof window === 'undefined' || optedOut()) return enabled;
-  const stub: Plausible =
-    window.plausible ??
-    Object.assign((...args: unknown[]) => {
-      (stub.q = stub.q ?? []).push(args);
-    });
-  stub.init = stub.init ?? ((options) => (stub.o = options ?? {}));
-  window.plausible = stub;
-  stub.init();
-
+export const startAnalytics = (
+  id = websiteId(import.meta.env.VITE_UMAMI_WEBSITE_ID as string | undefined),
+  host = typeof window === 'undefined' ? '' : window.location.hostname,
+): boolean => {
+  if (enabled || !id || typeof window === 'undefined' || optedOut() || isLocal(host)) return enabled;
   const script = document.createElement('script');
-  script.async = true;
-  script.src = src;
+  script.defer = true;
+  script.src = SCRIPT_SRC;
+  script.dataset.websiteId = id;
+  script.dataset.doNotTrack = 'true';
   document.head.appendChild(script);
 
   document.addEventListener('click', onAddressClick, { capture: true });
@@ -79,7 +77,7 @@ export const startAnalytics = (src = scriptSource(import.meta.env.VITE_PLAUSIBLE
 export const track = <E extends keyof Events>(event: E, props: Events[E]): void => {
   if (!enabled) return;
   const strings = Object.fromEntries(Object.entries(props).map(([k, v]) => [k, String(v)]));
-  window.plausible?.(event, { props: strings });
+  window.umami?.track(event, strings);
 };
 
 /** Where an address leads, in words that read well in the dashboard: email, LinkedIn, GitHub, or the site's host. */
@@ -110,5 +108,5 @@ const onAddressClick = (e: MouseEvent) => {
 export const resetAnalytics = () => {
   enabled = false;
   document.removeEventListener('click', onAddressClick, { capture: true });
-  delete window.plausible;
+  delete window.umami;
 };

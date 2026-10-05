@@ -26,7 +26,7 @@
       "Zoom in any time to make text bigger.",
       "",
       { "text": "{cyan}PRIVACY{/}", "heading": true },
-      "Visits are counted with Plausible, which uses no cookies and collects nothing that identifies you.",
+      "Visits are counted with Umami, which uses no cookies and collects nothing that identifies you.",
       "",
       "It records which pages are read, where visitors came from, their country and type of device, and which links and switches are used.",
       "",
