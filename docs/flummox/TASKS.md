@@ -21,14 +21,16 @@ Ordered build tasks for [PLAN.md](./PLAN.md). Each lists what's done when it's d
 - [ ] **T10. Fastext actions.** `FastTextBar` and `MobileKeypad` accept a page link, an action, or an answer key per slot; answer keys draw as solid colour blocks with names like "Red: BBC One". *Done when* existing Fastext tests still pass and new ones cover both new kinds.
 - [ ] **T11. App wiring.** On 152 the body, Fastext and mirror come from the game screen; `R`/`G`/`Y`/`B`/`C` and the remote answer on a question; digits still navigate. *Done when* a full game can be played by keyboard and by the remote.
 - [ ] **T12. Clickable answers.** Answer lines in the grid answer on click or tap, never taking focus. *Done when* a game can be played with the mouse alone.
+- [ ] **T13. Share message and links.** `src/flummox/share.ts` builds the message and the share URL for Bluesky, X, Threads, Facebook, LinkedIn, WhatsApp and email (SPEC §6, Sharing). *Done when* unit tests cover each URL and the encoding.
+- [ ] **T14. Share and Copy.** Share on the Finished screen uses the native share sheet when there is one, otherwise the Share screen; Copy uses the clipboard with a fallback; /152/ gets its own link preview and share image. *Done when* both paths work in a browser and the built /152/index.html has the new Open Graph tags.
 
-**Review with Steve:** play it on a preview build.
+**Review with Steve:** play it on a preview build, and share a score.
 
 ## Checkpoint 3: accessible and shipped
 
-- [ ] **T13. Mirror.** The `answers` block of four buttons, Felix's alt text, result headings, and the `answer-N` focus twin (SPEC §9). *Done when* axe passes on a question and a result screen.
-- [ ] **T14. Focus and announcements.** Focus to the result heading after an answer and to the next question's heading after Next or Try again; live-region messages. *Done when* tested in Vitest.
-- [ ] **T15. Text mode and shortcuts off.** *Done when* a game can be played in Text mode and with shortcuts off, using Tab and Enter.
-- [ ] **T16. No-JavaScript fallback.** The pre-rendered /152/ says the quiz needs JavaScript. *Done when* checked in the built HTML.
-- [ ] **T17. Playwright.** The journeys in PLAN §6, plus screenshots of the intro, a question and the Flummoxed screen at four sizes; baselines from the workflow. *Done when* CI is green.
-- [ ] **T18. Docs.** README section "Updating the Flummox! questions"; mark the spec as built and record any decisions taken during the build in its log. *Done when* merged with the build PR.
+- [ ] **T15. Mirror.** The `answers` block of four buttons, Felix's alt text, result headings, and the `answer-N` focus twin (SPEC §9). *Done when* axe passes on a question and a result screen.
+- [ ] **T16. Focus and announcements.** Focus to the result heading after an answer and to the next question's heading after Next or Try again; live-region messages. *Done when* tested in Vitest.
+- [ ] **T17. Text mode and shortcuts off.** *Done when* a game can be played in Text mode and with shortcuts off, using Tab and Enter.
+- [ ] **T18. No-JavaScript fallback.** The pre-rendered /152/ says the quiz needs JavaScript. *Done when* checked in the built HTML.
+- [ ] **T19. Playwright.** The journeys in PLAN §7, plus screenshots of the intro, a question and the Flummoxed screen at four sizes; baselines from the workflow. *Done when* CI is green.
+- [ ] **T20. Docs.** README section "Updating the Flummox! questions"; mark the spec as built and record any decisions taken during the build in its log. *Done when* merged with the build PR.

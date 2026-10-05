@@ -8,7 +8,7 @@
 
 ## 1. Summary
 
-Flummox! is a multiple-choice quiz on page 152, in the style of Channel 4's Teletext quiz Bamboozle! (1993 to 2009). The quizmaster is **Felix Flummox**, a small mosaic caricature in the style of the page 101 cartoon of Steve. Each question has four answers, one per Fastext colour, and you answer by pressing the coloured key. Get one wrong and you're **FLUMMOXED!**, sent back to the last checkpoint. You score a point for every question you get right first time, and the site remembers your best score.
+Flummox! is a multiple-choice quiz on page 152, in the style of Channel 4's Teletext quiz Bamboozle! (1993 to 2009). The quizmaster is **Felix Flummox**, a small mosaic caricature in the style of the page 101 cartoon of Steve. Each question has four answers, one per Fastext colour, and you answer by pressing the coloured key. Get one wrong and you're **FLUMMOXED!**, sent back to the last checkpoint. You score a point for every question you get right first time, the site remembers your best score, and at the end you can share your score on the usual social networks.
 
 The questions live in one content file in the repo, so Steve can change them by editing it and merging.
 
@@ -44,7 +44,8 @@ The game is a small set of screens, all on page 152. Each is laid out like any o
 | **Correct** | Felix (normal) with Felix's line for that question (`quip`, or a stock line), "+1 POINT" when it counted, the score. | Home, Next, Restart, Contact |
 | **Flummoxed** | `FLUMMOXED!` in double height, Felix with his yellow face, "Back to question N", the score. The right answer is not shown, as in Bamboozle! (open question Q5). | Home, Try again, Restart, Contact |
 | **Checkpoint** | After questions 4 and 8: "CHECKPOINT! You're safe at question 5". | Home, Next, Restart, Contact |
-| **Finished** | Felix, "You beat Felix!", the final score out of 12 and a verdict line by score band, "NEW BEST!" when it is. | Home, Play again, About, Contact |
+| **Finished** | Felix, "You beat Felix!", the final score out of 12 and a verdict line by score band, "NEW BEST!" when it is. | Home, Play again, Share, Contact |
+| **Share** | "SHARE YOUR SCORE", the message that will be shared, then one line per network (§6, Sharing). | Home, Back, Copy, Contact |
 
 Rough shape of a question at 40 × 24 (classic); widescreen is the same with the quick index beside it:
 
@@ -86,6 +87,29 @@ P152 STEEVEFAX 152       MON 05 OCT 10:14
 - **Verdicts** on the Finished screen, by score band (wording in the content file so Steve can change it): 12 "Felix is utterly FLUMMOXED!", 9 to 11, 5 to 8, 0 to 4.
 - The game in progress (question, checkpoint, score, which questions have been asked) is kept in `sessionStorage`, so a reload keeps your place but a new visit starts fresh.
 
+### Sharing your score
+
+Steve asked for a way to share your score on social media at the end of a game.
+
+- **Share** on the Finished screen (yellow Fastext, or `Y`) offers it. On a device with a native share sheet (`navigator.share`, most phones and Safari), that opens with the message and link. Everywhere else, and when the sheet is cancelled or fails, the Share screen opens.
+- **The message**: "I scored 9/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?", followed by the link to `/152/`. The wording is in `quiz.json` with a `{score}` placeholder so Steve can change it.
+- **The Share screen** lists one network per line, drawn like the index's directory lines and clickable in the grid, each opening that network's own share page in a new tab with the message filled in:
+
+  | Network | Share page | Carries the message? |
+  |---|---|---|
+  | Bluesky | `bsky.app/intent/compose?text=…` | Yes |
+  | X | `x.com/intent/post?text=…&url=…` | Yes |
+  | Threads | `threads.net/intent/post?text=…` | Yes |
+  | Facebook | `facebook.com/sharer/sharer.php?u=…` | Link only |
+  | LinkedIn | `linkedin.com/sharing/share-offsite/?url=…` | Link only |
+  | WhatsApp | `wa.me/?text=…` | Yes |
+  | Email | `mailto:?subject=…&body=…` | Yes |
+
+  **Copy** (yellow Fastext, `Y`) copies the message and link to the clipboard and says "COPIED" on screen and in the live region; if the clipboard isn't available it says so and the message stays on screen to select.
+- **Link previews**: Facebook and LinkedIn take only a link and show its preview, so `/152/` gets its own pre-rendered title, description ("Can you flummox Felix? A Teletext quiz on STEEVEFAX page 152") and a share image of the Flummox! intro screen, taken the way `public/share.png` is now. The preview can't show a score, because the site is static (open question Q7).
+- **Privacy**: plain links only. No share buttons, scripts or tracking pixels from the networks are loaded, and nothing is sent anywhere until the visitor picks a network.
+- **Accessibility**: in the mirror the Share screen is a heading, the message as a paragraph, and a list of real links named "Share on Bluesky (opens in a new tab)"; Copy is a button. The score in the message is the same number the Finished screen shows.
+
 ## 7. Question content file
 
 `src/content/flummox/quiz.json`, compiled and checked at build time by the same content plugin as the pages (v1 §7), so a bad edit fails the build rather than the live site.
@@ -94,6 +118,7 @@ P152 STEEVEFAX 152       MON 05 OCT 10:14
 {
   "edition": "Autumn 2026",
   "checkpoints": [4, 8],
+  "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
   "verdicts": [
     { "min": 12, "text": "Felix is utterly FLUMMOXED! A perfect game." },
     { "min": 9, "text": "Felix is impressed. Nearly perfect." },
@@ -113,6 +138,7 @@ P152 STEEVEFAX 152       MON 05 OCT 10:14
 
 - `edition` names this set of questions; changing it starts a new best score.
 - `answers` is red, green, yellow, cyan, in that order. `correct` is the index (0 to 3) of the right one.
+- `share` is the message shared at the end; `{score}` is replaced with the final score.
 - `quip` is optional; without it Felix uses a stock line.
 - Questions and answers are plain text; colour tags are allowed in questions but not links.
 
@@ -168,6 +194,8 @@ Each has a default the plan uses if you don't say otherwise.
 | Q4 | Add a Bambette-style consolation question? | No, not in this version. |
 | Q5 | Show the right answer after a wrong one? | No, as in Bamboozle!: you have to get it right next time round. |
 | Q6 | List 152 on the index page and quick index? | Yes. |
+| Q7 | Should link previews on Facebook and LinkedIn show the score? It needs 13 extra pre-rendered pages (`/152/score/0/` to `/152/score/12/`), each with its own preview image and title, that send visitors on to `/152/`. | No for now: the score is in the message on networks that take text, and the preview is the Flummox! intro. |
+| Q8 | Which networks? | Bluesky, X, Threads, Facebook, LinkedIn, WhatsApp and email, plus Copy and the phone's own share sheet. |
 
 ## 12. Sources
 
@@ -185,3 +213,4 @@ These came from search summaries; the sandbox couldn't open the pages themselves
 | FLX-003 | Scores and the game in progress stay in the browser only (best score in `localStorage`, current game in `sessionStorage`). |
 | FLX-004 | The fourth answer key is cyan, matching the site's Fastext, with `B` and `C` both accepted. |
 | FLX-005 | Scoring: a point per question right at the first try; a wrong answer sends you back to the last checkpoint (after questions 4 and 8). |
+| FLX-006 | Sharing uses the native share sheet where there is one, otherwise plain share links to each network and Copy. No third-party scripts. |
