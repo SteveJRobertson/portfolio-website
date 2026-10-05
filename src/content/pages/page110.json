@@ -52,8 +52,8 @@
       "",
       {
         "image": "rbs",
-        "alt": "The Royal Bank of Scotland logo: four white arrows pointing to the centre of a purple square.",
-        "rows": 4,
+        "alt": "The Royal Bank of Scotland logo: four white arrows pointing in to a circle in the centre.",
+        "rows": 5,
         "pixelArt": true,
         "beside": [{ "text": "{yellow}Royal Bank of Scotland{/}", "heading": true }, "{cyan}Frontend Engineer{/}", "Sep 2018 - Dec 2019"]
       },
