@@ -1,23 +1,36 @@
 {
   "page": 888,
   "title": "Accessibility",
-  "description": "Accessibility settings for STEEVEFAX: a plain text view, keyboard shortcuts and an old-TV screen effect, each with an on/off switch.",
+  "description": "Accessibility settings for STEEVEFAX: a plain text view, keyboard shortcuts and an old-TV screen effect, each with an on/off switch, and how visits are counted.",
   "label": "A11Y",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
-  "rows": [
-    { "banner": "{black}ACCESSIBILITY{/}", "bg": "magenta" },
-    "",
-    { "text": "Use the switches below the screen.", "screenOnly": true },
-    { "text": "{cyan}TEXT MODE{/}", "heading": true },
-    "Shows every page as plain text, without the TV screen. The site remembers your choice.",
-    "",
-    { "text": "{cyan}SHORTCUTS{/}", "heading": true },
-    "Type a page number to go there. R, G, Y and B are the coloured buttons. H stops a page changing. Turn these off if you use voice control.",
-    "",
-    { "text": "{cyan}CRT EFFECT{/}", "heading": true },
-    "Adds the lines and glow of an old TV. It's off at first if your device asks for less motion or more contrast.",
-    "",
-    "Zoom in any time to make text bigger."
+  "hint": "{white}Press ← or → for privacy.{/}",
+  "subpages": [
+    [
+      { "banner": "{black}ACCESSIBILITY{/}", "bg": "magenta" },
+      "",
+      { "text": "Use the switches below the screen.", "screenOnly": true },
+      { "text": "{cyan}TEXT MODE{/}", "heading": true },
+      "Shows every page as plain text, without the TV screen. The site remembers your choice.",
+      "",
+      { "text": "{cyan}SHORTCUTS{/}", "heading": true },
+      "Type a page number to go there. R, G, Y and B are the coloured buttons. H stops a page changing. Turn these off if you use voice control.",
+      "",
+      { "text": "{cyan}CRT EFFECT{/}", "heading": true },
+      "Adds the lines and glow of an old TV. It's off at first if your device asks for less motion or more contrast."
+    ],
+    [
+      { "banner": "{black}ACCESSIBILITY{/}", "bg": "magenta" },
+      "",
+      "Zoom in any time to make text bigger.",
+      "",
+      { "text": "{cyan}PRIVACY{/}", "heading": true },
+      "Visits are counted with Umami, which uses no cookies and collects nothing that identifies you.",
+      "",
+      "It records which pages are read, where visitors came from, their country and type of device, and which links and switches are used.",
+      "",
+      "The switches save your choices in this browser only. They are never sent anywhere."
+    ]
   ]
 }

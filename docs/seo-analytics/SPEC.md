@@ -1,7 +1,7 @@
 # Specification: Search and analytics
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Approved in outline by Steve, 5 Oct 2026; open questions to settle after Flummox! ([../flummox/SPEC.md](../flummox/SPEC.md)) ships. No plan or tasks until then.
+**Status**: Approved in outline by Steve, 5 Oct 2026. Analytics (§4–5) brought forward and built ahead of Flummox!: see [ANALYTICS.md](ANALYTICS.md). Search (§3) and the Flummox! events wait for Flummox! ([../flummox/SPEC.md](../flummox/SPEC.md)).
 **Builds on**: the v1 spec in [archive/steevefax-v1/SPEC.md](../archive/steevefax-v1/SPEC.md) ("v1 §5" and so on).
 
 ---
@@ -115,3 +115,4 @@ One module, `src/analytics/track.ts`, with a typed `track(event, props)` that do
 |---|---|
 | SEO-001 | Keep three-digit page numbers in URLs. |
 | SEO-002 | Analytics must be cookieless and not identify visitors, so there is no consent banner. |
+| SEO-003 | Analytics uses Umami Cloud's free plan (Q3: Steve preferred free to Plausible's monthly fee), loaded from cloud.umami.is (Q4: no), with no public dashboard (Q5: no), switched on by the `UMAMI_WEBSITE_ID` repo variable. Built 5 Oct 2026, ahead of Flummox!. |

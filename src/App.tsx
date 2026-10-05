@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { track, trackOutbound, type NavigateMethod } from './analytics/track';
 import { TeletextScreen } from './components/TeletextScreen';
 import { HeaderTicker } from './components/HeaderTicker';
 import { FastTextBar } from './components/FastTextBar';
@@ -17,20 +18,43 @@ import { useSubpage } from './hooks/useSubpage';
 import { useDigitBuffer } from './navigation/useDigitBuffer';
 import { useHotkeys } from './navigation/useHotkeys';
 import { useNavigation } from './navigation/useNavigation';
-import { crtEffectOn, useSettings } from './settings/useSettings';
+import { crtEffectOn, useSettings, type Settings } from './settings/useSettings';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
 
 /** Email opens the mail app; web addresses open in a new tab so the Teletext stays put. */
 const openAddress = (href: string) => {
+  trackOutbound(href);
   if (href.startsWith('mailto:')) window.location.href = href;
   else window.open(href, '_blank', 'noopener');
 };
 
+const SETTING_NAMES = { textMode: 'text mode', shortcuts: 'shortcuts', crt: 'crt' } as const;
+
 export const App: React.FC = () => {
-  const { page: requested, changes, navigate } = useNavigation();
-  const [settings, updateSettings] = useSettings();
+  const { page: requested, changes, navigate: goTo } = useNavigation();
+  const [settings, saveSettings] = useSettings();
+
+  // Each way of changing page is counted by how it was used (analytics SPEC §4.2).
+  const nav = useMemo(() => {
+    const by = (method: NavigateMethod) => (page: number) => {
+      track('Navigate', { method });
+      goTo(page);
+    };
+    return { digits: by('digits'), fastext: by('fastext'), link: by('link'), remote: by('remote') };
+  }, [goTo]);
+  const navigate = nav.link;
+
+  const updateSettings = useCallback(
+    (change: Partial<Settings>) => {
+      for (const [name, on] of Object.entries(change)) {
+        if (typeof on === 'boolean') track('Setting', { name: SETTING_NAMES[name as keyof Settings], on });
+      }
+      saveSettings(change);
+    },
+    [saveSettings],
+  );
   const mode = useGridMode();
 
   const page = getPage(requested)!;
@@ -46,7 +70,7 @@ export const App: React.FC = () => {
     paused: !visible || mirrorFocus !== null || settings.textMode,
     startHeld: reducedMotion,
   });
-  const buffer = useDigitBuffer(requested, navigate);
+  const buffer = useDigitBuffer(requested, nav.digits);
 
   // Focus goes to the page heading after a page change or a switch of view, but not on first load.
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -85,7 +109,7 @@ export const App: React.FC = () => {
     arrowKeys: !settings.textMode,
     onDigit: buffer.digit,
     onClear: buffer.clear,
-    onFastext: (slot) => navigate(page.fastext[slot].page),
+    onFastext: (slot) => nav.fastext(page.fastext[slot].page),
     onSubpage: stepSubpage,
     onHold: () => {
       if (subpage.count > 1) toggleHold();
@@ -165,7 +189,7 @@ export const App: React.FC = () => {
             />
           ))}
 
-          <FastTextBar links={page.fastext} onNavigate={navigate} cols={mode.cols} row={mode.rows} />
+          <FastTextBar links={page.fastext} onNavigate={nav.fastext} cols={mode.cols} row={mode.rows} />
         </TeletextScreen>
 
         <section className="control-strip" aria-label="Screen controls">
@@ -174,7 +198,7 @@ export const App: React.FC = () => {
             onDigit={buffer.digit}
             onClear={buffer.clear}
             fastext={page.fastext}
-            onNavigate={navigate}
+            onNavigate={nav.remote}
             onSubpage={stepSubpage}
             hold={subpage.count > 1 ? { held: subpage.held, onToggle: toggleHold } : undefined}
             currentPage={requested}
