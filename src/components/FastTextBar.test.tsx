@@ -12,7 +12,7 @@ const links: [FastextLink, FastextLink, FastextLink, FastextLink] = [
 
 describe('FastTextBar', () => {
   it('renders four real links with full accessible names', () => {
-    render(<FastTextBar links={links} onNavigate={vi.fn()} cols={56} row={24} />);
+    render(<FastTextBar links={links} onNavigate={vi.fn()} cols={58} row={24} />);
     const anchors = screen.getAllByRole('link');
     expect(anchors.map((a) => a.getAttribute('href'))).toEqual(['/', '/200/', '/300/', '/400/']);
     expect(anchors.map((a) => a.getAttribute('aria-label'))).toEqual([
@@ -25,7 +25,7 @@ describe('FastTextBar', () => {
 
   it('navigates in place on a plain click', () => {
     const onNavigate = vi.fn();
-    render(<FastTextBar links={links} onNavigate={onNavigate} cols={56} row={24} />);
+    render(<FastTextBar links={links} onNavigate={onNavigate} cols={58} row={24} />);
     const link = screen.getByRole('link', { name: /Projects/ });
     expect(fireEvent.click(link)).toBe(false); // default prevented
     expect(onNavigate).toHaveBeenCalledWith(200);
@@ -33,7 +33,7 @@ describe('FastTextBar', () => {
 
   it('leaves modified and middle clicks to the browser (new tab and so on)', () => {
     const onNavigate = vi.fn();
-    render(<FastTextBar links={links} onNavigate={onNavigate} cols={56} row={24} />);
+    render(<FastTextBar links={links} onNavigate={onNavigate} cols={58} row={24} />);
     const link = screen.getByRole('link', { name: /Projects/ });
     expect(fireEvent.click(link, { metaKey: true })).toBe(true);
     expect(fireEvent.click(link, { ctrlKey: true })).toBe(true);

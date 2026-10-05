@@ -32,15 +32,15 @@ const manyRows = (n: number): GridRow[] => Array.from({ length: n }, (_, i) => t
 describe('grid modes', () => {
   it('defines the three spec grids', () => {
     expect(MODES.map((m) => [m.name, m.cols, m.rows])).toEqual([
-      ['widescreen', 56, 24],
+      ['widescreen', 58, 24],
       ['classic', 40, 24],
       ['portrait', 32, 34],
     ]);
   });
 
-  it('splits widescreen into 38 + 1 + 1 + 16 columns', () => {
+  it('splits widescreen into the classic 40 columns + 1 + 1 + 16', () => {
     const { mainCols, sidebarCols, cols } = GRID_MODES.widescreen;
-    expect([mainCols, sidebarCols, mainCols + 2 + sidebarCols]).toEqual([38, 16, cols]);
+    expect([mainCols, sidebarCols, mainCols + 2 + sidebarCols]).toEqual([GRID_MODES.classic.cols, 16, cols]);
   });
 
   it('picks the mode from aspect ratio queries alone', () => {
@@ -110,9 +110,9 @@ describe('layoutBody', () => {
     const sidebar = lines.filter((l) => l.key.startsWith('side'));
     const separators = lines.filter((l) => l.key.startsWith('sep'));
     expect(sidebar.map((l) => rowText(l.content).trimEnd())).toEqual(SIDEBAR_ROWS.map((r) => rowText(r).trimEnd()));
-    expect(sidebar.every((l) => l.col === 41 && l.width === 16)).toBe(true);
+    expect(sidebar.every((l) => l.col === 43 && l.width === 16)).toBe(true);
     expect(separators).toHaveLength(bodyRowCount(mode));
-    expect(separators.every((l) => l.col === 40)).toBe(true);
+    expect(separators.every((l) => l.col === 42)).toBe(true);
   });
 
   it('has no sidebar outside widescreen', () => {
@@ -138,7 +138,7 @@ describe('formatHeader', () => {
 
   it('formats each width', () => {
     const text = (cols: number) => rowText(formatHeader({ bufferText: 'P1--', currentPage: 100, now, cols }));
-    expect(text(56)).toBe('P1-- STEEVEFAX 100' + ' '.repeat(19) + 'SUN 04 OCT 14:03:22');
+    expect(text(58)).toBe('P1-- STEEVEFAX 100' + ' '.repeat(21) + 'SUN 04 OCT 14:03:22');
     expect(text(40)).toBe('P1-- STEEVEFAX 100       04 OCT 14:03:22');
     expect(text(32)).toBe('P1-- STEEVEFAX' + ' '.repeat(13) + '14:03');
     expect(text(20)).toBe('P1-- STEVE     14:03');
@@ -167,7 +167,7 @@ describe('formatHeader', () => {
   it('makes room for HOLD by dropping the date at 40 columns and the name at 20', () => {
     const text = (cols: number) =>
       rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6, held: true } }));
-    expect(text(56)).toBe('P110 STEEVEFAX 110 1/6 HOLD' + ' '.repeat(10) + 'SUN 04 OCT 14:03:22');
+    expect(text(58)).toBe('P110 STEEVEFAX 110 1/6 HOLD' + ' '.repeat(12) + 'SUN 04 OCT 14:03:22');
     expect(text(40)).toBe('P110 STEEVEFAX 110 1/6 HOLD     14:03:22');
     expect(text(32)).toBe('P110 STEEVEFAX 1/6 HOLD    14:03');
     expect(text(20)).toBe('P110 1/6 HOLD  14:03');

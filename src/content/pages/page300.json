@@ -5,6 +5,7 @@
   "label": "SKILLS",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 400 }],
+  "hint": "{white}Press ← or → for more skills.{/}",
   "subpages": [
     [
       { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
@@ -13,9 +14,7 @@
       "React, TypeScript, JavaScript, Redux, React Router, HTML, CSS",
       "",
       { "text": "{yellow}DESIGN SYSTEMS{/}", "heading": true },
-      "Component libraries, design tokens, accessibility, documentation",
-      "",
-      { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
+      "Component libraries, design tokens, accessibility, documentation"
     ],
     [
       { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
@@ -24,9 +23,7 @@
       "Git, CI/CD, Jenkins, GitHub Actions, Docker, AWS, Nx",
       "",
       { "text": "{yellow}DESIGN AND COLLABORATION{/}", "heading": true },
-      "Figma, system architecture, stakeholder engagement, technical docs",
-      "",
-      { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
+      "Figma, system architecture, stakeholder engagement, technical docs"
     ],
     [
       { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
@@ -35,9 +32,7 @@
       "Agile/Scrum, TDD, AI-assisted workflows",
       "",
       { "text": "{yellow}LEADERSHIP{/}", "heading": true },
-      "Mentoring, developer enablement, knowledge sharing",
-      "",
-      { "text": "{white}Press ← or → for more skills.{/}", "screenOnly": true }
+      "Mentoring, developer enablement, knowledge sharing"
     ]
   ]
 }

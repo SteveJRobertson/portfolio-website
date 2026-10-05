@@ -189,7 +189,31 @@ describe('compilePages', () => {
   it('compiles sub-pages', () => {
     const { pages, errors } = compilePages([file(source({ rows: undefined, subpages: [['One'], ['Two']] }))]);
     expect(errors).toEqual([]);
-    expect(pages[0].wide.map(texts)).toEqual([[' One'], [' Two']]);
+    expect(pages[0].wide.map((rows) => texts(rows)[0])).toEqual([' One', ' Two']);
+  });
+
+  it('puts the ← → hint in the last body row of every sub-page', () => {
+    const { pages, errors } = compilePages([
+      file(source({ rows: undefined, subpages: [['One'], ['Two']], hint: '{white}Press ← or → for more roles.{/}' })),
+    ]);
+    expect(errors).toEqual([]);
+    for (const [layout, limit] of [[pages[0].wide, WIDE_BODY_ROWS], [pages[0].narrow, NARROW_BODY_ROWS]] as const) {
+      for (const rows of layout) {
+        expect(rows).toHaveLength(limit);
+        expect(texts(rows).at(-1)).toBe(' Press ← or → for more roles.');
+      }
+    }
+    expect(texts(compilePages([file(source({ rows: undefined, subpages: [['One'], ['Two']] }))]).pages[0].wide[0]).at(-1)).toBe(
+      ' Press ← or → for more.',
+    );
+  });
+
+  it('keeps a blank row and the hint clear of sub-page content', () => {
+    const full = Array.from({ length: WIDE_BODY_ROWS - 1 }, (_, i) => `Line ${i}`);
+    expect(errorsFor(file(source({ rows: undefined, subpages: [full, ['Two']] })))).toContain(
+      `needs ${WIDE_BODY_ROWS - 1} rows; the limit is ${WIDE_BODY_ROWS - 2}, leaving a blank row and the ← → hint`,
+    );
+    expect(errorsFor(file(source({ hint: 'Press ←' })))).toContain('"hint" is only for pages with "subpages"');
   });
 
   const errorsFor = (...files: SourceFile[]) => compilePages(files).errors.join('\n');
