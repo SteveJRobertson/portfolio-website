@@ -6,7 +6,7 @@ Steve Robertson's developer portfolio, built as a Ceefax / ORACLE-style Teletext
 
 ![Page 100, the STEEVEFAX index: Steve Robertson's name in Teletext block letters, a page directory and coloured Fastext links](public/share.png)
 
-Every page is drawn on a real character grid in the Bedstead Mode 7 font, which changes shape with the screen: 56 × 24 with a quick index on widescreen, 40 × 24 on a 4:3 screen and 20 × 36 on a phone. Content is written once as JSON with colour tags and laid out at build time. Behind the grid, a semantic copy of each page (headings, lists and real links) serves screen readers, and page 888 switches to it as a plain Text mode.
+Every page is drawn on a real character grid in the Bedstead Mode 7 font, which changes shape with the screen: 56 × 24 with a quick index on widescreen, 40 × 24 on a 4:3 screen and 32 × 34 on a phone. Content is written once as JSON with colour tags and laid out at build time. Behind the grid, a semantic copy of each page (headings, lists and real links) serves screen readers, and page 888 switches to it as a plain Text mode.
 
 ## Getting started
 

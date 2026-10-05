@@ -34,7 +34,7 @@ describe('grid modes', () => {
     expect(MODES.map((m) => [m.name, m.cols, m.rows])).toEqual([
       ['widescreen', 56, 24],
       ['classic', 40, 24],
-      ['portrait', 20, 36],
+      ['portrait', 32, 34],
     ]);
   });
 
@@ -140,6 +140,7 @@ describe('formatHeader', () => {
     const text = (cols: number) => rowText(formatHeader({ bufferText: 'P1--', currentPage: 100, now, cols }));
     expect(text(56)).toBe('P1-- STEEVEFAX 100' + ' '.repeat(19) + 'SUN 04 OCT 14:03:22');
     expect(text(40)).toBe('P1-- STEEVEFAX 100       04 OCT 14:03:22');
+    expect(text(32)).toBe('P1-- STEEVEFAX' + ' '.repeat(13) + '14:03');
     expect(text(20)).toBe('P1-- STEVE     14:03');
   });
 
@@ -149,10 +150,11 @@ describe('formatHeader', () => {
     expect(rowText(row)).toContain('2/6');
   });
 
-  it('shows the counter after the page number, or before the name in portrait', () => {
+  it('shows the counter after the page number, after the name at 32 columns, or before it at 20', () => {
     const text = (cols: number) =>
       rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6 } }));
     expect(text(40)).toBe('P110 STEEVEFAX 110 1/6   04 OCT 14:03:22');
+    expect(text(32)).toBe('P110 STEEVEFAX 1/6' + ' '.repeat(9) + '14:03');
     expect(text(20)).toBe('P110 1/6 STEVE 14:03');
   });
 
@@ -167,6 +169,7 @@ describe('formatHeader', () => {
       rowText(formatHeader({ bufferText: 'P110', currentPage: 110, now, cols, subpage: { index: 0, count: 6, held: true } }));
     expect(text(56)).toBe('P110 STEEVEFAX 110 1/6 HOLD' + ' '.repeat(10) + 'SUN 04 OCT 14:03:22');
     expect(text(40)).toBe('P110 STEEVEFAX 110 1/6 HOLD     14:03:22');
+    expect(text(32)).toBe('P110 STEEVEFAX 1/6 HOLD    14:03');
     expect(text(20)).toBe('P110 1/6 HOLD  14:03');
   });
 
@@ -198,17 +201,29 @@ describe('fastext', () => {
     const links = [
       { label: 'HOME', page: 100 },
       { label: 'EXPERIENCE', page: 110 },
-      { label: 'SKILLS', page: 300 },
+      { label: 'LIGHTHOUSE', page: 300 },
       { label: 'CONTACT', page: 400 },
     ];
     expect(fastextLabels(links, [10, 10, 10, 10])).toEqual(['   100    ', '   110    ', '   300    ', '   400    ']);
+  });
+
+  it('lets a label fill its slot when leaning the centring right still keeps a gap', () => {
+    const links = [
+      { label: 'ABOUT', page: 101 },
+      { label: 'CAREER', page: 110 },
+      { label: 'PROJECTS', page: 200 },
+      { label: 'CONTACT', page: 400 },
+    ];
+    expect(fastextLabels(links, [8, 8, 8, 8])).toEqual(['  About ', ' Career ', 'Projects', ' Contact']);
+    const touching = [links[0], links[2], { label: 'EXPERTISE', page: 300 }, links[3]];
+    expect(fastextLabels(touching, [8, 8, 8, 8])).toEqual(['  101   ', '  200   ', '  300   ', '  400   ']);
   });
 
   it.each(MODES)('never runs labels together at $cols columns', ({ cols }) => {
     const widths = fastextSlotWidths(cols);
     for (const page of PAGES) {
       const row = fastextLabels(page.fastext, widths);
-      row.forEach((slot) => expect(slot.endsWith(' ')).toBe(true));
+      row.slice(1).forEach((slot, i) => expect(row[i].endsWith(' ') || slot.startsWith(' ')).toBe(true));
     }
   });
 

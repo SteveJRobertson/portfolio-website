@@ -7,7 +7,7 @@ const RESOLVED_ID = '\0' + VIRTUAL_ID;
 
 /**
  * Compiles `src/content/pages/*.json` into `virtual:pages` (SPEC §7): validated,
- * and wrapped for 38 and 20 columns, with images from `src/content/images`
+ * and wrapped for 38 and 32 columns, with images from `src/content/images`
  * converted to mosaic cells (SPEC §8), so the app ships finished rows. A content
  * error fails the build, and shows the error overlay in dev.
  */

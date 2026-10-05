@@ -78,7 +78,7 @@ export interface CompiledPage {
   fastext: [FastextLink, FastextLink, FastextLink, FastextLink];
   /** One entry per sub-page, laid out for the 38-column pane (widescreen and classic). */
   wide: GridRow[][];
-  /** One entry per sub-page, laid out for the 20-column portrait grid. */
+  /** One entry per sub-page, laid out for the 32-column portrait grid. */
   narrow: GridRow[][];
   /** One entry per sub-page: the same content as headings, paragraphs, lists and links. */
   semantic: SemanticBlock[][];
