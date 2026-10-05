@@ -1,4 +1,4 @@
-import { blankRow, type GridRow } from './rows';
+import type { GridRow } from './rows';
 import type { TeletextColor } from '../types/teletext';
 
 export interface QuickIndexEntry {
@@ -26,6 +26,4 @@ export const sidebarRows = (entries: readonly QuickIndexEntry[]): GridRow[] => [
   rule(),
   ...entries.map(entry),
   rule(),
-  blankRow(),
-  { segments: [{ text: ' EDINBURGH, UK', color: 'white' }] },
 ];
