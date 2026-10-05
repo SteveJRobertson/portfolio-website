@@ -1,5 +1,6 @@
 import React from 'react';
 import { ColorSpan } from './ColorSpan';
+import { TeletextIcon } from './TeletextIcon';
 import type { GridRow } from '../display/rows';
 
 interface GridLineProps {
@@ -46,6 +47,14 @@ const linkedRange = (row: GridRow, link: number): [number, number] => [
 export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width, height = 1, onLink, onOpen, focusLink, focusHref }) => {
   const whole = onLink ? lineLink(content) : undefined;
   const span = (segment: GridRow['segments'][number], i: number) => {
+    if (segment.icon) {
+      return (
+        <span key={i} className="tt-icon">
+          {segment.text}
+          <TeletextIcon name={segment.icon} size="1em" label="" />
+        </span>
+      );
+    }
     const { link, href } = segment;
     const onClick =
       whole !== undefined

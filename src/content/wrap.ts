@@ -18,6 +18,7 @@ interface StyledChar {
   bg?: TeletextColor;
   link?: number;
   href?: string;
+  icon?: GridSegment['icon'];
 }
 
 export interface LaidOutRows {
@@ -42,6 +43,7 @@ const toSegments = (styled: StyledChar[]): GridSegment[] => {
       last.bg === style.bg &&
       last.link === style.link &&
       last.href === style.href &&
+      last.icon === style.icon &&
       last.leaderDots === style.leaderDots
     )
       last.text += ch;

@@ -51,14 +51,15 @@ export const buildSemantic = (rows: RowSource[]): SemanticBlock[] => {
     }
     const parsed = parseMarkup(row.text);
     const hasLeader = parsed.segments.some((s) => s.leader);
-    parsed.segments = parsed.segments.filter((s) => !s.leader);
+    const hasIcon = parsed.segments.some((s) => s.icon);
+    parsed.segments = parsed.segments.filter((s) => !s.leader && !s.icon);
     const raw = parsed.segments.map((s) => s.text).join('');
     if (parsed.fill !== undefined || raw.trim() === '') {
       endList();
       continue;
     }
 
-    const content = inlines(parsed.segments);
+    const content = hasIcon ? trimStart(inlines(parsed.segments), /^\s+/) : inlines(parsed.segments);
     if (row.heading) {
       endList();
       blocks.push({ kind: 'heading', content });

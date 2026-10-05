@@ -19,6 +19,6 @@
     "{link:203}{yellow}Steevefax{dots}{/}203{/}",
     "  This Teletext portfolio.",
     "",
-    "{cyan}github.com/stevejrobertson{/}"
+    "{icon:github} {cyan}github.com/stevejrobertson{/}"
   ]
 }
