@@ -37,7 +37,7 @@ Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with
 | Path | Purpose |
 |---|---|
 | `src/content/pages/*.json` | One file per Teletext page, written with colour tags (see SPEC §7) |
-| `src/content/images/*.png` | Pictures turned into block graphics at build time (see SPEC §8) |
+| `src/content/images/*.png` | Pictures turned into block graphics at build time (see [SPEC §8](docs/archive/steevefax-v1/SPEC.md)) |
 | `src/content/` | Tag parser, wrapper, mosaic converter, semantic mirror builder, validator and the page registry |
 | `src/display/` | Grid modes and screen layout |
 | `src/components/` | Teletext UI components |
@@ -47,11 +47,13 @@ Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with
 | `e2e/` | Playwright tests, screenshot baselines and `shareImage.ts` (retakes `public/share.png`) |
 | `src/design-system/` | Token stories and helpers |
 | `public/fonts/` | Self-hosted Bedstead (CC0) |
-| `docs/` | Spec, roadmap, review and content brief |
+| `docs/` | Feature docs; the finished v1 spec, roadmap, review and content brief are in `docs/archive/steevefax-v1/` |
 
 ## Docs
 
-- [SPEC.md](docs/SPEC.md): requirements and decision log
-- [ROADMAP.md](docs/ROADMAP.md): phased delivery plan
-- [REVIEW.md](docs/REVIEW.md): review of the original build
-- [CONTENT.md](docs/CONTENT.md): content brief and proposed page map
+New feature docs live in [docs/](docs/README.md). The v1 docs are archived in [docs/archive/steevefax-v1](docs/archive/steevefax-v1/README.md):
+
+- [SPEC.md](docs/archive/steevefax-v1/SPEC.md): requirements and decision log
+- [ROADMAP.md](docs/archive/steevefax-v1/ROADMAP.md): phased delivery plan
+- [REVIEW.md](docs/archive/steevefax-v1/REVIEW.md): review of the original build
+- [CONTENT.md](docs/archive/steevefax-v1/CONTENT.md): content brief and approved page map
