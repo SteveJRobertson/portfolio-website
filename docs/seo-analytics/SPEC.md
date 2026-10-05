@@ -1,7 +1,7 @@
 # Specification: Search and analytics
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Approved in outline by Steve, 5 Oct 2026. Analytics (§4–5) brought forward and built ahead of Flummox!: see [ANALYTICS.md](ANALYTICS.md). Search (§3) and the Flummox! events wait for Flummox! ([../flummox/SPEC.md](../flummox/SPEC.md)).
+**Status**: Approved in outline by Steve, 5 Oct 2026. Analytics (§4–5) brought forward and built ahead of Flummox!: see [ANALYTICS.md](ANALYTICS.md). Search (§3.2 items 1–6) built on 5 Oct 2026 (SEO-004 to SEO-006); Search Console (item 9) and the mirror check (item 8) are Steve's to do; the Flummox! parts wait for Flummox! ([../flummox/SPEC.md](../flummox/SPEC.md)).
 **Builds on**: the v1 spec in [archive/steevefax-v1/SPEC.md](../archive/steevefax-v1/SPEC.md) ("v1 §5" and so on).
 
 ---
@@ -116,3 +116,6 @@ One module, `src/analytics/track.ts`, with a typed `track(event, props)` that do
 | SEO-001 | Keep three-digit page numbers in URLs. |
 | SEO-002 | Analytics must be cookieless and not identify visitors, so there is no consent banner. |
 | SEO-003 | Analytics uses Umami Cloud's free plan (Q3: Steve preferred free to Plausible's monthly fee), loaded from cloud.umami.is (Q4: no), with no public dashboard (Q5: no), switched on by the `UMAMI_WEBSITE_ID` repo variable. Built 5 Oct 2026, ahead of Flummox!. |
+| SEO-004 | The site is served at steverobertson.dev (Q1 (a), via the `CUSTOM_DOMAIN` repo variable). The pre-render step writes `sitemap.xml` (every page but 404, `lastmod` from each page file's last commit) and, at the root of a domain only, `robots.txt` pointing at it. |
+| SEO-005 | Titles lead with the subject and keep the number (Q2 default): `About me (P101) \| Steve Robertson`; the index, whose title already names Steve, is `Steve Robertson: Frontend Software Engineer (P100)`. Every page but 404 has its own description, and the validator requires it. |
+| SEO-006 | The index carries JSON-LD: a `Person` (name, job title, employer, Edinburgh, LinkedIn and GitHub as `sameAs`) and a `WebSite` named STEEVEFAX. `og:image:alt` stays the same on every page, since every page shares the one image. |

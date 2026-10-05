@@ -9,6 +9,7 @@ import { compilePages, type SourceFile } from './compile';
 import { compilePageDir } from '../../scripts/lib/pageFiles';
 import { autolink, buildSemantic } from './semantic';
 import { NARROW_BODY_ROWS, NARROW_COLS, WIDE_BODY_ROWS, type PageSource } from './schema';
+import { documentTitle, missingDescriptions } from './meta';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage, isValidPage } from './registry';
 import { sidebarRows } from '../display/sidebar';
 import { rowLength, rowText } from '../display/rows';
@@ -283,10 +284,25 @@ describe('real content', () => {
     },
   );
 
+  it('gives every page but 404 its own description', () => {
+    expect(missingDescriptions(PAGES)).toEqual([]);
+  });
+
   it('has the approved page map', () => {
     expect(PAGES.map((p) => p.page)).toEqual([100, 101, 110, 200, 201, 202, 203, 300, 400, 404, 888]);
     expect(getPage(110)?.wide).toHaveLength(7);
     expect(getPage(300)?.wide).toHaveLength(3);
+  });
+});
+
+describe('meta', () => {
+  it('leads titles with the subject and keeps the page number', () => {
+    expect(documentTitle(110, 'Experience')).toBe('Experience (P110) | Steve Robertson');
+    expect(documentTitle(100, 'Steve Robertson: Frontend Software Engineer')).toBe('Steve Robertson: Frontend Software Engineer (P100)');
+  });
+
+  it('lets only the not-found page go without a description', () => {
+    expect(missingDescriptions([{ page: 404 }, { page: 201 }, { page: 202, description: 'Lighthouse' }])).toEqual([201]);
   });
 });
 

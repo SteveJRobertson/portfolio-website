@@ -4,7 +4,7 @@ import { BASE, open } from './helpers';
 test.describe('navigation', () => {
   test('opens the index at the base path', async ({ page }) => {
     await open(page, '');
-    await expect(page).toHaveTitle(/^P100 /);
+    await expect(page).toHaveTitle('Steve Robertson: Frontend Software Engineer (P100)');
     const hrefs = await page.getByRole('navigation', { name: 'Fastext' }).getByRole('link').evaluateAll((links) => links.map((a) => a.getAttribute('href')));
     expect(hrefs).toHaveLength(4);
     for (const href of hrefs) expect(href).toMatch(new RegExp(`^${BASE}\\d{3}/$`));
@@ -15,7 +15,7 @@ test.describe('navigation', () => {
     await open(page, '');
     await page.keyboard.type('110');
     await expect(page).toHaveURL(`${BASE}110/`);
-    await expect(page).toHaveTitle('P110 Experience | Steve Robertson');
+    await expect(page).toHaveTitle('Experience (P110) | Steve Robertson');
   });
 
   test('goes to a page from the remote keypad', async ({ page }) => {
@@ -40,15 +40,15 @@ test.describe('navigation', () => {
 
   test('opens and reloads a page from its own URL', async ({ page }) => {
     await open(page, '110/');
-    await expect(page).toHaveTitle('P110 Experience | Steve Robertson');
+    await expect(page).toHaveTitle('Experience (P110) | Steve Robertson');
     await page.reload();
-    await expect(page).toHaveTitle('P110 Experience | Steve Robertson');
+    await expect(page).toHaveTitle('Experience (P110) | Steve Robertson');
     await expect(page).toHaveURL(`${BASE}110/`);
   });
 
   test('accepts a page URL without the trailing slash', async ({ page }) => {
     await open(page, '300');
-    await expect(page).toHaveTitle('P300 Skills | Steve Robertson');
+    await expect(page).toHaveTitle('Skills (P300) | Steve Robertson');
   });
 
   test('keeps back and forward in step', async ({ page }) => {
@@ -56,9 +56,9 @@ test.describe('navigation', () => {
     await page.getByRole('navigation', { name: 'Fastext' }).getByRole('link').first().click();
     await expect(page).toHaveURL(`${BASE}101/`);
     await page.goBack();
-    await expect(page).toHaveTitle(/^P100 /);
+    await expect(page).toHaveTitle('Steve Robertson: Frontend Software Engineer (P100)');
     await page.goForward();
-    await expect(page).toHaveTitle('P101 About me | Steve Robertson');
+    await expect(page).toHaveTitle('About me (P101) | Steve Robertson');
   });
 
   test('sends an unknown page to the not-found page', async ({ page }) => {
@@ -73,11 +73,26 @@ test.describe('pre-rendered pages', () => {
 
   test('serve their content, title and canonical link without JavaScript', async ({ page }) => {
     await page.goto('110/');
-    await expect(page).toHaveTitle('P110 Experience | Steve Robertson');
+    await expect(page).toHaveTitle('Experience (P110) | Steve Robertson');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Experience');
     await expect(page.getByRole('heading', { name: 'FanDuel' })).toBeVisible();
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://stevejrobertson.github.io/portfolio-website/110/');
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /\/portfolio-website\/share\.png$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://steverobertson.dev/110/');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://steverobertson.dev/share.png');
+  });
+
+  test('describe Steve to search engines on the index', async ({ page }) => {
+    await page.goto('');
+    const json = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+    expect(json['@graph'].map((item: { '@type': string }) => item['@type'])).toEqual(['Person', 'WebSite']);
+    expect(json['@graph'][0]).toMatchObject({ name: 'Steve Robertson', url: 'https://steverobertson.dev/' });
+  });
+
+  test('are all in the sitemap but 404', async ({ request }) => {
+    const xml = await (await request.get('sitemap.xml')).text();
+    expect(xml).toContain('<loc>https://steverobertson.dev/</loc>');
+    expect(xml).toContain('<loc>https://steverobertson.dev/110/</loc>');
+    expect(xml).not.toContain('/404');
+    expect(await (await request.get('robots.txt')).text()).toContain('Sitemap: https://steverobertson.dev/sitemap.xml');
   });
 
   test('link to each other under the base path', async ({ page }) => {

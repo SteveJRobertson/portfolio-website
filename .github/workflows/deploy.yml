@@ -30,6 +30,8 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # Full history, so the sitemap's lastmod dates come from each page's own last change
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v5

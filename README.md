@@ -2,7 +2,7 @@
 
 Steve Robertson's developer portfolio, built as a Ceefax / ORACLE-style Teletext service: 3-digit page numbers, Fastext colour links, Mode 7 typography.
 
-**Live:** https://stevejrobertson.github.io/portfolio-website/ · design system in [Storybook](https://stevejrobertson.github.io/portfolio-website/storybook/)
+**Live:** https://steverobertson.dev/ · design system in [Storybook](https://steverobertson.dev/storybook/)
 
 ![Page 100, the STEEVEFAX index: Steve Robertson's name in Teletext block letters, a page directory and coloured Fastext links](public/share.png)
 

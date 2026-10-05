@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Playwright runs against `vite preview` of the production build with the
- * GitHub Pages base, so it tests what ships (SPEC §10). One project per screen
+ * live site's base and URL, so it tests what ships (SPEC §10). One project per screen
  * the site is designed for. Screenshots are compared with baselines made on CI's
  * Linux image (`mcr.microsoft.com/playwright`, same version as the package),
  * since font rendering differs between machines.
@@ -10,7 +10,7 @@ import { defineConfig, devices } from '@playwright/test'
  * Locally, `PLAYWRIGHT_CHROMIUM` can point at an installed Chromium.
  */
 const PORT = 4173
-const BASE = '/portfolio-website/'
+const BASE = '/'
 
 export default defineConfig({
   testDir: 'e2e',
@@ -38,7 +38,8 @@ export default defineConfig({
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}${BASE}`,
-    env: { GITHUB_PAGES: 'true' },
+    // Built as the live site is: at the root of steverobertson.dev
+    env: { BASE_PATH: BASE, SITE_URL: 'https://steverobertson.dev' },
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },

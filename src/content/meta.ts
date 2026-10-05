@@ -1,7 +1,17 @@
 import type { CompiledPage, SemanticBlock } from '../types/teletext.ts';
 
-/** The browser tab title, set by the app on every page change and written into each pre-rendered page. */
-export const documentTitle = (page: number, title: string): string => `P${page} ${title} | Steve Robertson`;
+/**
+ * The browser tab title, set by the app on every page change and written into
+ * each pre-rendered page. The subject leads so search results read naturally,
+ * with the page number kept in brackets (SEO SPEC §3.2.5): the index's title
+ * already carries Steve's name, so it goes without the suffix.
+ */
+export const documentTitle = (page: number, title: string): string =>
+  page === 100 ? `${title} (P${page})` : `${title} (P${page}) | Steve Robertson`;
+
+/** Pages without their own description; only the not-found page may go without (SEO SPEC §3.2.4). */
+export const missingDescriptions = (pages: readonly Pick<CompiledPage, 'page' | 'description'>[]): number[] =>
+  pages.filter((p) => p.page !== 404 && !p.description).map((p) => p.page);
 
 const DESCRIPTION_LENGTH = 160;
 
