@@ -10,7 +10,7 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 | 3. Content pipeline | Done |
 | 4. Navigation & accessibility | Done |
 | 5. Graphics & polish | Done |
-| 6. Ship | In review |
+| 6. Ship | Done |
 
 ---
 
