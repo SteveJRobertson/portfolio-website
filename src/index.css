@@ -413,8 +413,13 @@ html, body {
 
 .remote-fastext-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.remote-fastext-btn {
+  min-height: 2.75rem;
+  border-radius: 4px;
 }
 
 .remote-btn {
@@ -464,6 +469,23 @@ html, body {
 }
 .remote-nav-row .remote-btn {
   flex: 1 1 30%;
+}
+
+/* Phones: the handset spans the screen inside the gutters and safe areas, just above the control strip */
+@media (max-width: 480px) {
+  .remote-handset-body {
+    position: fixed;
+    box-sizing: border-box;
+    width: auto;
+    transform: none;
+    left: calc(env(safe-area-inset-left, 0px) + var(--tt-gutter));
+    right: calc(env(safe-area-inset-right, 0px) + var(--tt-gutter));
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tt-gutter) + var(--tt-remote-h) + 0.25rem);
+  }
+
+  .remote-num-btn {
+    padding: 0.6rem;
+  }
 }
 
 /* ============================================================
