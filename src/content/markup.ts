@@ -97,7 +97,8 @@ export const parseMarkup = (source: string): ParsedLine => {
       stack.push({ ...current(), color: 'cyan', link: page });
     } else if (tag === 'dots') {
       leaders++;
-      segments.push({ text: '.', color: current().color ?? 'white', leader: true });
+      const { color, link } = current();
+      segments.push({ text: '.', color: color ?? 'white', leader: true, ...(link !== undefined ? { link } : {}) });
     } else if (tag === 'rule' || /^rule:.$/u.test(tag)) {
       fill = tag === 'rule' ? RULE : tag.slice(5);
       fillColor = current().color ?? 'white';

@@ -13,6 +13,7 @@ const HANGING_MARKERS = /^(\* |- |\d{3} +)/;
 interface StyledChar {
   ch: string;
   leader?: boolean;
+  leaderDots?: boolean;
   color?: TeletextColor;
   bg?: TeletextColor;
   link?: number;
@@ -35,7 +36,15 @@ const toSegments = (styled: StyledChar[]): GridSegment[] => {
   const segments: GridSegment[] = [];
   for (const { ch, leader: _leader, ...style } of styled) {
     const last = segments[segments.length - 1];
-    if (last && last.color === style.color && last.bg === style.bg && last.link === style.link && last.href === style.href) last.text += ch;
+    if (
+      last &&
+      last.color === style.color &&
+      last.bg === style.bg &&
+      last.link === style.link &&
+      last.href === style.href &&
+      last.leaderDots === style.leaderDots
+    )
+      last.text += ch;
     else segments.push({ text: ch, ...style });
   }
   return segments;
@@ -194,7 +203,7 @@ export const layoutRows = (sources: RowSource[], width: number, wrap = true, ren
       const indent = MARGIN + lead;
       const dots = width - indent - (body.length - 1);
       if (dots < 1) errors.push(`${where} is too long for its "{dots}" leader at ${width} columns`);
-      const expanded = [...body.slice(0, leader), ...Array.from({ length: Math.max(1, dots) }, () => ({ ...body[leader], leader: false })), ...body.slice(leader + 1)];
+      const expanded = [...body.slice(0, leader), ...Array.from({ length: Math.max(1, dots) }, () => ({ ...body[leader], leader: false, leaderDots: true })), ...body.slice(leader + 1)];
       rows.push({ segments: toSegments([...spaces(indent), ...expanded]), ...extra });
       return;
     }

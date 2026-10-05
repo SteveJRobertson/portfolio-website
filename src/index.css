@@ -240,6 +240,18 @@ html, body {
   text-decoration: underline;
 }
 
+/* A directory line is one link; hovering it joins its leader dots into a solid line (Bedstead's dot sits 0.71–0.81em down) */
+.tt-line-link {
+  cursor: pointer;
+}
+
+.tt-line-link:hover .tt-leader {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 100% 0.1em;
+  background-position: 0 0.71em;
+}
+
 /* The grid twin of whatever has keyboard focus in the hidden semantic mirror */
 .tt-twin-focus {
   outline: 2px solid var(--tt-white);

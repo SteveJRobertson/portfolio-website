@@ -31,6 +31,8 @@ export interface GridSegment {
   mosaic?: boolean;
   /** A `{dots}` leader: stretched with dots to push the rest of the line to the right edge. */
   leader?: boolean;
+  /** The dots a leader was stretched into, once laid out (drawn solid when its linked line is hovered). */
+  leaderDots?: boolean;
 }
 
 export interface GridRow {
