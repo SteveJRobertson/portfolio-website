@@ -1,7 +1,7 @@
 # Specification: Flummox! (page 152)
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Draft for review, 5 Oct 2026. Nothing is built until Steve approves this spec and [PLAN.md](./PLAN.md).
+**Status**: Approved by Steve, 5 Oct 2026. The build waits until the pre-launch fixes to the other pages are done.
 **Builds on**: the v1 spec in [archive/steevefax-v1/SPEC.md](../archive/steevefax-v1/SPEC.md). Section numbers like "v1 §5" point there.
 
 ---

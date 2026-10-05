@@ -1,7 +1,7 @@
 # Specification: Search and analytics
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Draft, 5 Oct 2026. To be reviewed after Flummox! ([../flummox/SPEC.md](../flummox/SPEC.md)) ships. No plan or tasks until then.
+**Status**: Approved in outline by Steve, 5 Oct 2026; open questions to settle after Flummox! ([../flummox/SPEC.md](../flummox/SPEC.md)) ships. No plan or tasks until then.
 **Builds on**: the v1 spec in [archive/steevefax-v1/SPEC.md](../archive/steevefax-v1/SPEC.md) ("v1 §5" and so on).
 
 ---
