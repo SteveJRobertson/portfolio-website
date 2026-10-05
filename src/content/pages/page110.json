@@ -11,7 +11,7 @@
       "",
       {
         "image": "fanduel",
-        "alt": "The FanDuel logo: a blue shield with a white F.",
+        "alt": "The FanDuel logo: a blue shield, split to form an F.",
         "rows": 4,
         "pixelArt": true,
         "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Present"]
@@ -44,7 +44,7 @@
       "",
       {
         "image": "rbs",
-        "alt": "The Royal Bank of Scotland logo: the blue daisy.",
+        "alt": "The Royal Bank of Scotland logo: four white arrows pointing to the centre of a purple square.",
         "rows": 4,
         "pixelArt": true,
         "beside": [{ "text": "{yellow}Royal Bank of Scotland{/}", "heading": true }, "{cyan}Frontend Engineer{/}", "Sep 2018 - Dec 2019"]
