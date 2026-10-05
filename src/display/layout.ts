@@ -34,7 +34,8 @@ export const layoutBody = (mode: GridMode, body: GridRow[], sidebar: GridRow[] =
   }
 
   if (mode.sidebarCols > 0) {
-    const separatorCol = mode.mainCols + 1;
+    // A blank column first, so a banner or right-aligned number that fills the pane doesn't touch the rule
+    const separatorCol = mode.mainCols + 2;
     const sidebarCol = separatorCol + 1;
     for (let r = FIRST_BODY_ROW; r <= lastBodyRow; r++) {
       placed.push({ key: `sep-${r}`, row: r, col: separatorCol, width: 1, height: 1, content: SEPARATOR });

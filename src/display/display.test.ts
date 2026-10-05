@@ -38,9 +38,9 @@ describe('grid modes', () => {
     ]);
   });
 
-  it('splits widescreen into 38 + 1 + 17 columns', () => {
+  it('splits widescreen into 38 + 1 + 1 + 16 columns', () => {
     const { mainCols, sidebarCols, cols } = GRID_MODES.widescreen;
-    expect([mainCols, sidebarCols, mainCols + 1 + sidebarCols]).toEqual([38, 17, cols]);
+    expect([mainCols, sidebarCols, mainCols + 2 + sidebarCols]).toEqual([38, 16, cols]);
   });
 
   it('picks the mode from aspect ratio queries alone', () => {
@@ -110,9 +110,9 @@ describe('layoutBody', () => {
     const sidebar = lines.filter((l) => l.key.startsWith('side'));
     const separators = lines.filter((l) => l.key.startsWith('sep'));
     expect(sidebar.map((l) => rowText(l.content).trimEnd())).toEqual(SIDEBAR_ROWS.map((r) => rowText(r).trimEnd()));
-    expect(sidebar.every((l) => l.col === 40 && l.width === 17)).toBe(true);
+    expect(sidebar.every((l) => l.col === 41 && l.width === 16)).toBe(true);
     expect(separators).toHaveLength(bodyRowCount(mode));
-    expect(separators.every((l) => l.col === 39)).toBe(true);
+    expect(separators.every((l) => l.col === 40)).toBe(true);
   });
 
   it('has no sidebar outside widescreen', () => {

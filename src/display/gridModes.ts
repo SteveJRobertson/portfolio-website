@@ -16,8 +16,8 @@ export interface GridMode {
 }
 
 export const GRID_MODES: Record<GridModeName, GridMode> = {
-  // 38-column main pane + 1-column separator + 17-column quick index.
-  widescreen: { name: 'widescreen', cols: 56, rows: 24, mainCols: 38, sidebarCols: 17 },
+  // 38-column main pane + 1 blank column + 1-column separator + 16-column quick index.
+  widescreen: { name: 'widescreen', cols: 56, rows: 24, mainCols: 38, sidebarCols: 16 },
   classic: { name: 'classic', cols: 40, rows: 24, mainCols: 40, sidebarCols: 0 },
   portrait: { name: 'portrait', cols: 32, rows: 34, mainCols: 32, sidebarCols: 0 },
 };

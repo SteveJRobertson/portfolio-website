@@ -27,7 +27,7 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 
 | Mode | Query | Grid | Layout |
 |---|---|---|---|
-| Widescreen | `min-aspect-ratio: 16/10` | 56 × 24 | 38-column main pane, 1-column separator, 17-column quick-index sidebar |
+| Widescreen | `min-aspect-ratio: 16/10` | 56 × 24 | 38-column main pane, a blank column, a 1-column separator and a 16-column quick-index sidebar |
 | Classic | `1/1` to `16/10` | 40 × 24 | Traditional 4:3 screen |
 | Portrait | `max-aspect-ratio: 1/1` | 32 × 34 | Tall phone matrix, no scroll, safe-area insets (DEC-016) |
 

@@ -369,9 +369,9 @@ html, body {
   outline: none;
 }
 
-/* Retro Remote Handset Component */
+/* Retro Remote Handset Component. Not positioned itself, so the handset centres on the
+   control strip (which stays centred under the screen) wherever the REMOTE button sits. */
 .teletext-remote-control {
-  position: relative;
   display: flex;
   justify-content: center;
 }
@@ -390,7 +390,7 @@ html, body {
   border: 2px solid #333333;
   border-radius: 8px;
   padding: 0.8rem;
-  width: 280px;
+  width: 320px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
@@ -436,6 +436,8 @@ html, body {
 .nav-btn {
   background: #333333;
   color: #ffffff;
+  font-size: 0.85rem;
+  min-height: 2.75rem;
 }
 
 .remote-keypad-grid {
@@ -449,9 +451,10 @@ html, body {
   color: #ffffff;
   border: 1px solid #444444;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  padding: 0.4rem;
+  padding: 0.6rem;
+  min-height: 2.75rem;
   border-radius: 4px;
   cursor: pointer;
   text-align: center;
@@ -481,10 +484,6 @@ html, body {
     left: calc(env(safe-area-inset-left, 0px) + var(--tt-gutter));
     right: calc(env(safe-area-inset-right, 0px) + var(--tt-gutter));
     bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tt-gutter) + var(--tt-remote-h) + 0.25rem);
-  }
-
-  .remote-num-btn {
-    padding: 0.6rem;
   }
 }
 
