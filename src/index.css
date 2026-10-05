@@ -109,6 +109,11 @@ html, body {
     calc(env(safe-area-inset-left, 0px) + var(--tt-gutter));
 }
 
+/* On a phone the screen sits at the top, like an app, rather than floating mid-page */
+.teletext-wrapper[data-mode='portrait'] {
+  justify-content: flex-start;
+}
+
 /* CRT frame: one cell of margin left and right, half a row top and bottom */
 .teletext-screen {
   --cols: 40;

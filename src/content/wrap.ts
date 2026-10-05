@@ -81,10 +81,10 @@ const trimEnd = (line: StyledChar[]): StyledChar[] => {
  * Greedy word wrap. Space runs inside a line are kept (for aligned columns);
  * the spaces at a break are dropped. Words longer than a line are hard-split.
  */
-const wrapTokens = (tokens: StyledChar[][], firstRoom: number, nextRoom: number): StyledChar[][] => {
+const wrapTokens = (tokens: StyledChar[][], roomFor: (line: number) => number): StyledChar[][] => {
   const lines: StyledChar[][] = [];
   let line: StyledChar[] = [];
-  const room = () => (lines.length === 0 ? firstRoom : nextRoom);
+  const room = () => roomFor(lines.length);
   const flush = () => {
     lines.push(trimEnd(line));
     line = [];
@@ -124,7 +124,8 @@ const padTo = (row: GridRow, cells: number): GridSegment[] => {
 /**
  * An image row: the picture centred on its own, or with its `beside` text to
  * the right (left-aligned picture, one blank cell, then the text with its
- * usual margin). Where the text column would be too narrow, as in portrait,
+ * usual margin). Text that runs past the bottom of the picture flows on
+ * underneath it at full width. Where the text column would be too narrow,
  * the text goes below the centred picture.
  */
 const layoutImage = (source: ImageRowSource, width: number, wrap: boolean, renderImage: ImageRenderer): LaidOutRows => {
@@ -134,9 +135,10 @@ const layoutImage = (source: ImageRowSource, width: number, wrap: boolean, rende
   const besideWidth = width - left;
 
   if (source.beside && besideWidth >= MIN_BESIDE_COLS) {
-    const text = layoutRows(source.beside, besideWidth, wrap);
+    const text = layoutRows(source.beside, width, wrap, undefined, { rows: image.rows.length, inset: left });
     const rows = Array.from({ length: Math.max(image.rows.length, text.rows.length) }, (_, i): GridRow => {
-      const picture = padTo(image.rows[i] ?? { segments: [] }, image.cols);
+      if (i >= image.rows.length) return text.rows[i];
+      const picture = padTo(image.rows[i], image.cols);
       const words = text.rows[i]?.segments ?? [];
       return { segments: [{ text: ' '.repeat(MARGIN) }, ...picture, { text: ' ' }, ...words] };
     });
@@ -149,14 +151,29 @@ const layoutImage = (source: ImageRowSource, width: number, wrap: boolean, rende
   return { rows: [...rows, ...text.rows], errors: text.errors.map((e) => `beside: ${e}`), links: text.links };
 };
 
+/** The first `rows` rows are `inset` cells narrower, leaving room for a picture to their left. */
+interface Narrowed {
+  rows: number;
+  inset: number;
+}
+
 /**
  * Lays out logical lines for one width. With `wrap` off (a `mobileRows`
  * override) each line is used as written and over-long lines are reported.
+ * With `narrowed`, rows beside the picture are laid out without the inset,
+ * for the caller to place after it; the rows below use the full width.
  */
-export const layoutRows = (sources: RowSource[], width: number, wrap = true, renderImage?: ImageRenderer): LaidOutRows => {
+export const layoutRows = (
+  sources: RowSource[],
+  width: number,
+  wrap = true,
+  renderImage?: ImageRenderer,
+  narrowed?: Narrowed,
+): LaidOutRows => {
   const rows: GridRow[] = [];
   const errors: string[] = [];
   const links: number[] = [];
+  const widthAt = (row: number) => (narrowed && row < narrowed.rows ? width - narrowed.inset : width);
 
   sources.forEach((source, index) => {
     const where = `line ${index + 1}`;
@@ -201,8 +218,9 @@ export const layoutRows = (sources: RowSource[], width: number, wrap = true, ren
     const leader = body.findIndex((c) => c.leader);
     if (leader !== -1) {
       const indent = MARGIN + lead;
-      const dots = width - indent - (body.length - 1);
-      if (dots < 1) errors.push(`${where} is too long for its "{dots}" leader at ${width} columns`);
+      const room = widthAt(rows.length);
+      const dots = room - indent - (body.length - 1);
+      if (dots < 1) errors.push(`${where} is too long for its "{dots}" leader at ${room} columns`);
       const expanded = [...body.slice(0, leader), ...Array.from({ length: Math.max(1, dots) }, () => ({ ...body[leader], leader: false, leaderDots: true })), ...body.slice(leader + 1)];
       rows.push({ segments: toSegments([...spaces(indent), ...expanded]), ...extra });
       return;
@@ -211,14 +229,16 @@ export const layoutRows = (sources: RowSource[], width: number, wrap = true, ren
     const plain = body.map((c) => c.ch).join('');
     const hang = wrap ? (plain.match(HANGING_MARKERS)?.[0].length ?? 0) : 0;
     const indent = MARGIN + lead;
+    const first = rows.length;
     const lines = wrap
-      ? wrapTokens(tokenize(body), width - indent, width - indent - hang)
+      ? wrapTokens(tokenize(body), (i) => widthAt(first + i) - indent - (i === 0 ? 0 : hang))
       : [trimEnd(body)];
 
     lines.forEach((line, i) => {
       const prefix = i === 0 ? indent : indent + hang;
-      if (prefix + line.length > width) {
-        errors.push(`${where} is ${prefix + line.length} cells wide; the limit is ${width}`);
+      const limit = widthAt(first + i);
+      if (prefix + line.length > limit) {
+        errors.push(`${where} is ${prefix + line.length} cells wide; the limit is ${limit}`);
       }
       rows.push({ segments: toSegments([...spaces(prefix), ...line]), ...extra });
     });

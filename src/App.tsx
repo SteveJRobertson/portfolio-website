@@ -150,7 +150,7 @@ export const App: React.FC = () => {
         Skip to page content
       </a>
 
-      <div className="teletext-wrapper">
+      <div className="teletext-wrapper" data-mode={mode.name}>
         <TeletextScreen mode={mode} crt={crt}>
           <HeaderTicker bufferText={buffer.text} currentPage={requested} cols={mode.cols} subpage={subpage} />
 
