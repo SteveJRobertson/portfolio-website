@@ -15,7 +15,7 @@
 | `portfolio-site-2026` | The current site: a Vite + React app built with Lovable, one page at `/`. Its `og:url` is `https://www.steverobertson.dev/` | Every push deploys to **two** Vercel projects in the `steve-robertsons-projects` team: `portfolio-site-2026` and `portfolio-site-2026-gdle` (last production deploy 2 May 2026). Repo homepage: `portfolio-site-2026-teal.vercel.app` |
 | `portfolio-site` | The 2023 Next.js site | Vercel deployments in Aug 2023, `@vercel/analytics`; repo homepage is `https://steverobertson.dev` |
 
-To confirm in Vercel (Settings → Domains on each project): which project holds `steverobertson.dev` and `www.steverobertson.dev`, and whether Vercel is also the DNS host (nameservers `ns1.vercel-dns.com`/`ns2.vercel-dns.com`) or the records live at the registrar.
+To confirm in Vercel (Settings → Domains on each project): which project holds `steverobertson.dev` and `www.steverobertson.dev`, DNS is at GoDaddy (Steve checked, 5 Oct): `A @ 216.198.79.1` and `www CNAME …vercel-dns-017.com`, no email records.
 
 **Watch out:** the old user-site repo `stevejrobertson.github.io` has a `CNAME` of `sr.digital` (2018). If that repo still publishes to Pages with that domain, GitHub sends every project site, this one included, to `sr.digital/…`. Check Settings → Pages on that repo; if Pages is on, turn it off or remove the domain before the cutover.
 
@@ -36,8 +36,8 @@ Done this way, the old Vercel site keeps serving until DNS flips, so the only ga
 2. **Verify the domain** (any time before): GitHub → your profile Settings → Pages → Add a domain → `steverobertson.dev`, then add the `_github-pages-challenge-SteveJRobertson` TXT record it gives you. This stops anyone else claiming the domain on Pages.
 3. **Lower the TTL** on the apex and `www` records to 300 seconds, a day ahead if you can.
 4. **Point Pages at the domain.** In this repo: Settings → Secrets and variables → Actions → Variables → add `CUSTOM_DOMAIN` = `steverobertson.dev`. Then Settings → Pages → Custom domain → `steverobertson.dev` → Save. Then Actions → Deploy → Run workflow. From now on `stevejrobertson.github.io/portfolio-website/…` redirects to `steverobertson.dev/…`, which is still the Vercel site until step 5.
-5. **Switch DNS** (in Vercel DNS if Vercel hosts the zone, otherwise at the registrar). Leave MX and other TXT records alone.
-   - Remove the Vercel records: apex `A 76.76.21.21` (or an `ALIAS`), `www CNAME cname.vercel-dns.com`.
+5. **Switch DNS** at GoDaddy, which hosts the zone. Leave NS, SOA and `_domainconnect` alone.
+   - Remove the Vercel records: apex `A 216.198.79.1` and the `www CNAME …vercel-dns-017.com`.
    - Apex `A`: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
    - Apex `AAAA`: `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
    - `www CNAME stevejrobertson.github.io` (GitHub redirects `www` to the apex).
