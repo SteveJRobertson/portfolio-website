@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { RULE, parseMarkup } from './markup';
+import { ICON_CELLS, RULE, parseMarkup } from './markup';
 import { layoutBanner } from './banner';
 import { blockBitmap, unsupportedChars } from './blockFont';
 import { layoutRows, slotsUsed } from './wrap';
@@ -58,6 +58,29 @@ describe('parseMarkup', () => {
     ['TEXT {rule}', 'only thing on its line'],
   ])('reports %s', (source, message) => {
     expect(parseMarkup(source).errors.join()).toContain(message);
+  });
+});
+
+describe('icons', () => {
+  it('takes two cells for an icon and checks its name', () => {
+    expect(parseMarkup('{icon:email} {green}EMAIL{/}').segments).toEqual([
+      { text: ICON_CELLS, icon: 'email' },
+      { text: ' ', color: 'white' },
+      { text: 'EMAIL', color: 'green' },
+    ]);
+    expect(parseMarkup('{icon:myspace}').errors.join()).toContain('unknown icon "myspace"');
+  });
+
+  it('keeps an icon whole when a line wraps, and apart from the text', () => {
+    const { rows } = layoutRows(['{icon:github} {cyan}github.com/SteveJRobertson/lighthouse-compare{/}'], 20);
+    expect(rows[0].segments.filter((s) => s.icon)).toEqual([{ text: ICON_CELLS, icon: 'github' }]);
+    expect(rows.slice(1).some((r) => r.segments.some((s) => s.icon))).toBe(false);
+  });
+
+  it('leaves icons out of the semantic page: the words beside them name them', () => {
+    expect(buildSemantic([{ text: '{icon:linkedin} {green}LINKEDIN{/}', heading: true }])).toEqual([
+      { kind: 'heading', content: [{ text: 'LINKEDIN' }] },
+    ]);
   });
 });
 

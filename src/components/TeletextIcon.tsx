@@ -6,8 +6,8 @@ interface TeletextIconProps {
   name: IconName;
   /** Draws the icon in one colour instead of its own. */
   color?: TeletextColor;
-  /** Width and height in px. 24 by default, so each pixel of the 12 × 12 grid is 2 × 2. */
-  size?: number;
+  /** Width and height: px, or any CSS length. 24 px by default, so each pixel of the 12 × 12 grid is 2 × 2. */
+  size?: number | string;
   /** The accessible name. Defaults to the icon's label; pass '' when text beside it already names it. */
   label?: string;
 }

@@ -1,5 +1,6 @@
 import { TELETEXT_COLORS, type GridSegment, type TeletextColor } from '../types/teletext.ts';
 import { sextant } from './mosaic.ts';
+import { ICONS, type IconName } from '../icons/icons.ts';
 
 /**
  * Colour-tag markup for one logical line (SPEC §7):
@@ -10,6 +11,7 @@ import { sextant } from './mosaic.ts';
  *   {rule} / {rule:-}    a full-width rule; the only thing on its row, colour from the enclosing tag.
  *                        {rule} is a solid mosaic bar; {rule:X} repeats X
  *   {dots}               a leader: dots that push the rest of the line to the right edge
+ *   {icon:linkedin}      an icon (src/icons), two cells wide and one line tall
  *   {{                   a literal "{"
  *
  * Tags nest, `{/}` closes the most recent one, and every tag must be closed by
@@ -31,6 +33,9 @@ interface Style {
   bg?: TeletextColor;
   link?: number;
 }
+
+/** What an icon takes up on the grid: two cells of non-breaking space, so wrapping never splits or trims it. */
+export const ICON_CELLS = '\u00a0\u00a0';
 
 /** The middle third of a cell: a solid bar across the screen. */
 export const RULE = sextant(0b001100);
@@ -99,6 +104,10 @@ export const parseMarkup = (source: string): ParsedLine => {
       leaders++;
       const { color, link } = current();
       segments.push({ text: '.', color: color ?? 'white', leader: true, ...(link !== undefined ? { link } : {}) });
+    } else if (tag.startsWith('icon:')) {
+      const name = tag.slice(5);
+      if (name in ICONS) segments.push({ text: ICON_CELLS, icon: name as IconName });
+      else errors.push(`unknown icon "${name}"; the icons are ${Object.keys(ICONS).join(', ')}`);
     } else if (tag === 'rule' || /^rule:.$/u.test(tag)) {
       fill = tag === 'rule' ? RULE : tag.slice(5);
       fillColor = current().color ?? 'white';

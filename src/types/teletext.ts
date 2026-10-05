@@ -19,8 +19,12 @@ export const TELETEXT_COLORS: readonly TeletextColor[] = [
   'black',
 ];
 
+import type { IconName } from '../icons/icons.ts';
+
 export interface GridSegment {
   text: string;
+  /** An `{icon:NAME}`: the icon drawn over this segment's two cells. */
+  icon?: IconName;
   color?: TeletextColor;
   bg?: TeletextColor;
   /** Target of an inline `{link:NNN}` tag: clickable in the grid, a real link in the semantic mirror. */

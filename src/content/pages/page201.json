@@ -12,6 +12,6 @@
     "{green}TECH{/}    TypeScript, React",
     "{green}STATUS{/}  In progress",
     "",
-    "{cyan}github.com/SteveJRobertson/isolate-ui{/}"
+    "{icon:github} {cyan}github.com/SteveJRobertson/isolate-ui{/}"
   ]
 }
