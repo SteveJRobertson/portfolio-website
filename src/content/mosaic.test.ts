@@ -134,6 +134,19 @@ describe('image rows', () => {
     expect(pages[0].semantic[0].map((b) => b.kind)).toEqual(['image', 'paragraph', 'paragraph']);
   });
 
+  it('flows text that runs past the picture on underneath it at full width', () => {
+    // 2 rows of picture, 4 cells wide: at 38 columns the text beside it has 32 cells.
+    const beside = ['one two three four five six seven eight nine ten eleven twelve thirteen fourteen'];
+    const { pages, errors } = compilePages([page([{ image: 'art', alt: 'Art.', rows: 2, pixelArt: true, beside }])], { art });
+    expect(errors).toEqual([]);
+    const wide = pages[0].wide[0].map(rowText);
+    expect(wide).toEqual([
+      expect.stringMatching(/^ .{4}  one two three four five six$/u),
+      expect.stringMatching(/^ .{4}  seven eight nine ten eleven$/u),
+      ' twelve thirteen fourteen',
+    ]);
+  });
+
   it('finds pixel-art cells with more than two colours (transparent counts as black)', () => {
     expect(overfullCells(art)).toEqual([]);
     const three = image(2, 3, (x, y) => (y === 0 ? 'red' : y === 1 ? 'white' : x ? 'blue' : null));
