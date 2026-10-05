@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { NOT_FOUND_PAGE, isValidPage } from '../content/registry';
+import { track } from '../analytics/track';
 import { pageFromPath, pageHref } from './paths';
 
 export interface Navigation {
@@ -22,7 +23,10 @@ const pageFromLocation = () => resolvePage(pageFromPath(window.location.pathname
 
 /** Puts the URL right when it names a page that doesn't exist, without adding a history entry. */
 const replaceUnknownPath = (page: number) => {
-  if (window.location.pathname !== pageHref(page)) window.history.replaceState({ page }, '', pageHref(page));
+  const path = window.location.pathname;
+  if (path === pageHref(page)) return;
+  if (page === NOT_FOUND_PAGE) track('Not found', { path });
+  window.history.replaceState({ page }, '', pageHref(page));
 };
 
 /** The current page, kept in step with the URL through the History API (SPEC §5). */
@@ -34,6 +38,7 @@ export const useNavigation = (): Navigation => {
 
   const navigate = useCallback((requested: number) => {
     const page = resolvePage(requested);
+    if (page === NOT_FOUND_PAGE && requested !== NOT_FOUND_PAGE) track('Not found', { path: pageHref(requested) });
     const href = pageHref(page);
     if (window.location.pathname !== href) window.history.pushState({ page }, '', href);
     setState((s) => ({ page, changes: s.changes + 1 }));
