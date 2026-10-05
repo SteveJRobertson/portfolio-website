@@ -30,7 +30,7 @@ npm run test:e2e   # Playwright against the production build (see below)
 
 ## Deployment
 
-Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with `GITHUB_PAGES=true` (base `/portfolio-website/`), pre-renders every page, builds Storybook into `/storybook/` and publishes to GitHub Pages. For a custom domain, build with `BASE_PATH=/` and `SITE_URL=https://your.domain`.
+Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with `GITHUB_PAGES=true` (base `/portfolio-website/`), pre-renders every page, builds Storybook into `/storybook/` and publishes to GitHub Pages. To serve it from a custom domain, set the repository variable `CUSTOM_DOMAIN` (e.g. `steverobertson.dev`) and add the same domain under Settings → Pages; the deploy then builds with `BASE_PATH=/` and `SITE_URL=https://<domain>`. With the variable unset it stays on `/portfolio-website/`. GitHub ignores a `CNAME` file when deploying from Actions, so there isn't one.
 
 ## Project layout
 
