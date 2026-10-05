@@ -27,6 +27,9 @@ export interface CompileResult {
   errors: string[];
 }
 
+/** The sub-page hint when a page doesn't set its own. */
+export const DEFAULT_HINT = '{white}Press ← or → for more.{/}';
+
 const BOOLEAN_KEYS = ROW_KEYS.filter((k) => k !== 'text');
 
 const isCount = (v: unknown) => Number.isInteger(v) && (v as number) > 0;
@@ -82,6 +85,8 @@ const shapeErrors = (data: unknown): string[] => {
     errors.push('"description" must be some text');
   }
   if (page.index !== undefined && typeof page.index !== 'boolean') errors.push('"index" must be true or false');
+  if (page.hint !== undefined && (typeof page.hint !== 'string' || !page.hint)) errors.push('"hint" must be some text');
+  if (page.hint !== undefined && !Array.isArray(page.subpages)) errors.push('"hint" is only for pages with "subpages"');
   const fastext = page.fastext;
   if (
     !Array.isArray(fastext) ||
@@ -191,7 +196,21 @@ export const compilePages = (files: SourceFile[], images: Readonly<Record<string
           if (!exists(link)) errors.push(`${where}: links to page ${link}, which doesn't exist`);
         }
       }
-      return result.rows;
+      return subpages.length > 1 ? withHint(result.rows, width, limit, where) : result.rows;
+    };
+
+    // Pages with sub-pages say how to step through them, always in the last body row, just above Fastext.
+    const hint = page.hint ?? DEFAULT_HINT;
+    const withHint = (rows: GridRow[], width: number, limit: number, where: string): GridRow[] => {
+      const used = slotsUsed(rows);
+      if (used > limit - 2) {
+        if (used <= limit) errors.push(`${where}: needs ${used} rows; the limit is ${limit - 2}, leaving a blank row and the ← → hint`);
+        return rows;
+      }
+      const laid = layoutRows([hint], width);
+      errors.push(...laid.errors.map((e) => `${where}: hint: ${e}`));
+      if (laid.rows.length > 1) errors.push(`${where}: the hint "${hint}" must fit on one line`);
+      return [...rows, ...Array.from({ length: limit - 1 - used }, () => ({ segments: [] })), laid.rows[0]];
     };
 
     const fastext = page.fastext.map((f, i): FastextLink => {

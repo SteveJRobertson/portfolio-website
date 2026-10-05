@@ -76,13 +76,22 @@ export interface PageSource {
   rows?: RowSource[];
   /** …or several sub-pages. */
   subpages?: RowSource[][];
+  /**
+   * With sub-pages: the line that says how to step through them, e.g.
+   * "{white}Press ← or → for more roles.{/}". It's drawn in the last body row
+   * of every sub-page (on screen only), so it never moves.
+   */
+  hint?: string;
   /** Portrait override, used line for line instead of the automatic wrap. */
   mobileRows?: RowSource[];
   mobileSubpages?: RowSource[][];
 }
 
-/** The widescreen main pane width (38). Classic shows the same line breaks with two cells spare. */
-export const WIDE_COLS = GRID_MODES.widescreen.mainCols;
+/**
+ * The width text is set to on the 40-column screens (classic, and widescreen's main pane): 38,
+ * leaving two cells spare at the right, as on Ceefax. Banners extend their band into them.
+ */
+export const WIDE_COLS = GRID_MODES.classic.mainCols - 2;
 export const NARROW_COLS = GRID_MODES.portrait.mainCols;
 
 /** Body rows between the header and Fastext (22 and 34). */

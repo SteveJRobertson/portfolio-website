@@ -162,6 +162,15 @@ html, body {
     repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0, rgba(0, 0, 0, 0.32) 1px, transparent 1px, transparent 3px);
 }
 
+/* Phones: the text is small, so 3px scanlines would cut through each glyph. Finer lines keep it readable. */
+@media (max-width: 600px), (max-height: 500px) {
+  .crt-overlay {
+    background:
+      radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.45) 100%),
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0, rgba(0, 0, 0, 0.3) 0.5px, transparent 0.5px, transparent 1.5px);
+  }
+}
+
 /* Exact cols x rows character cells */
 .tt-grid {
   display: grid;
@@ -240,9 +249,14 @@ html, body {
   text-decoration: underline;
 }
 
-/* A directory line is one link; hovering it joins its leader dots into a solid line (Bedstead's dot sits 0.71–0.81em down) */
+/* A line that links as a whole is one link; hovering it joins its leader dots into a solid line (Bedstead's dot sits
+   0.71–0.81em down), or underlines it when it has no dots, as in the quick index */
 .tt-line-link {
   cursor: pointer;
+}
+
+.tt-line-link--plain:hover {
+  text-decoration: underline;
 }
 
 .tt-line-link:hover .tt-leader {
