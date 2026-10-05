@@ -1,13 +1,13 @@
 {
   "page": 100,
-  "title": "Steve Robertson: Senior Frontend Engineer",
-  "description": "Steve Robertson, Senior Frontend Engineer in Edinburgh. A developer portfolio built as a working Ceefax-style Teletext service: key a page number or press a Fastext button.",
+  "title": "Steve Robertson: Frontend Software Engineer",
+  "description": "Steve Robertson, Frontend Software Engineer in Edinburgh. A developer portfolio built as a working Ceefax-style Teletext service: key a page number or press a Fastext button.",
   "label": "INDEX",
   "index": true,
   "fastext": [{ "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 200 }, { "page": 400 }],
   "rows": [
     { "banner": "{white}STEVE{/} {yellow}ROBERTSON{/}", "bg": "blue" },
-    "{cyan}Senior Frontend Engineer{/}",
+    "{cyan}Frontend Software Engineer{/}",
     "Edinburgh, Scotland",
     "",
     "{link:101}{white}About me{dots}{/}101{/}",

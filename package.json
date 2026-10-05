@@ -12,6 +12,7 @@
     "build": "npm run validate && tsc -b && vite build && npm run prerender",
     "lint": "oxlint",
     "preview": "vite preview",
+    "favicon": "tsx scripts/favicon.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prerender": "vite build --ssr src/prerender.tsx --outDir dist-ssr && tsx scripts/prerender.ts",
