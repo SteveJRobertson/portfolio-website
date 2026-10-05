@@ -55,7 +55,7 @@ describe('App', () => {
     renderAt('/101');
     expect(heading()).toHaveProperty('textContent', 'About me');
     expect(document.activeElement).toBe(document.body);
-    expect(document.title).toBe('P101 About me | Steve Robertson');
+    expect(document.title).toBe('About me (P101) | Steve Robertson');
   });
 
   it('navigates once from digits typed on the keyboard and keypad together, and focuses the new heading', () => {

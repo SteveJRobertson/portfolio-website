@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -7,7 +8,10 @@ import { pathToFileURL } from 'node:url';
  * `vite build --ssr src/prerender.tsx --outDir dist-ssr`: `index.html` for 100,
  * `NNN/index.html` for the rest and `404.html` for the not-found page, so every
  * URL is a real file on GitHub Pages. Each gets its own title, description,
- * canonical link and Open Graph tags, and the page's text in `#root`.
+ * canonical link and Open Graph tags, and the page's text in `#root`. The
+ * index also gets JSON-LD describing Steve and the site. Then `sitemap.xml`
+ * lists every page but 404, and at the root of a domain `robots.txt` points
+ * search engines at it (SEO SPEC §3.2).
  *
  * `SITE_URL` is the site's origin for absolute links (default: GitHub Pages).
  */
@@ -33,6 +37,72 @@ const SHARE_IMAGE = 'share.png';
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/** Who the site is about, for search engines (schema.org `Person`). */
+const PERSON = {
+  name: 'Steve Robertson',
+  jobTitle: 'Frontend Software Engineer',
+  worksFor: 'Motability Operations',
+  locality: 'Edinburgh',
+  region: 'Scotland',
+  country: 'GB',
+  knowsAbout: ['React', 'TypeScript', 'JavaScript', 'Design systems', 'Accessibility'],
+  sameAs: ['https://www.linkedin.com/in/steverobertson80', 'https://github.com/stevejrobertson'],
+};
+
+/** The index's structured data: Steve as a `Person` and the site as a `WebSite` by him. */
+const structuredData = (home: string) => ({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${home}#person`,
+      name: PERSON.name,
+      url: home,
+      jobTitle: PERSON.jobTitle,
+      worksFor: { '@type': 'Organization', name: PERSON.worksFor },
+      address: { '@type': 'PostalAddress', addressLocality: PERSON.locality, addressRegion: PERSON.region, addressCountry: PERSON.country },
+      knowsAbout: PERSON.knowsAbout,
+      sameAs: PERSON.sameAs,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${home}#website`,
+      name: SITE_NAME,
+      alternateName: `${PERSON.name}'s portfolio`,
+      url: home,
+      inLanguage: 'en-GB',
+      author: { '@id': `${home}#person` },
+    },
+  ],
+});
+
+/** JSON for inside a `<script>`: `<` is escaped so the text can't close the element. */
+const scriptJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
+
+/** The day the page's content file last changed, from git; none when git can't say (no history, no git). */
+const lastModified = (page: number): string | undefined => {
+  try {
+    const date = execFileSync('git', ['log', '-1', '--format=%cs', '--', `src/content/pages/page${page}.json`], { cwd: root, encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const sitemap = (pages: PrerenderedPage[]) =>
+  [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...pages
+      .filter((page) => page.file !== '404.html')
+      .map((page) => {
+        const lastmod = lastModified(page.page);
+        return `  <url><loc>${escape(`${SITE_URL}${page.href}`)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
+      }),
+    '</urlset>',
+    '',
+  ].join('\n');
+
 const META = /<!-- page-meta[\s\S]*?<!-- \/page-meta -->/;
 const ROOT = '<div id="root"></div>';
 
@@ -54,6 +124,7 @@ const head = (page: PrerenderedPage, base: string) => {
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:alt" content="The STEEVEFAX index page: Steve Robertson's name in Teletext block letters." />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
+    ...(page.file === 'index.html' ? [`<script type="application/ld+json">${scriptJson(structuredData(url))}</script>`] : []),
   ];
   return tags.join('\n    ');
 };
@@ -75,8 +146,12 @@ const main = async () => {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, html);
   }
+  fs.writeFileSync(path.join(dist, 'sitemap.xml'), sitemap(pages));
+  // robots.txt only counts at the root of a host, so it's written only for a custom domain
+  const robots = base === '/';
+  if (robots) fs.writeFileSync(path.join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}${base}sitemap.xml\n`);
   fs.rmSync(ssr, { recursive: true, force: true });
-  console.log(`Pre-rendered ${pages.length} pages (base ${base}, site ${SITE_URL})`);
+  console.log(`Pre-rendered ${pages.length} pages and the sitemap${robots ? ' and robots.txt' : ''} (base ${base}, site ${SITE_URL})`);
 };
 
 await main();

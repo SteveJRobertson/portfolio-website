@@ -1,6 +1,7 @@
 {
   "page": 101,
   "title": "About me",
+  "description": "About Steve Robertson: a frontend engineer in Edinburgh with over fifteen years building for the web, specialising in React, TypeScript and design systems.",
   "label": "ABOUT",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 110, "label": "CAREER" }, { "page": 300 }, { "page": 400 }],
