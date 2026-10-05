@@ -16,7 +16,7 @@ interface HeaderInput {
 
 /**
  * Row 1, exactly `cols` wide:
- *   56: P100 STEEVEFAX 100 ...... SUN 04 OCT 14:03:22
+ *   58: P100 STEEVEFAX 100 ...... SUN 04 OCT 14:03:22
  *   40: P100 STEEVEFAX 100 ...... 04 OCT 14:03:22
  *   32: P100 STEEVEFAX ........... 14:03
  *   20: P100 STEVE ..... 14:03
@@ -49,7 +49,7 @@ export const formatHeader = ({ bufferText, currentPage, now, cols, subpage }: He
           ...hold,
         ];
   const seconds = `${time}:${two(now.getSeconds())}`;
-  const right = cols < 40 ? time : cols < 56 ? (held ? seconds : `${date} ${seconds}`) : `${DAYS[now.getDay()]} ${date} ${seconds}`;
+  const right = cols < 40 ? time : cols <= 40 ? (held ? seconds : `${date} ${seconds}`) : `${DAYS[now.getDay()]} ${date} ${seconds}`;
 
   const leftWidth = 4 + 1 + left.reduce((n, s) => n + s.text.length, 0);
   const gap = Math.max(1, cols - leftWidth - right.length);

@@ -18,56 +18,89 @@ interface GridLineProps {
   focusHref?: string;
 }
 
-/** The page a directory line links to as a whole: its leader dots link, and so does all its text. */
+/**
+ * The page a line links to as a whole: every word on it (a directory line's
+ * label, dots and number, or a quick-index entry's number and label) links to
+ * the same page, so it's one link rather than several.
+ */
 const lineLink = (row: GridRow): number | undefined => {
-  const dots = row.segments.find((s) => s.leaderDots);
-  if (dots?.link === undefined) return undefined;
-  return row.segments.every((s) => !s.text.trim() || s.link === dots.link) ? dots.link : undefined;
+  const words = row.segments.filter((s) => s.text.trim());
+  const link = words[0]?.link;
+  if (link === undefined || words.length < 2) return undefined;
+  return words.every((s) => s.link === link) ? link : undefined;
 };
+
+/** Index of the first and last segment carrying `link`; the blanks around them stay outside the link. */
+const linkedRange = (row: GridRow, link: number): [number, number] => [
+  row.segments.findIndex((s) => s.link === link),
+  row.segments.findLastIndex((s) => s.link === link),
+];
 
 /**
  * One row of text pinned to its grid cells. Double-height rows span two row
  * slots. Hidden from assistive tech: the semantic mirror carries the content.
- * A directory line ("About me.......101") is one link from label to number,
- * and its dots draw solid while it's hovered.
+ * A line whose words all link to one page ("About me.......101", or "101 ABOUT"
+ * in the quick index) is one link from label to number. Hovering it draws its
+ * leader dots solid, or underlines it if it has none.
  */
 export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width, height = 1, onLink, onOpen, focusLink, focusHref }) => {
   const whole = onLink ? lineLink(content) : undefined;
+  const span = (segment: GridRow['segments'][number], i: number) => {
+    const { link, href } = segment;
+    const onClick =
+      whole !== undefined
+        ? undefined
+        : link !== undefined && onLink
+          ? () => onLink(link)
+          : href !== undefined && onOpen
+            ? () => onOpen(href)
+            : undefined;
+    const focused = whole === undefined && ((link !== undefined && link === focusLink) || (href !== undefined && href === focusHref));
+    return (
+      <ColorSpan
+        key={i}
+        color={segment.color ?? 'white'}
+        bg={segment.bg}
+        mosaic={segment.mosaic}
+        className={[onClick && 'tt-link', focused && 'tt-twin-focus', segment.leaderDots && 'tt-leader'].filter(Boolean).join(' ')}
+        onClick={onClick}
+      >
+        {segment.text}
+      </ColorSpan>
+    );
+  };
+
+  let text: React.ReactNode = content.segments.map(span);
+  if (whole !== undefined) {
+    const [first, last] = linkedRange(content, whole);
+    const linked = content.segments.slice(first, last + 1);
+    text = (
+      <>
+        {content.segments.slice(0, first).map(span)}
+        <span
+          className={[
+            'tt-line-link',
+            !linked.some((s) => s.leaderDots) && 'tt-line-link--plain',
+            whole === focusLink && 'tt-twin-focus',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          onClick={() => onLink!(whole)}
+        >
+          {linked.map((segment, i) => span(segment, first + i))}
+        </span>
+        {content.segments.slice(last + 1).map((segment, i) => span(segment, last + 1 + i))}
+      </>
+    );
+  }
+
   return (
     <div
       aria-hidden="true"
       className={height === 2 ? 'tt-line tt-line--double' : 'tt-line'}
       style={{ gridRow: `${row} / span ${height}`, gridColumn: `${col} / span ${width}` }}
     >
-      <span
-        className={whole === undefined ? 'tt-line__text' : ['tt-line__text tt-line-link', whole === focusLink && 'tt-twin-focus'].filter(Boolean).join(' ')}
-        onClick={whole === undefined ? undefined : () => onLink!(whole)}
-      >
-        {content.segments.map((segment, i) => {
-          const { link, href } = segment;
-          const onClick =
-            whole !== undefined
-              ? undefined
-              : link !== undefined && onLink
-                ? () => onLink(link)
-                : href !== undefined && onOpen
-                  ? () => onOpen(href)
-                  : undefined;
-          const focused = whole === undefined && ((link !== undefined && link === focusLink) || (href !== undefined && href === focusHref));
-          return (
-            <ColorSpan
-              key={i}
-              color={segment.color ?? 'white'}
-              bg={segment.bg}
-              mosaic={segment.mosaic}
-              className={[onClick && 'tt-link', focused && 'tt-twin-focus', segment.leaderDots && 'tt-leader'].filter(Boolean).join(' ')}
-              onClick={onClick}
-            >
-              {segment.text}
-            </ColorSpan>
-          );
-        })}
-      </span>
+      <span className="tt-line__text">{text}</span>
     </div>
   );
 };

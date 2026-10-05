@@ -4,30 +4,23 @@
   "label": "ABOUT",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 110, "label": "CAREER" }, { "page": 300 }, { "page": 400 }],
-  "subpages": [
-    [
-      { "banner": "ABOUT ME", "bg": "red" },
-      "",
-      {
-        "image": "steve",
-        "alt": "A cartoon of Steve in Teletext block graphics: a cyan cap, a white beard and a red jacket.",
-        "rows": 12,
-        "pixelArt": true,
-        "beside": [
-          "Over fifteen years building for the web, specialising in React, TypeScript and design systems.",
-          "",
-          "I lead cross-team frontend initiatives, from shared UI libraries to large-scale codebase migrations."
-        ]
-      }
-    ],
-    [
-      { "banner": "ABOUT ME", "bg": "red" },
-      "",
-      "{green}I thrive where frontend engineering intersects with design, platform teams and business stakeholders.{/}",
-      "",
-      "Based in Edinburgh, Scotland.",
-      "",
-      "Career on {link:110}110{/}, skills on {link:300}300{/}, contact on {link:400}400{/}."
-    ]
+  "rows": [
+    { "banner": "ABOUT ME", "bg": "red" },
+    "",
+    {
+      "image": "steve",
+      "alt": "A cartoon of Steve in Teletext block graphics: a cyan cap, a white beard and a red jacket.",
+      "rows": 10,
+      "pixelArt": true,
+      "beside": [
+        "Over fifteen years building for the web, specialising in React, TypeScript and design systems.",
+        "",
+        "I lead cross-team frontend initiatives, from shared UI libraries to large-scale codebase migrations."
+      ]
+    },
+    "",
+    "{green}I thrive where frontend engineering intersects with design, platform teams and business stakeholders.{/}",
+    "",
+    "Based in Edinburgh, Scotland."
   ]
 }

@@ -5,6 +5,7 @@
   "label": "EXPERIENCE",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 300 }, { "page": 400 }],
+  "hint": "{white}Press ← or → for more roles.{/}",
   "subpages": [
     [
       { "banner": "EXPERIENCE", "bg": "red" },
@@ -16,9 +17,7 @@
       "* Large-scale migrations (company-wide design system, routing infrastructure) for high-traffic apps",
       "* Root-cause analysis of complex regressions",
       "* Changed migration strategy to clear reviewer bottlenecks",
-      "* AWS staging environments (Route 53, S3, CloudFront) for new product domains",
-      "",
-      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
+      "* AWS staging environments (Route 53, S3, CloudFront) for new product domains"
     ],
     [
       { "banner": "EXPERIENCE", "bg": "red" },
@@ -31,9 +30,7 @@
       "* Bridge between UX, Product and Engineering",
       "* Self-service docs and CI/CD",
       "* Onboarded and mentored 10+ teams",
-      "* Handed over to internal maintenance",
-      "",
-      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
+      "* Handed over to internal maintenance"
     ],
     [
       { "banner": "EXPERIENCE", "bg": "red" },
@@ -44,9 +41,7 @@
       "",
       "* GDPR management reporting app (React, Redux)",
       "* Introduced Hooks and Context",
-      "* Onboarded new developers on a time-critical project",
-      "",
-      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
+      "* Onboarded new developers on a time-critical project"
     ],
     [
       { "banner": "EXPERIENCE", "bg": "red" },
@@ -57,9 +52,7 @@
       "",
       "* Customer-facing investment platform",
       "* Championed TDD",
-      "* Set up peer code review",
-      "",
-      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
+      "* Set up peer code review"
     ],
     [
       { "banner": "EXPERIENCE", "bg": "red" },
@@ -68,9 +61,7 @@
       "{cyan}Frontend Developer{/}",
       "Nov 2016 - Apr 2017",
       "",
-      "* Content-managed customer site on EPiServer, Bootstrap, jQuery and Sass",
-      "",
-      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
+      "* Content-managed customer site on EPiServer, Bootstrap, jQuery and Sass"
     ],
     [
       { "banner": "EXPERIENCE", "bg": "red" },
@@ -81,9 +72,7 @@
       "",
       "* Built a freelance business",
       "* Senior developer at a digital agency",
-      "* Led Angular UI toolkit development at Sopra Steria",
-      "",
-      { "text": "{white}Press ← or → for more roles.{/}", "screenOnly": true }
+      "* Led Angular UI toolkit development at Sopra Steria"
     ]
   ]
 }

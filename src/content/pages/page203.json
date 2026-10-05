@@ -11,6 +11,6 @@
     "{green}TECH{/}    React, TypeScript, Vite",
     "{green}STATUS{/}  In progress",
     "",
-    "The cartoon on {link:101}101{/} is drawn the Teletext way: 2 × 3 blocks a character cell, and two colours a cell."
+    "The {link:101}cartoon on 101{/} is drawn the Teletext way: 2 × 3 blocks a character cell, and two colours a cell."
   ]
 }
