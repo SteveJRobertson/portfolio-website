@@ -1,23 +1,23 @@
 {
   "page": 888,
   "title": "Accessibility",
-  "description": "Accessibility settings for STEEVEFAX: a plain high-contrast text view, keyboard shortcuts and the CRT screen effect.",
+  "description": "Accessibility settings for STEEVEFAX: a plain text view, keyboard shortcuts and an old-TV screen effect, each with an on/off switch.",
   "label": "A11Y",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
   "rows": [
     { "banner": "{black}ACCESSIBILITY{/}", "bg": "magenta" },
     "",
-    { "text": "The switches are below the screen.", "screenOnly": true },
+    { "text": "Use the switches below the screen.", "screenOnly": true },
     { "text": "{cyan}TEXT MODE{/}", "heading": true },
-    "A plain, high-contrast reader view of every page. Your choice is remembered.",
+    "Shows every page as plain text, without the TV screen. The site remembers your choice.",
     "",
     { "text": "{cyan}SHORTCUTS{/}", "heading": true },
-    "Number keys, R, G, Y and B jump between pages; H holds a cycling page. Turn them off if they get in the way of speech input.",
+    "Type a page number to go there. R, G, Y and B are the coloured buttons. H stops a page changing. Turn these off if you use voice control.",
     "",
     { "text": "{cyan}CRT EFFECT{/}", "heading": true },
-    "Scanlines and glow, like an old TV. Off at first if your system asks for less motion or more contrast.",
+    "Adds the lines and glow of an old TV. It's off at first if your device asks for less motion or more contrast.",
     "",
-    "Pinch-zoom always works."
+    "Zoom in any time to make text bigger."
   ]
 }

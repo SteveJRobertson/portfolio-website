@@ -1,7 +1,7 @@
 {
   "page": 110,
   "title": "Experience",
-  "description": "Steve Robertson's experience: Senior Software Engineer at FanDuel, Design System Lead at Wood Mackenzie, and frontend roles at Royal Bank of Scotland, Aegon and Royal London.",
+  "description": "Steve Robertson's experience: Senior Software Engineer at Motability Operations and FanDuel, Design System Lead at Wood Mackenzie, and frontend roles at Royal Bank of Scotland, Aegon and Royal London.",
   "label": "EXPERIENCE",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 300 }, { "page": 400 }],
@@ -10,9 +10,24 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}FanDuel{/}", "heading": true },
+      { "text": "{yellow}Motability Operations{/}", "heading": true },
       "{cyan}Senior Software Engineer{/}",
-      "Jan 2025 - Present",
+      "Sep 2025 - Present",
+      "",
+      "* Website migration",
+      "* Design system",
+      "* AI orchestration"
+    ],
+    [
+      { "banner": "EXPERIENCE", "bg": "red" },
+      "",
+      {
+        "image": "fanduel",
+        "alt": "The FanDuel logo: a blue shield, split to form an F.",
+        "rows": 4,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Aug 2025"]
+      },
       "",
       "* Large-scale migrations (company-wide design system, routing infrastructure) for high-traffic apps",
       "* Root-cause analysis of complex regressions",
@@ -35,9 +50,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}Royal Bank of Scotland{/}", "heading": true },
-      "{cyan}Frontend Engineer{/}",
-      "Sep 2018 - Dec 2019",
+      {
+        "image": "rbs",
+        "alt": "The Royal Bank of Scotland logo: four white arrows pointing to the centre of a purple square.",
+        "rows": 4,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}Royal Bank of Scotland{/}", "heading": true }, "{cyan}Frontend Engineer{/}", "Sep 2018 - Dec 2019"]
+      },
       "",
       "* GDPR management reporting app (React, Redux)",
       "* Introduced Hooks and Context",
@@ -46,9 +65,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}Aegon{/}", "heading": true },
-      "{cyan}Frontend Engineer{/}",
-      "Apr 2017 - Sep 2018",
+      {
+        "image": "aegon",
+        "alt": "The Aegon logo: the word aegon in blue.",
+        "rows": 3,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}Aegon{/}", "heading": true }, "{cyan}Frontend Engineer{/}", "Apr 2017 - Sep 2018"]
+      },
       "",
       "* Customer-facing investment platform",
       "* Championed TDD",
