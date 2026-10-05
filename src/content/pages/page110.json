@@ -9,9 +9,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}FanDuel{/}", "heading": true },
-      "{cyan}Senior Software Engineer{/}",
-      "Jan 2025 - Present",
+      {
+        "image": "fanduel",
+        "alt": "The FanDuel logo: a blue shield with a white figure.",
+        "rows": 4,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Present"]
+      },
       "",
       "* Large-scale migrations (company-wide design system, routing infrastructure) for high-traffic apps",
       "* Root-cause analysis of complex regressions",
@@ -38,9 +42,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}Royal Bank of Scotland{/}", "heading": true },
-      "{cyan}Frontend Engineer{/}",
-      "Sep 2018 - Dec 2019",
+      {
+        "image": "rbs",
+        "alt": "The Royal Bank of Scotland logo: the blue daisy.",
+        "rows": 4,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}Royal Bank of Scotland{/}", "heading": true }, "{cyan}Frontend Engineer{/}", "Sep 2018 - Dec 2019"]
+      },
       "",
       "* GDPR management reporting app (React, Redux)",
       "* Introduced Hooks and Context",
@@ -51,9 +59,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}Aegon{/}", "heading": true },
-      "{cyan}Frontend Engineer{/}",
-      "Apr 2017 - Sep 2018",
+      {
+        "image": "aegon",
+        "alt": "The Aegon logo: the word aegon in blue.",
+        "rows": 3,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}Aegon{/}", "heading": true }, "{cyan}Frontend Engineer{/}", "Apr 2017 - Sep 2018"]
+      },
       "",
       "* Customer-facing investment platform",
       "* Championed TDD",
