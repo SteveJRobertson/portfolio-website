@@ -1,8 +1,11 @@
 name: Deploy Teletext Portfolio to GitHub Pages
 
-# Manual only while the repo is private and deployment is deferred (SPEC DEC-007).
-# Restore the push trigger in Phase 6.
+# Deploys main once CI has passed on it, or by hand.
 on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: ['main']
   workflow_dispatch:
 
 permissions:
@@ -16,16 +19,20 @@ concurrency:
 
 jobs:
   build-and-deploy:
+    # Only a CI run for a push to main, and only when it passed
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -33,16 +40,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build static site
+      - name: Build and pre-render the site
         env:
           GITHUB_PAGES: 'true'
         run: npm run build
+
+      - name: Build Storybook into /storybook
+        env:
+          GITHUB_PAGES: 'true'
+        run: npm run build-storybook -- -o dist/storybook
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: './dist'
 

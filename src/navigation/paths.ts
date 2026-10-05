@@ -2,12 +2,20 @@ import { NOT_FOUND_PAGE } from '../content/registry';
 
 export const HOME_PAGE = 100;
 
-/** The one place a page URL is built (`/` for 100, `/NNN` otherwise), so Phase 6 can add a base path here. */
-export const pageHref = (page: number): string => (page === HOME_PAGE ? '/' : `/${page}`);
+/** Where the site is served from, with a trailing slash: `/` locally, `/portfolio-website/` on GitHub Pages (Vite's `base`). */
+const BASE = import.meta.env.BASE_URL;
 
-/** The page a path asks for: `/` is 100, `/NNN` is NNN (found or not), anything else is the not-found page. */
-export const pageFromPath = (path: string): number => {
-  const clean = path.replace(/^\/+|\/+$/g, '');
+/**
+ * The one place a page URL is built: the base for 100, `<base>NNN/` otherwise.
+ * The trailing slash matches the pre-rendered `NNN/index.html` files, so GitHub
+ * Pages serves them without a redirect.
+ */
+export const pageHref = (page: number, base = BASE): string => (page === HOME_PAGE ? base : `${base}${page}/`);
+
+/** The page a path asks for: the base is 100, `<base>NNN` is NNN (found or not, with or without a slash), anything else is the not-found page. */
+export const pageFromPath = (path: string, base = BASE): number => {
+  const local = path.startsWith(base) ? path.slice(base.length) : path;
+  const clean = local.replace(/^\/+|\/+$/g, '');
   if (!clean) return HOME_PAGE;
   return /^\d{3}$/.test(clean) ? Number(clean) : NOT_FOUND_PAGE;
 };

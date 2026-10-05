@@ -8,6 +8,7 @@ import { SemanticPage, type MirrorFocus } from './components/SemanticPage';
 import { SettingsControls } from './components/SettingsControls';
 import { HoldButton } from './components/HoldButton';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage } from './content/registry';
+import { documentTitle } from './content/meta';
 import { useGridMode } from './display/useGridMode';
 import { MORE_CONTRAST, REDUCED_MOTION, useMediaQuery, usePageVisible } from './display/useMediaQuery';
 import { layoutBody } from './display/layout';
@@ -59,9 +60,10 @@ export const App: React.FC = () => {
     headingRef.current?.focus();
   }, [settings.textMode]);
 
+  const title = documentTitle(requested, heading);
   useEffect(() => {
-    document.title = `P${requested} ${heading} | Steve Robertson`;
-  }, [requested, heading]);
+    document.title = title;
+  }, [title]);
 
   // Sub-page steps don't move focus, so the visitor's own steps and HOLD are announced.
   // Timed steps aren't (the mirror already has every part, so they'd only interrupt),

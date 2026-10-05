@@ -18,8 +18,8 @@ A developer portfolio built as an authentic European Teletext (Ceefax / ORACLE) 
 | Design system | Storybook | Tokens, primitives and screen layouts, shown in isolation. |
 | Content | Local JSON files in `src/content/pages/` | No CMS. Validated at build time. |
 | Font | Bedstead (self-hosted WOFF2) | Mode 7 / SAA5050 geometry. Public domain. |
-| Tests | Vitest (unit), Playwright (visual, later) | |
-| Hosting | GitHub Pages via GitHub Actions | **Deferred**: the repo is private. |
+| Tests | Vitest (unit), Playwright (end to end, axe and screenshots) | Playwright runs against the production build at four viewports. |
+| Hosting | GitHub Pages via GitHub Actions | https://stevejrobertson.github.io/portfolio-website/, deployed after CI passes on `main`. Storybook at `/storybook/`. |
 
 ## 3. Display engine
 
@@ -49,7 +49,8 @@ The viewport is always locked to `100dvh` with no window scroll. The grid mode i
 ## 5. Navigation
 
 - **3-digit buffer**: one shared buffer fed by the keyboard (`0`–`9`) and the on-screen keypad. The header shows `P1--` while you type. The third digit navigates. `Escape` clears.
-- **Routing**: path based (`/100`, `/101`, …; `/` = 100), using the History API so back, forward and bookmarks work. `pageHref()` in `src/navigation/paths.ts` is the only place a page URL is built.
+- **Routing**: path based (`/101/`, `/110/`, …; the site root = 100), using the History API so back, forward and bookmarks work. `pageHref()` in `src/navigation/paths.ts` is the only place a page URL is built; it adds Vite's `base` (`/portfolio-website/` on GitHub Pages, from `GITHUB_PAGES=true`, or `BASE_PATH`) and a trailing slash, and `pageFromPath()` strips them.
+- **Pre-rendering**: after the build, `npm run prerender` writes `NNN/index.html` for every page and `404.html` for the not-found page, so every URL is a real file. Each has its own title, description (the page's `description`, or the start of its text), canonical link and Open Graph tags with `public/share.png`, and the semantic mirror as static HTML in `#root`, shown only without JavaScript. The app replaces it on load (no hydration).
 - **Unknown pages**: show an authentic "PAGE NOT FOUND" screen that links back to 100. Any page number or path that isn't in the registry redirects to `/404` (a replace on load or back/forward, a push when navigating).
 - **Fastext**: four slots per page (red, green, yellow, cyan). Rendered as real `<a href>` links with a focus style distinct from hover; a plain click navigates in place, a modified click opens a new tab. Each label is in its key's colour on black, as on a real set; focus inverts it to black on that colour inside a white outline. A slot pointing at 100 reads HOME. Hotkeys `R`, `G`, `Y`, and `B` or `C` for the fourth.
 - **Hotkeys**: one listener (`useHotkeys`). Keys with a modifier and keys typed into form fields are ignored. The digit and letter shortcuts (including `H` for HOLD) can be switched off on page 888 (WCAG 2.1.4); `←`/`→` are off in Text mode.
@@ -74,7 +75,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 
 ## 7. Content schema and validation
 
-- Each page is a JSON file `src/content/pages/pageNNN.json` with `page`, `title`, `label` (short name for the quick index and Fastext), `fastext` (four `{ "page": NNN }` entries, red to cyan, with an optional `label`), optional `index` (list it in the quick index), and either `rows` or `subpages`. `mobileRows` / `mobileSubpages` optionally override the portrait layout line for line.
+- Each page is a JSON file `src/content/pages/pageNNN.json` with `page`, `title`, optional `description` (for search results and link previews), `label` (short name for the quick index and Fastext), `fastext` (four `{ "page": NNN }` entries, red to cyan, with an optional `label`), optional `index` (list it in the quick index), and either `rows` or `subpages`. `mobileRows` / `mobileSubpages` optionally override the portrait layout line for line.
 - A row is one logical line of any length: a string, or an object `{ "text": … }` with optional `"doubleHeight": true`, `"heading": true` (a heading in the semantic mirror) and `"screenOnly": true` (left out of the mirror, for hints like "Press ← or →"). An empty string is a blank row. Any other key is an error.
 - A banner row `{ "banner": "EXPERIENCE", "bg": "red" }` sets the page title in mosaic block letters on a band of `bg`, with a thin lip under it, as on Ceefax's section headers (3 row slots). Colour tags colour the letters (white by default), and a space between two colour runs is the one-cell gap a colour change costs, e.g. `{white}STEVE{/} {yellow}ROBERTSON{/}`. The band starts one cell in and the letters two cells after that. Bold letters are used when they fit with a cell to spare, then a condensed face, then double-height text on the band (usually in portrait); a title too long for all three is an error. Each section keeps its band colour: red for 101 and 110, green for 200–203, yellow for 300, cyan for 400, magenta for 888, blue for the index.
 - An image row is `{ "image": "steve", "alt": "…", "rows": 12 }`, for `src/content/images/steve.png`, with optional `mobileRows`, `palette` (the colours it may use), `contrast`, `saturation` and `brightness`. `rows` is its height at 38 columns and the width follows the picture's shape; portrait fits it into 20 columns unless `mobileRows` is set. `"pixelArt": true` uses a PNG drawn at 2 × 3 pixels a cell as it is (see §8). `"beside": [rows]` lays text out to the right of the picture, as on a Ceefax page, when that leaves at least 12 columns; otherwise (portrait) the text goes under it. A picture on its own is centred (see §8).
@@ -119,7 +120,7 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-004 | Aspect-ratio engine: 56×24 / 40×24 / 20×36. Supersedes Gemini's "scaled 40×24 + remote" mobile approach, which was never signed off. |
 | DEC-005 | Write content once with colour tags and wrap it at build time. Per-page `mobileRows` override. |
 | DEC-006 | Path-based routing. |
-| DEC-007 | Deployment deferred while the repo is private. |
+| DEC-007 | Deployment deferred while the repo is private. Resolved in Phase 6: the repo is public (5 Oct 2026). |
 | DEC-008 | Deliver as one PR per phase, on stacked branches (see [ROADMAP.md](./ROADMAP.md)). |
 | DEC-009 | Page map from [CONTENT.md](./CONTENT.md) approved, including 110 Experience with per-role sub-pages. |
 | DEC-010 | The mode queries live in one TypeScript module (React needs `cols × rows` to render the cells) and CSS keys off `data-mode`. Revisit for pre-rendering in Phase 6. |
@@ -127,7 +128,8 @@ There is one page registry. The router, sidebar, keypad, semantic tree and valid
 | DEC-012 | Phase 4: the 888 switches live in the strip under the screen; grid links answer clicks but never take focus, with real links in the mirror and a focus outline on the grid twin; mirror headings are marked with `"heading": true` rather than guessed from colour; axe runs in Vitest with jsdom (contrast stays in `contrast.test.ts`), with Playwright left for Phase 6; `B` and `C` both work for the fourth Fastext slot. |
 | DEC-013 | Phase 5: sub-pages cycle every 15 seconds and a manual step restarts the countdown (rather than holding the page); HOLD is the `H` key, a strip button and the keypad; pages open held with reduced motion. Images are PNGs converted at build time with each cell choosing its own two colours and no dithering. The portrait was first a converted photo on 203, which Steve found too big and too soft; it's now a 16 × 12-cell cartoon of Steve, drawn as pixel art from his photo (a cyan baseball cap with a blue peak), on page 101 with his summary beside it. 101 becomes two sub-pages so the picture fits in portrait. The CRT effect is static and on by default, off at first with reduced motion or more contrast. edit.tf import is deferred. |
 | DEC-014 | Headings (after a review of real Ceefax, Webfax and SPARK pages): page titles are Ceefax-style banners of mosaic block letters on a section-coloured band, replacing double-height text over a row of `=`; `{rule}` becomes a solid mosaic bar; Fastext is coloured text on black and its link to 100 reads HOME; the index lists pages as `Name.....NNN` with dotted leaders, white with cyan numbers. |
+| DEC-015 | Phase 6 (ship): GitHub Pages at the `github.io` address, with the base configurable for a custom domain later. Pages are pre-rendered per page with the mirror as static HTML (replaced, not hydrated, so the grid stays client-rendered). Page URLs end in a slash. Playwright (Chromium) runs navigation, axe with contrast and screenshot tests against the production build at 1920×1080, 1440×900, 1024×768 and 390×844; baselines are made in the Playwright Docker image by the "Update visual baselines" workflow, and axe leaves out mosaic cells, whose banner contrast is checked at 3:1 in Vitest. The magenta (888) and cyan (400) banners use black letters. |
 
 ## 11. Open questions
 
-- Custom domain vs `github.io` when deployment resumes.
+- Custom domain (it would only need `BASE_PATH=/` and `SITE_URL`). Launched on `github.io`.

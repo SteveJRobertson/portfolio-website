@@ -582,3 +582,8 @@ html, body {
   font-size: 1rem;
   padding: 0.5rem 1rem;
 }
+
+/* The pre-rendered page (scripts/prerender.ts) is for visitors without JavaScript; the app replaces it on load */
+.js .prerender {
+  display: none;
+}

@@ -1,11 +1,12 @@
 {
   "page": 400,
   "title": "Contact",
+  "description": "Contact Steve Robertson by email, on LinkedIn or on GitHub.",
   "label": "CONTACT",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 200 }],
   "rows": [
-    { "banner": "{blue}CONTACT{/}", "bg": "cyan" },
+    { "banner": "{black}CONTACT{/}", "bg": "cyan" },
     "",
     { "text": "{green}EMAIL{/}", "heading": true },
     "steve.robertson80@gmail.com",

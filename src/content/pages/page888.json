@@ -1,11 +1,12 @@
 {
   "page": 888,
   "title": "Accessibility",
+  "description": "Accessibility settings for STEEVEFAX: a plain high-contrast text view, keyboard shortcuts and the CRT screen effect.",
   "label": "A11Y",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 200 }, { "page": 400 }],
   "rows": [
-    { "banner": "ACCESSIBILITY", "bg": "magenta" },
+    { "banner": "{black}ACCESSIBILITY{/}", "bg": "magenta" },
     "",
     { "text": "The switches are below the screen.", "screenOnly": true },
     { "text": "{cyan}TEXT MODE{/}", "heading": true },

@@ -64,6 +64,8 @@ export interface PageSource {
   /** 100–899, and must match the file name (`page110.json`). */
   page: number;
   title: string;
+  /** For search results and link previews; defaults to the start of the page's text. */
+  description?: string;
   /** Short name for the quick index and Fastext, e.g. "ABOUT". */
   label: string;
   /** List the page in the widescreen quick index. */

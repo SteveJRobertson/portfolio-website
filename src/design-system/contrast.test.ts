@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { parseMarkup } from '../content/markup';
 import { contrastRatio } from './contrast';
 
 describe('contrastRatio', () => {
@@ -27,5 +28,21 @@ describe('contrastRatio', () => {
   it('keeps the control strip readable at AA', () => {
     expect(contrastRatio('#00FF00', '#222222')).toBeGreaterThanOrEqual(4.5); // switch off
     expect(contrastRatio('#000000', '#00FF00')).toBeGreaterThanOrEqual(4.5); // switch on
+  });
+
+  it('keeps every page banner at 3:1, the minimum for large text', () => {
+    const css = fs.readFileSync(path.join(__dirname, '../index.css'), 'utf-8');
+    const colour = (name: string) => css.match(new RegExp(`--tt-${name}: (#[0-9a-fA-F]{6})`))![1];
+    const pagesDir = path.join(__dirname, '../content/pages');
+    const banners = fs
+      .readdirSync(pagesDir)
+      .flatMap((file) => JSON.stringify(JSON.parse(fs.readFileSync(path.join(pagesDir, file), 'utf-8'))).match(/\{"banner":"(?:[^"\\]|\\.)*","bg":"\w+"\}/g) ?? [])
+      .map((json) => JSON.parse(json) as { banner: string; bg: string });
+    expect(banners.length).toBeGreaterThan(10);
+    for (const { banner, bg } of banners) {
+      for (const segment of parseMarkup(banner).segments.filter((s) => s.text.trim())) {
+        expect(contrastRatio(colour(segment.color ?? 'white'), colour(bg)), `${banner} on ${bg}`).toBeGreaterThanOrEqual(3);
+      }
+    }
   });
 });

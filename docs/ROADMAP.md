@@ -9,8 +9,8 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 | 2. Grid engine | Done |
 | 3. Content pipeline | Done |
 | 4. Navigation & accessibility | Done |
-| 5. Graphics & polish | In review |
-| 6. Ship | Deferred (private repo) |
+| 5. Graphics & polish | Done |
+| 6. Ship | In review |
 
 ---
 
@@ -61,8 +61,10 @@ Remediation of the Gemini build. Each phase ships as its own PR. Background is i
 - [x] CRT scanline/glow overlay, off at first with reduced motion or more contrast, with a switch on 888
 - [x] Sub-page cycling every 15 seconds with HOLD (H key, strip button, keypad)
 
-### Phase 6: Ship (deferred)
-- [ ] Per-page pre-rendered HTML + meta tags
-- [ ] Vite `base`, `404.html` SPA fallback
-- [ ] Storybook published at `/storybook`
-- [ ] Playwright visual tests at four viewports
+### Phase 6: Ship
+- [x] Per-page pre-rendered HTML + meta tags (title, description, canonical, Open Graph with a share image)
+- [x] Vite `base`, `404.html` for unknown URLs
+- [x] Storybook published at `/storybook`
+- [x] Playwright tests at four viewports: navigation, axe with contrast, screenshots
+- [x] Deploy to GitHub Pages after CI passes on `main`
+- [x] Black letters on the magenta and cyan banners, with a 3:1 banner contrast test

@@ -69,6 +69,8 @@ export type SemanticBlock =
 export interface CompiledPage {
   page: number;
   title: string;
+  /** Set in the page JSON; otherwise `pageDescription` takes the start of the text. */
+  description?: string;
   label: string;
   /** Listed in the widescreen quick index. */
   index: boolean;
