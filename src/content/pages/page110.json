@@ -10,9 +10,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}Motability Operations{/}", "heading": true },
-      "{cyan}Senior Software Engineer{/}",
-      "Sep 2025 - Present",
+      {
+        "image": "motability",
+        "alt": "The Motability Operations logo: the letters MO in blue.",
+        "rows": 4,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}Motability Operations{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Sep 2025 - Present"]
+      },
       "",
       "* Website migration",
       "* Design system",
@@ -37,9 +41,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}Wood Mackenzie{/}", "heading": true },
-      "{cyan}Design System Lead (Contract){/}",
-      "Dec 2019 - Nov 2024",
+      {
+        "image": "woodmac",
+        "alt": "The Wood Mackenzie logo: two blue shapes, like a sweet wrapper, split by a diagonal line.",
+        "rows": 5,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}Wood Mackenzie{/}", "heading": true }, "{cyan}Design System Lead (Contract){/}", "Dec 2019 - Nov 2024"]
+      },
       "",
       "* Unified React and TypeScript component library across the global business",
       "* Bridge between UX, Product and Engineering",
@@ -52,8 +60,8 @@
       "",
       {
         "image": "rbs",
-        "alt": "The Royal Bank of Scotland logo: four white arrows pointing to the centre of a purple square.",
-        "rows": 4,
+        "alt": "The Royal Bank of Scotland logo: four magenta arrows pointing in to a circle in the centre.",
+        "rows": 5,
         "pixelArt": true,
         "beside": [{ "text": "{yellow}Royal Bank of Scotland{/}", "heading": true }, "{cyan}Frontend Engineer{/}", "Sep 2018 - Dec 2019"]
       },
