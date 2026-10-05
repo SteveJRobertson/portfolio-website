@@ -1,7 +1,7 @@
 # Specification: Teletext Web Portfolio
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Complete. All six phases shipped and live at https://stevejrobertson.github.io/portfolio-website/; see [REVIEW.md](./REVIEW.md).
+**Status**: Complete. All six phases shipped and live at https://steverobertson.dev; see [REVIEW.md](./REVIEW.md).
 
 ---
 

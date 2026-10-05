@@ -2,7 +2,7 @@
 
 Steve Robertson's developer portfolio, built as a Ceefax / ORACLE-style Teletext service: 3-digit page numbers, Fastext colour links, Mode 7 typography.
 
-**Live:** https://stevejrobertson.github.io/portfolio-website/ · design system in [Storybook](https://stevejrobertson.github.io/portfolio-website/storybook/)
+**Live:** https://steverobertson.dev · design system in [Storybook](https://steverobertson.dev/storybook/)
 
 ![Page 100, the STEEVEFAX index: Steve Robertson's name in Teletext block letters, a page directory and coloured Fastext links](public/share.png)
 
@@ -30,7 +30,7 @@ npm run test:e2e   # Playwright against the production build (see below)
 
 ## Deployment
 
-Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with `GITHUB_PAGES=true` (base `/portfolio-website/`), pre-renders every page, builds Storybook into `/storybook/` and publishes to GitHub Pages. For a custom domain, build with `BASE_PATH=/` and `SITE_URL=https://your.domain`.
+Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with `CUSTOM_DOMAIN=steverobertson.dev` (base `/`), pre-renders every page, builds Storybook into `/storybook/` and publishes to GitHub Pages. To switch domains, update `CUSTOM_DOMAIN` and `BASE_PATH` in the repo settings.
 
 ## Project layout
 
