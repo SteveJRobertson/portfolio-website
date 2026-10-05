@@ -10,9 +10,13 @@
     [
       { "banner": "EXPERIENCE", "bg": "red" },
       "",
-      { "text": "{yellow}Motability Operations{/}", "heading": true },
-      "{cyan}Senior Software Engineer{/}",
-      "Sep 2025 - Present",
+      {
+        "image": "motability",
+        "alt": "The Motability Operations logo: the letters MO in blue.",
+        "rows": 4,
+        "pixelArt": true,
+        "beside": [{ "text": "{yellow}Motability Operations{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Sep 2025 - Present"]
+      },
       "",
       "* Website migration",
       "* Design system",
