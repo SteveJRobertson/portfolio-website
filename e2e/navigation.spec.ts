@@ -76,22 +76,23 @@ test.describe('pre-rendered pages', () => {
     await expect(page).toHaveTitle('Experience (P110) | Steve Robertson');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Experience');
     await expect(page.getByRole('heading', { name: 'FanDuel' })).toBeVisible();
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://stevejrobertson.github.io/portfolio-website/110/');
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /\/portfolio-website\/share\.png$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://steverobertson.dev/110/');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://steverobertson.dev/share.png');
   });
 
   test('describe Steve to search engines on the index', async ({ page }) => {
     await page.goto('');
     const json = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
     expect(json['@graph'].map((item: { '@type': string }) => item['@type'])).toEqual(['Person', 'WebSite']);
-    expect(json['@graph'][0]).toMatchObject({ name: 'Steve Robertson', url: 'https://stevejrobertson.github.io/portfolio-website/' });
+    expect(json['@graph'][0]).toMatchObject({ name: 'Steve Robertson', url: 'https://steverobertson.dev/' });
   });
 
   test('are all in the sitemap but 404', async ({ request }) => {
     const xml = await (await request.get('sitemap.xml')).text();
-    expect(xml).toContain('<loc>https://stevejrobertson.github.io/portfolio-website/</loc>');
-    expect(xml).toContain('<loc>https://stevejrobertson.github.io/portfolio-website/110/</loc>');
+    expect(xml).toContain('<loc>https://steverobertson.dev/</loc>');
+    expect(xml).toContain('<loc>https://steverobertson.dev/110/</loc>');
     expect(xml).not.toContain('/404');
+    expect(await (await request.get('robots.txt')).text()).toContain('Sitemap: https://steverobertson.dev/sitemap.xml');
   });
 
   test('link to each other under the base path', async ({ page }) => {

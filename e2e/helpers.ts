@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-export const BASE = '/portfolio-website/';
+export const BASE = '/';
 
 /** Every page in the registry, and the not-found page. */
 export const PAGES = [100, 101, 110, 200, 201, 202, 203, 300, 400, 888];

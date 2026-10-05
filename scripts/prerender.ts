@@ -13,7 +13,7 @@ import { pathToFileURL } from 'node:url';
  * lists every page but 404, and at the root of a domain `robots.txt` points
  * search engines at it (SEO SPEC §3.2).
  *
- * `SITE_URL` is the site's origin for absolute links (default: GitHub Pages).
+ * `SITE_URL` is the site's origin for absolute links (default: the live site, steverobertson.dev).
  */
 
 /** What `src/prerender.tsx` returns for each page. */
@@ -30,7 +30,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const dist = path.join(root, 'dist');
 const ssr = path.join(root, 'dist-ssr');
 
-const SITE_URL = (process.env.SITE_URL ?? 'https://stevejrobertson.github.io').replace(/\/+$/, '');
+const SITE_URL = (process.env.SITE_URL ?? 'https://steverobertson.dev').replace(/\/+$/, '');
 const SITE_NAME = 'STEEVEFAX';
 const SHARE_IMAGE = 'share.png';
 

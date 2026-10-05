@@ -6,7 +6,7 @@ import { chromium } from '@playwright/test';
  * of a running preview (`GITHUB_PAGES=true npm run build && GITHUB_PAGES=true npx vite preview`), then
  * `npx tsx e2e/shareImage.ts [url]`. Run it again when page 100 changes.
  */
-const url = process.argv[2] ?? 'http://localhost:4173/portfolio-website/';
+const url = process.argv[2] ?? 'http://localhost:4173/';
 const out = path.resolve(import.meta.dirname, '../public/share.png');
 
 const browser = await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM } : {});
