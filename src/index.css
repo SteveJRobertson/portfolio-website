@@ -158,12 +158,14 @@ html, body {
 }
 
 .crt-overlay {
+  /* A light shade at the edges of the tube; kept faint so the corner text stays bright. */
+  --crt-vignette: radial-gradient(ellipse at center, transparent 65%, rgba(0, 0, 0, 0.25) 100%);
   position: absolute;
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
   background:
-    radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.45) 100%),
+    var(--crt-vignette),
     repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0, rgba(0, 0, 0, 0.32) 1px, transparent 1px, transparent 3px);
 }
 
@@ -171,7 +173,7 @@ html, body {
 @media (max-width: 600px), (max-height: 500px) {
   .crt-overlay {
     background:
-      radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.45) 100%),
+      var(--crt-vignette),
       repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0, rgba(0, 0, 0, 0.3) 0.5px, transparent 0.5px, transparent 1.5px);
   }
 }
