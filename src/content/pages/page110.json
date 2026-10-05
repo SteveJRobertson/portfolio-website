@@ -11,7 +11,7 @@
       "",
       {
         "image": "fanduel",
-        "alt": "The FanDuel logo: a blue shield with a white figure.",
+        "alt": "The FanDuel logo: a blue shield with a white F.",
         "rows": 4,
         "pixelArt": true,
         "beside": [{ "text": "{yellow}FanDuel{/}", "heading": true }, "{cyan}Senior Software Engineer{/}", "Jan 2025 - Present"]
