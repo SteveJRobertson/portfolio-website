@@ -15,9 +15,6 @@
     "linkedin.com/in/steverobertson80",
     "",
     { "text": "{icon:github} {green}GITHUB{/}", "heading": true },
-    "github.com/stevejrobertson",
-    "",
-    { "text": "{green}WEBSITE{/}", "heading": true },
-    "steverobertson.dev"
+    "github.com/stevejrobertson"
   ]
 }

@@ -399,7 +399,7 @@ describe('buildSemantic', () => {
       page.semantic.forEach((blocks) => expect(blocks.length).toBeGreaterThan(0));
     }
     const contact = getPage(400)!.semantic[0];
-    expect(contact.filter((b) => b.kind === 'heading')).toHaveLength(4);
+    expect(contact.filter((b) => b.kind === 'heading')).toHaveLength(3);
     expect(JSON.stringify(contact)).toContain('"href":"mailto:steve.robertson80@gmail.com"');
   });
 });
