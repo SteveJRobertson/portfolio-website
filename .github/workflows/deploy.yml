@@ -40,14 +40,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Set the repository variable CUSTOM_DOMAIN (e.g. steverobertson.dev) to
+      # serve the site from the root of that domain; unset, it stays on
+      # stevejrobertson.github.io/portfolio-website/.
+      - name: Work out where the site is served from
+        id: site
+        env:
+          CUSTOM_DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
+        run: |
+          if [ -n "$CUSTOM_DOMAIN" ]; then
+            echo "base=/" >> "$GITHUB_OUTPUT"
+            echo "url=https://$CUSTOM_DOMAIN" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=/portfolio-website/" >> "$GITHUB_OUTPUT"
+            echo "url=https://stevejrobertson.github.io" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build and pre-render the site
         env:
           GITHUB_PAGES: 'true'
+          BASE_PATH: ${{ steps.site.outputs.base }}
+          SITE_URL: ${{ steps.site.outputs.url }}
         run: npm run build
 
       - name: Build Storybook into /storybook
         env:
           GITHUB_PAGES: 'true'
+          BASE_PATH: ${{ steps.site.outputs.base }}
         run: npm run build-storybook -- -o dist/storybook
 
       - name: Setup Pages
