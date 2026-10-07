@@ -1,5 +1,5 @@
 import type { GridRow } from './rows';
-import type { TeletextColor } from '../types/teletext';
+import { THIN_LINE, type TeletextColor } from '../types/teletext';
 
 export interface QuickIndexEntry {
   page: number;
@@ -18,7 +18,7 @@ const entry = ({ page, label }: QuickIndexEntry): GridRow => ({
   ],
 });
 
-const rule = (): GridRow => ({ segments: [{ text: ' ' + '-'.repeat(15), color: 'yellow' }] });
+const rule = (): GridRow => ({ segments: [{ text: ' ' }, { text: THIN_LINE.repeat(15), color: 'cyan', line: true }] });
 
 /** Widescreen quick index, one row per body slot, built from the page registry. */
 export const sidebarRows = (entries: readonly QuickIndexEntry[]): GridRow[] => [

@@ -15,7 +15,7 @@ interface HeaderInput {
 }
 
 /**
- * Row 1, exactly `cols` wide:
+ * Row 1, exactly `cols` wide, white with a yellow clock:
  *   58: P100 STEEVEFAX 100 ...... SUN 04 OCT 14:03:22
  *   40: P100 STEEVEFAX 100 ...... 04 OCT 14:03:22
  *   32: P100 STEEVEFAX ........... 14:03
@@ -57,11 +57,14 @@ export const formatHeader = ({ bufferText, currentPage, now, cols, subpage }: He
   return fitRow(
     {
       segments: [
-        { text: buffer, color: 'white', bg: 'blue' },
+        // The keyed digits are picked out in blue while you type, then the number goes plain like the rest
+        { text: buffer, color: 'white', ...(buffer.trim() === `P${page}` ? {} : { bg: 'blue' as const }) },
         { text: ' ' },
         ...left,
         { text: ' '.repeat(gap) },
-        { text: right, color: 'green' },
+        // As on every real service, the date is white and the clock yellow
+        ...(right === time || right === seconds ? [] : [{ text: right.slice(0, -seconds.length), color: 'white' as const }]),
+        { text: right === time ? time : seconds, color: 'yellow' as const },
       ],
     },
     cols,

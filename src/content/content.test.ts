@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ICON_CELLS, RULE, parseMarkup } from './markup';
 import { layoutBanner } from './banner';
-import { blockBitmap, unsupportedChars } from './blockFont';
+import { blockBitmap, mixedBitmap, unsupportedChars, unsupportedMixedChars } from './blockFont';
 import { layoutRows, slotsUsed } from './wrap';
 import { compilePages, type SourceFile } from './compile';
 import { compilePageDir } from '../../scripts/lib/pageFiles';
@@ -12,8 +12,8 @@ import { NARROW_BODY_ROWS, NARROW_COLS, WIDE_BODY_ROWS, type PageSource } from '
 import { documentTitle, missingDescriptions } from './meta';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage, isValidPage } from './registry';
 import { sidebarRows } from '../display/sidebar';
-import { rowLength, rowText } from '../display/rows';
-import type { GridRow } from '../types/teletext';
+import { fitRow, rowLength, rowText } from '../display/rows';
+import { THIN_LINE, type GridRow } from '../types/teletext';
 
 const texts = (rows: GridRow[]) => rows.map(rowText);
 
@@ -43,6 +43,12 @@ describe('parseMarkup', () => {
   it('reads {rule} and {rule:X} with the enclosing colour', () => {
     expect(parseMarkup('{blue}{rule}{/}')).toMatchObject({ fill: RULE, fillColor: 'blue', segments: [] });
     expect(parseMarkup('{rule:-}')).toMatchObject({ fill: '-', fillColor: 'white' });
+  });
+
+  it('reads {line} as a thin solid line across the row', () => {
+    expect(parseMarkup('{cyan}{line}{/}')).toMatchObject({ fill: THIN_LINE, fillColor: 'cyan', segments: [] });
+    const fitted = fitRow({ segments: [{ text: '', color: 'cyan' }], fill: THIN_LINE }, 10);
+    expect(fitted.segments).toEqual([{ text: THIN_LINE.repeat(10), color: 'cyan', line: true }]);
   });
 
   it('turns {{ into a literal brace', () => {
@@ -95,9 +101,11 @@ describe('layoutRows', () => {
     expect(second.segments).toEqual([{ text: ' ' }, { text: 'beta', color: 'cyan' }, { text: ' go', color: 'white' }]);
   });
 
-  it('hangs bullets and page numbers', () => {
-    expect(texts(layoutRows(['* aaa bbb ccc', '201  ddd eee fff'], 12).rows)).toEqual([
-      ' * aaa bbb',
+  it('draws "* " bullets as yellow squares and hangs them and page numbers', () => {
+    const { rows } = layoutRows(['* aaa bbb ccc', '201  ddd eee fff'], 12);
+    expect(rows[0].segments.find((s) => s.text.includes('■'))?.color).toBe('yellow');
+    expect(texts(rows)).toEqual([
+      ' ■ aaa bbb',
       '   ccc',
       ' 201  ddd',
       '      eee',
@@ -232,6 +240,33 @@ describe('compilePages', () => {
     );
   });
 
+  it('puts a double-height red promo bar above Fastext, linked and in the mirror', () => {
+    const { pages, errors } = compilePages([file(source({ promo: { text: '{white}PLAY THE QUIZ p100{/}', page: 100 } }))]);
+    expect(errors).toEqual([]);
+    for (const [rows, limit, width] of [[pages[0].wide[0], WIDE_BODY_ROWS, 38], [pages[0].narrow[0], NARROW_BODY_ROWS, NARROW_COLS]] as const) {
+      expect(slotsUsed(rows)).toBe(limit);
+      const bar = rows.at(-1)!;
+      expect(bar.doubleHeight).toBe(true);
+      expect(rowLength(bar)).toBe(width);
+      expect(bar.segments.slice(1).every((s) => s.bg === 'red' && s.link === 100)).toBe(true);
+      expect(rowText(bar).trim()).toBe('PLAY THE QUIZ p100');
+    }
+    expect(pages[0].semantic[0].at(-1)).toEqual({ kind: 'paragraph', content: [{ text: 'PLAY THE QUIZ p100', page: 100 }] });
+  });
+
+  it('keeps the promo clear of the page and off pages with sub-pages', () => {
+    const full = Array.from({ length: WIDE_BODY_ROWS - 2 }, (_, i) => `Line ${i}`);
+    expect(errorsFor(file(source({ rows: full, promo: { text: 'X', page: 100 } })))).toContain(
+      `page100.json (38 columns): needs ${WIDE_BODY_ROWS - 2} rows; the limit is ${WIDE_BODY_ROWS - 3} with the promo`,
+    );
+    expect(errorsFor(file(source({ rows: undefined, subpages: [['A'], ['B']], promo: { text: 'X', page: 100 } })))).toContain(
+      'page100.json: "promo" is only for pages without "subpages"',
+    );
+    expect(errorsFor(file(source({ promo: { text: 'X', page: 999 } })))).toContain(
+      "page100.json (38 columns): the promo links to page 999, which doesn't exist",
+    );
+  });
+
   it('keeps a blank row and the hint clear of sub-page content', () => {
     const full = Array.from({ length: WIDE_BODY_ROWS - 1 }, (_, i) => `Line ${i}`);
     expect(errorsFor(file(source({ rows: undefined, subpages: [full, ['Two']] })))).toContain(
@@ -347,13 +382,19 @@ describe('buildSemantic', () => {
   it('drops banners, rules, blank and screen-only rows', () => {
     expect(
       buildSemantic([
-        { text: '{red}ABOUT{/}', doubleHeight: true },
+        { banner: 'ABOUT', bg: 'black', rule: 'yellow' },
         '{blue}{rule}{/}',
         '',
         'Hello there.',
         { text: 'Press ← or →', screenOnly: true },
       ]),
     ).toEqual([{ kind: 'paragraph', content: [{ text: 'Hello there.' }] }]);
+  });
+
+  it('keeps double-height text, which on screen is a lead line, not the title', () => {
+    expect(buildSemantic([{ text: 'Frontend Software Engineer', doubleHeight: true }])).toEqual([
+      { kind: 'paragraph', content: [{ text: 'Frontend Software Engineer' }] },
+    ]);
   });
 
   it('keeps each logical row whole, however long, and collapses alignment spaces', () => {
@@ -422,6 +463,28 @@ describe('banners', () => {
       expect(row.fillBg).toBe('yellow');
     }
     expect(rows[2]).toEqual({ segments: [{ text: ' ', color: 'yellow' }], fill: String.fromCodePoint(0x1fb02) });
+  });
+
+  it('draws mixed case nine pixels tall, with descenders below the capitals', () => {
+    const [top, , , , , , baseline, , bottom] = mixedBitmap('Ap', 'bold');
+    expect(top).toBe('.###.......');
+    expect(baseline).toBe('##.##.####.');
+    expect(bottom).toBe('......##...');
+    expect(mixedBitmap('mv', 'bold')[3]).toBe('##.##.#.##..##');
+    expect(unsupportedMixedChars('Café')).toEqual(['é']);
+  });
+
+  it('lays out a masthead on black: three rows of letters at the margin, then a thin line', () => {
+    const { rows, errors } = layoutBanner({ banner: '{green}Projects{/}', bg: 'black', rule: 'yellow' }, 38);
+    expect(errors).toEqual([]);
+    expect(rows).toHaveLength(4);
+    for (const row of rows.slice(0, 3)) {
+      expect(rowLength(row)).toBe(38);
+      expect(row.segments[1]).toMatchObject({ text: '', bg: 'black' });
+      expect(row.segments[2].color).toBe('green');
+    }
+    expect(rows[3]).toEqual({ segments: [{ text: '', color: 'yellow' }], fill: THIN_LINE });
+    expect(layoutBanner({ banner: '{red}About me{/}', bg: 'black' }, 38).rows[3].segments[0].color).toBe('red');
   });
 
   it('colours each run and falls back to condensed letters, then double height', () => {

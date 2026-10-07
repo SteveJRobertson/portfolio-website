@@ -19,7 +19,8 @@ import {
   type PageSource,
   type RowSource,
 } from './schema.ts';
-import { layoutRows, slotsUsed, type ImageRenderer } from './wrap.ts';
+import { MARGIN, layoutRows, slotsUsed, type ImageRenderer } from './wrap.ts';
+import { parseMarkup } from './markup.ts';
 import { mosaicCols, mosaicRowsFor, overfullCells, toMosaic, type RgbaImage } from './mosaic.ts';
 import { buildSemantic } from './semantic.ts';
 
@@ -66,6 +67,7 @@ const isRow = (row: unknown): row is RowSource => {
     return (
       typeof fields.banner === 'string' &&
       TELETEXT_COLORS.includes(fields.bg as TeletextColor) &&
+      (fields.rule === undefined || TELETEXT_COLORS.includes(fields.rule as TeletextColor)) &&
       Object.keys(fields).every((k) => (BANNER_KEYS as readonly string[]).includes(k))
     );
   }
@@ -95,6 +97,11 @@ const shapeErrors = (data: unknown): string[] => {
   if (page.index !== undefined && typeof page.index !== 'boolean') errors.push('"index" must be true or false');
   if (page.hint !== undefined && (typeof page.hint !== 'string' || !page.hint)) errors.push('"hint" must be some text');
   if (page.hint !== undefined && !Array.isArray(page.subpages)) errors.push('"hint" is only for pages with "subpages"');
+  const promo = page.promo as { text?: unknown; page?: unknown } | undefined;
+  if (promo !== undefined && (typeof promo !== 'object' || promo === null || typeof promo.text !== 'string' || !promo.text || !Number.isInteger(promo.page))) {
+    errors.push('"promo" must be { "text": "…", "page": NNN }');
+  }
+  if (promo !== undefined && page.subpages !== undefined) errors.push('"promo" is only for pages without "subpages"');
   const fastext = page.fastext;
   if (
     !Array.isArray(fastext) ||
@@ -106,7 +113,7 @@ const shapeErrors = (data: unknown): string[] => {
   if ((page.rows === undefined) === (page.subpages === undefined)) {
     errors.push('needs exactly one of "rows" or "subpages"');
   }
-  const lineHelp = `a line object may only have ${ROW_KEYS.join(', ')}; an image needs image, alt and rows, and may have ${IMAGE_KEYS.slice(3).join(', ')}; a banner needs banner and bg`;
+  const lineHelp = `a line object may only have ${ROW_KEYS.join(', ')}; an image needs image, alt and rows, and may have ${IMAGE_KEYS.slice(3).join(', ')}; a banner needs banner and bg, and may have rule`;
   if (page.rows !== undefined && !isRowList(page.rows)) errors.push(`"rows" must be a list of lines (${lineHelp})`);
   if (page.subpages !== undefined && !isSubpageList(page.subpages)) errors.push(`"subpages" must be a list of line lists (${lineHelp})`);
   if (page.mobileRows !== undefined && !isRowList(page.mobileRows)) errors.push('"mobileRows" must be a list of lines');
@@ -275,7 +282,24 @@ export const compilePages = (files: SourceFile[], images: Readonly<Record<string
           if (!exists(link)) errors.push(`${where}: links to page ${link}, which doesn't exist`);
         }
       }
+      if (page.promo) return withPromo(result.rows, page.promo, width, limit, where);
       return subpages.length > 1 ? withHint(result.rows, width, limit, where) : result.rows;
+    };
+
+    // The promo bar takes the last two body rows, just above Fastext, with a blank row above it.
+    const withPromo = (rows: GridRow[], promo: NonNullable<PageSource['promo']>, width: number, limit: number, where: string): GridRow[] => {
+      if (!exists(promo.page)) errors.push(`${where}: the promo links to page ${promo.page}, which doesn't exist`);
+      const used = slotsUsed(rows);
+      if (used > limit - 3) errors.push(`${where}: needs ${used} rows; the limit is ${limit - 3} with the promo`);
+      // Padded with no-break spaces so the red runs edge to edge (plain trailing spaces are trimmed)
+      const inner = width - MARGIN;
+      const length = Array.from(promo.text.replace(/\{[^}]*\}/g, '')).length;
+      const left = Math.max(0, Math.floor((inner - length) / 2));
+      const pad = (n: number) => '\u00a0'.repeat(Math.max(0, n));
+      const bar = layoutRows([{ text: `{link:${promo.page}}{bg:red}${pad(left)}${promo.text}${pad(inner - left - length)}{/}{/}`, doubleHeight: true }], width);
+      errors.push(...bar.errors.map((e) => `${where}: promo: ${e}`));
+      if (bar.rows.length > 1) errors.push(`${where}: the promo "${promo.text}" must fit on one line`);
+      return [...rows, ...Array.from({ length: Math.max(0, limit - 2 - used) }, () => ({ segments: [] })), bar.rows[0]];
     };
 
     // Pages with sub-pages say how to step through them, always in the last body row, just above Fastext.
@@ -300,7 +324,12 @@ export const compilePages = (files: SourceFile[], images: Readonly<Record<string
       fastext,
       wide: subpages.map((rows, i) => layout(rows, i, 'wide', true)),
       narrow: subpages.map((rows, i) => (mobile?.[i] ? layout(mobile[i], i, 'narrow', false) : layout(rows, i, 'narrow', true))),
-      semantic: subpages.map(buildSemantic),
+      semantic: subpages.map((rows) => {
+        const blocks = buildSemantic(rows);
+        if (!page.promo) return blocks;
+        const text = parseMarkup(page.promo.text).segments.map((s) => s.text).join('');
+        return [...blocks, { kind: 'paragraph' as const, content: [{ text, page: page.promo.page }] }];
+      }),
     };
   });
 

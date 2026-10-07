@@ -8,8 +8,7 @@
   "hint": "{white}Press ← or → for more skills.{/}",
   "subpages": [
     [
-      { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
-      "",
+      { "banner": "{yellow}Skills{/}", "bg": "black", "rule": "red" },
       { "text": "{yellow}FRONTEND ENGINEERING{/}", "heading": true },
       "React, TypeScript, JavaScript, Redux, React Router, HTML, CSS",
       "",
@@ -17,8 +16,7 @@
       "Component libraries, design tokens, accessibility, documentation"
     ],
     [
-      { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
-      "",
+      { "banner": "{yellow}Skills{/}", "bg": "black", "rule": "red" },
       { "text": "{yellow}TOOLING AND INFRASTRUCTURE{/}", "heading": true },
       "Git, CI/CD, Jenkins, GitHub Actions, Docker, AWS, Nx",
       "",
@@ -26,8 +24,7 @@
       "Figma, system architecture, stakeholder engagement, technical docs"
     ],
     [
-      { "banner": "{blue}SKILLS{/}", "bg": "yellow" },
-      "",
+      { "banner": "{yellow}Skills{/}", "bg": "black", "rule": "red" },
       { "text": "{yellow}PRACTICES{/}", "heading": true },
       "Agile/Scrum, TDD, AI-assisted workflows",
       "",

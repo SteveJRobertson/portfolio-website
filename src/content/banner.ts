@@ -1,11 +1,15 @@
-import type { GridRow, GridSegment, TeletextColor } from '../types/teletext.ts';
-import { BLOCK_HEIGHT, blockBitmap, unsupportedChars, type BlockWeight } from './blockFont.ts';
+import { THIN_LINE, type GridRow, type GridSegment, type TeletextColor } from '../types/teletext.ts';
+import { blockBitmap, mixedBitmap, unsupportedChars, unsupportedMixedChars, type BlockWeight } from './blockFont.ts';
 import { parseMarkup } from './markup.ts';
 import { sextant } from './mosaic.ts';
 
 /**
  * A page banner (SPEC §7): the title in mosaic block letters on a band of
  * colour, with a thin lip under it, as on Ceefax's section headers.
+ *
+ * On black it's a masthead, as on Teletext's: coloured letters in mixed case,
+ * three rows tall and against the left margin, over a thin solid line in the
+ * `rule` colour.
  *
  * As on a real set, the band starts one cell in (the colour change takes a
  * cell) and the letters two cells after that. Each colour run in the markup
@@ -17,6 +21,8 @@ import { sextant } from './mosaic.ts';
 export interface BannerSource {
   banner: string;
   bg: TeletextColor;
+  /** Draws the lip in this colour instead of the band's: a thin rule under letters on black. */
+  rule?: TeletextColor;
 }
 
 interface Run {
@@ -42,10 +48,11 @@ const runsOf = (segments: GridSegment[]): Run[] => {
 };
 
 /** Two rows of mosaic characters for one bitmap, `cells` wide. */
-const toCells = (bitmap: string[], cells: number): [string, string] => {
+/** Rows of mosaic characters for one bitmap (three pixels a row), `cells` wide. */
+const toCells = (bitmap: string[], cells: number): string[] => {
   const lit = (x: number, y: number) => bitmap[y]?.[x] === '#';
-  const rows: [string, string] = ['', ''];
-  for (let r = 0; r < BLOCK_HEIGHT / 3; r++) {
+  const rows = Array.from({ length: bitmap.length / 3 }, () => '');
+  for (let r = 0; r < rows.length; r++) {
     for (let c = 0; c < cells; c++) {
       let bits = 0;
       for (let p = 0; p < 6; p++) if (lit(2 * c + (p % 2), 3 * r + Math.floor(p / 2))) bits |= 1 << p;
@@ -57,9 +64,11 @@ const toCells = (bitmap: string[], cells: number): [string, string] => {
 
 const lip = (bg: TeletextColor): GridRow => ({ segments: [{ text: ' ', color: bg }], fill: LIP });
 
+const line = (color: TeletextColor): GridRow => ({ segments: [{ text: '', color }], fill: THIN_LINE });
+
 const blockRows = (runs: Run[], bg: TeletextColor, width: number, weight: BlockWeight): GridRow[] | undefined => {
   const drawn = runs.map((run) => {
-    const bitmap = blockBitmap(run.text, weight);
+    const bitmap = bg === 'black' ? mixedBitmap(run.text, weight) : blockBitmap(run.text, weight);
     const cells = Math.ceil(bitmap[0].length / 2);
     return { ...run, cells, rows: toCells(bitmap, cells) };
   });
@@ -67,11 +76,11 @@ const blockRows = (runs: Run[], bg: TeletextColor, width: number, weight: BlockW
   // Bold letters keep a band cell clear at the right; condensed ones may run to the edge.
   const room = width - LEAD - (weight === 'bold' ? 1 : 0);
   if (used > room) return undefined;
-  const before = 2 + Math.floor((width - LEAD - used) / 2);
+  const before = bg === 'black' ? 0 : 2 + Math.floor((width - LEAD - used) / 2);
   const after = width - 1 - before - used;
   if (weight === 'bold' && after < 1) return undefined;
 
-  return [0, 1].map((r): GridRow => {
+  return drawn[0].rows.map((_, r): GridRow => {
     const segments: GridSegment[] = [{ text: ' ' }, band(bg, ' '.repeat(before))];
     drawn.forEach((d, i) => {
       if (i > 0) segments.push(band(bg, ' '));
@@ -103,13 +112,14 @@ export const layoutBanner = (source: BannerSource, width: number): { rows: GridR
   }
   const runs = runsOf(parsed.segments);
   if (!runs.length) errors.push('a banner needs some text');
-  const unknown = unsupportedChars(runs.map((r) => r.text).join(''));
+  const unknown = (source.bg === 'black' ? unsupportedMixedChars : unsupportedChars)(runs.map((r) => r.text).join(''));
   if (unknown.length) errors.push(`the banner font has no ${unknown.map((c) => `"${c}"`).join(', ')}`);
   if (errors.length) return { rows: [], errors };
 
+  const under = source.bg === 'black' ? line(source.rule ?? runs[0].color) : lip(source.rule ?? source.bg);
   const block = blockRows(runs, source.bg, width, 'bold') ?? blockRows(runs, source.bg, width, 'condensed');
-  if (block) return { rows: [...block, lip(source.bg)], errors };
+  if (block) return { rows: [...block, under], errors };
   const text = textRow(runs, source.bg, width);
-  if (text) return { rows: [text, lip(source.bg)], errors };
+  if (text) return { rows: [text, under], errors };
   return { rows: [], errors: [`banner "${runs.map((r) => r.text).join(' ')}" is too long for ${width} columns`] };
 };

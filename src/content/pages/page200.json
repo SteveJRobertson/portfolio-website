@@ -5,9 +5,9 @@
   "label": "PROJECTS",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 400 }],
+  "promo": { "text": "{white}PLAY FLUMMOX! THE QUIZ p152{/}", "page": 152 },
   "rows": [
-    { "banner": "{black}PROJECTS{/}", "bg": "green" },
-    "",
+    { "banner": "{green}Projects{/}", "bg": "black", "rule": "yellow" },
     "Personal projects, all in progress.",
     "",
     "{link:201}{yellow}Isolate UI{dots}{/}201{/}",

@@ -39,11 +39,13 @@ export interface ImageRowSource {
 
 /**
  * A page banner: the title in mosaic block letters on a band of colour (SPEC §7).
- * `banner` may use colour tags for the letters; `bg` is the band.
+ * `banner` may use colour tags for the letters; `bg` is the band. On black (`bg: "black"`) it's a
+ * mixed-case masthead over a thin line in the `rule` colour (the letters' colour if left out).
  */
 export interface BannerRowSource {
   banner: string;
   bg: TeletextColor;
+  rule?: TeletextColor;
 }
 
 export type RowSource = TextRowSource | ImageRowSource | BannerRowSource;
@@ -51,7 +53,7 @@ export type RowSource = TextRowSource | ImageRowSource | BannerRowSource;
 export const ROW_KEYS = ['text', 'doubleHeight', 'heading', 'screenOnly'] as const;
 export const IMAGE_KEYS = ['image', 'alt', 'rows', 'mobileRows', 'pixelArt', 'beside', 'align', 'palette', 'contrast', 'saturation', 'brightness'] as const;
 
-export const BANNER_KEYS = ['banner', 'bg'] as const;
+export const BANNER_KEYS = ['banner', 'bg', 'rule'] as const;
 
 export const isImageRow = (row: RowSource): row is ImageRowSource => typeof row === 'object' && 'image' in row;
 export const isBannerRow = (row: RowSource): row is BannerRowSource => typeof row === 'object' && 'banner' in row;
@@ -84,6 +86,11 @@ export interface PageSource {
    * of every sub-page (on screen only), so it never moves.
    */
   hint?: string;
+  /**
+   * A double-height red promo bar above Fastext, linking to `page`, as Teletext
+   * advertised its other pages ("PLAY FLUMMOX! THE QUIZ p152"). Pages without sub-pages only.
+   */
+  promo?: { text: string; page: number };
   /** Portrait override, used line for line instead of the automatic wrap. */
   mobileRows?: RowSource[];
   mobileSubpages?: RowSource[][];

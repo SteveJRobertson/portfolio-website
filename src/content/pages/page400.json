@@ -5,9 +5,9 @@
   "label": "CONTACT",
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 200 }],
+  "promo": { "text": "{white}PLAY FLUMMOX! THE QUIZ p152{/}", "page": 152 },
   "rows": [
-    { "banner": "{black}CONTACT{/}", "bg": "cyan" },
-    "",
+    { "banner": "{cyan}Contact{/}", "bg": "black", "rule": "red" },
     { "text": "{icon:email} {green}EMAIL{/}", "heading": true },
     "steve.robertson80@gmail.com",
     "",

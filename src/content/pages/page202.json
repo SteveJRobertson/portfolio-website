@@ -5,8 +5,7 @@
   "label": "LIGHTHOUSE",
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 200 }, { "page": 101 }, { "page": 400 }],
   "rows": [
-    { "banner": "{black}LIGHTHOUSE{/}", "bg": "green" },
-    "",
+    { "banner": "{green}Lighthouse{/}", "bg": "black", "rule": "yellow" },
     "{yellow}Lighthouse Compare{/}: compare Lighthouse reports side by side to track improvements over time.",
     "",
     "{green}TECH{/}    JavaScript",
