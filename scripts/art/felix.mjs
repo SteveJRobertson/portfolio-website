@@ -11,7 +11,7 @@ const { PNG } = require('pngjs');
 
 const RGB = { w: [255,255,255], y: [255,255,0], c: [0,255,255], r: [255,51,51], b: [77,121,255], g: [0,255,0], m: [255,0,255], '.': null };
 
-// 32 x 24 pixels = 16 cells x 8 rows, as Bamber was (the face is drawn 28 wide, then his hand added). W is the face: white, or yellow when flummoxed.
+// 32 x 24 pixels = 16 cells x 8 rows, as Bamber was (the face is drawn 28 wide, then his hand added). W is the face: yellow, as Bamber's was.
 const HAIR = [
   '..........gggggg............',
   '.......gggggggggggg.........',
@@ -46,7 +46,7 @@ const happy = [
   ...BODY,
 ];
 
-// Flummoxed (and gone yellow, as Bamber did): worried brows, eyes crossed,
+// Flummoxed: worried brows, eyes crossed,
 // an "O" for a mouth and a cyan bead of sweat.
 const flummoxed = [
   ...HAIR,
@@ -111,12 +111,12 @@ const write = (file, rows, face, scale) => {
 
 const out = process.argv[2] ?? '.';
 const preview = process.argv[3];
-write(path.join(out, 'felix.png'), withHand(happy, THUMBS_UP), 'w', 1);
+write(path.join(out, 'felix.png'), withHand(happy, THUMBS_UP), 'y', 1);
 write(path.join(out, 'felix-flummoxed.png'), withHand(flummoxed, OPEN_HAND), 'y', 1);
 // Portrait screens are too narrow for the hand and a readable bubble, so Felix goes without it there.
-write(path.join(out, 'felix-narrow.png'), happy, 'w', 1);
+write(path.join(out, 'felix-narrow.png'), happy, 'y', 1);
 write(path.join(out, 'felix-narrow-flummoxed.png'), flummoxed, 'y', 1);
 if (preview) {
-  write(path.join(preview, 'felix-preview.png'), withHand(happy, THUMBS_UP), 'w', 12);
+  write(path.join(preview, 'felix-preview.png'), withHand(happy, THUMBS_UP), 'y', 12);
   write(path.join(preview, 'felix-flummoxed-preview.png'), withHand(flummoxed, OPEN_HAND), 'y', 12);
 }
