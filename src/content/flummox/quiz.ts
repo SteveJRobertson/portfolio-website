@@ -35,17 +35,16 @@ const NBSP = '\u00a0';
 /** The middle third of a cell, as `{rule}` draws. */
 const BAR = sextant(0b001100);
 
-/** Felix's cells across, and so the room left for his speech bubble beside him. */
-const FELIX_COLS = 14;
-
 interface Width {
   cols: number;
-  /** The speech bubble's width beside Felix: the text column less its margin. */
+  /** Felix's picture: with his raised hand (16 cells across) where there's room, without it (14) in portrait. */
+  felix: 'felix' | 'felix-narrow';
+  /** The speech bubble's width beside Felix: the text column less Felix and a margin. */
   bubble: number;
 }
 
-const WIDE: Width = { cols: 38, bubble: 38 - FELIX_COLS - 2 };
-const NARROW: Width = { cols: 32, bubble: 32 - FELIX_COLS - 2 };
+const WIDE: Width = { cols: 38, felix: 'felix', bubble: 38 - 16 - 2 };
+const NARROW: Width = { cols: 32, felix: 'felix-narrow', bubble: 32 - 14 - 2 };
 
 /** How many cells some markup takes on screen: a slot its width, `{{` one cell, other tags none. */
 const cellsOf = (markup: string): number =>
@@ -94,7 +93,7 @@ const felix = (says: string, width: Width, flummoxed = false): RowSource => {
   const said = bubble(says, width.bubble);
   const above = Math.max(0, Math.floor((FELIX_ROWS - 1 - said.length) / 2));
   return {
-    image: flummoxed ? 'felix-flummoxed' : 'felix',
+    image: flummoxed ? `${width.felix}-flummoxed` : width.felix,
     alt: flummoxed ? FELIX_FLUMMOXED_ALT : FELIX_ALT,
     rows: FELIX_ROWS,
     pixelArt: true,

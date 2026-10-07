@@ -12,7 +12,7 @@ import type { GridRow } from '../../types/teletext';
 const real = (): QuizSource => JSON.parse(fs.readFileSync(QUIZ_FILE, 'utf-8'));
 
 const images = Object.fromEntries(
-  ['felix', 'felix-flummoxed', 'flummox-logo'].map((name) => [name, PNG.sync.read(fs.readFileSync(`${IMAGES_DIR}/${name}.png`))]),
+  ['felix', 'felix-flummoxed', 'felix-narrow', 'felix-narrow-flummoxed', 'flummox-logo'].map((name) => [name, PNG.sync.read(fs.readFileSync(`${IMAGES_DIR}/${name}.png`))]),
 );
 
 const with_ = (change: (quiz: QuizSource) => void): QuizSource => {
