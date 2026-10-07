@@ -24,6 +24,8 @@ interface PrerenderedPage {
   title: string;
   description: string;
   body: string;
+  canonical?: string;
+  noindex?: boolean;
 }
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -94,7 +96,7 @@ const sitemap = (pages: PrerenderedPage[]) =>
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...pages
-      .filter((page) => page.file !== '404.html')
+      .filter((page) => page.file !== '404.html' && !page.noindex)
       .map((page) => {
         const lastmod = lastModified(page.page);
         return `  <url><loc>${escape(`${SITE_URL}${page.href}`)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
@@ -112,8 +114,9 @@ const head = (page: PrerenderedPage, base: string) => {
   const tags = [
     `<title>${escape(page.title)}</title>`,
     `<meta name="description" content="${escape(page.description)}" />`,
-    // The not-found page has no URL of its own
-    ...(page.file === '404.html' ? ['<meta name="robots" content="noindex" />'] : [`<link rel="canonical" href="${url}" />`]),
+    // The not-found page has no URL of its own; a Flummox! score page is page 152's, kept out of search
+    ...(page.file === '404.html' ? [] : [`<link rel="canonical" href="${SITE_URL}${page.canonical ?? page.href}" />`]),
+    ...(page.file === '404.html' || page.noindex ? ['<meta name="robots" content="noindex" />'] : []),
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:title" content="${escape(page.title)}" />`,

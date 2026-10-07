@@ -32,11 +32,7 @@ export const shareMessage = (template: string, score: number): string => templat
  * The shared link: the score's own page, whose link preview shows the score.
  * `site` is the site's root with a trailing slash, e.g. https://steverobertson.dev/.
  */
-export const scoreUrl = (site: string, score: number): string => `${site}152/score/${score}/`;
+export const scoreUrl = (site: string, score: number): string => `${site}152/${scorePath(score)}`;
 
-/** The score a score page's path is for, or none. */
-export const scoreFromPath = (path: string): number | undefined => {
-  const match = /^152\/score\/(\d{1,2})\/?$/.exec(path.replace(/^\/+/, ''));
-  const score = match ? Number(match[1]) : NaN;
-  return Number.isInteger(score) && score >= 0 && score <= 12 ? score : undefined;
-};
+/** A score page's path under page 152's, e.g. `score/7/`. */
+export const scorePath = (score: number): string => `score/${score}/`;

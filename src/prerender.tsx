@@ -3,6 +3,8 @@ import { SemanticPage } from './components/SemanticPage';
 import { documentTitle, pageDescription } from './content/meta';
 import { NAVIGABLE_PAGES, NOT_FOUND_PAGE, PAGES } from './content/registry';
 import { pageHref } from './navigation/paths';
+import { quiz } from './flummox/quizData';
+import { scorePath, shareMessage } from './flummox/share';
 
 /**
  * Server entry for `scripts/prerender.ts` (SPEC §5): for each page, its head
@@ -19,12 +21,16 @@ export interface PrerenderedPage {
   title: string;
   description: string;
   body: string;
+  /** The page's canonical path, when it isn't `href`: a score page points at page 152. */
+  canonical?: string;
+  /** Kept out of search results and the sitemap. */
+  noindex?: boolean;
 }
 
 const noop = () => {};
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
 
-export const prerender = (): PrerenderedPage[] =>
+const pages = (): PrerenderedPage[] =>
   PAGES.map((page) => ({
     page: page.page,
     file: page.page === NOT_FOUND_PAGE ? '404.html' : page.page === 100 ? 'index.html' : `${page.page}/index.html`,
@@ -42,3 +48,28 @@ export const prerender = (): PrerenderedPage[] =>
       </div>,
     ),
   }));
+
+const QUIZ_PAGE = 152;
+
+/**
+ * A page for each Flummox! score (docs/flummox/SPEC.md §6, Sharing): a shared
+ * link's preview shows the score, and the app takes a visitor on to page 152.
+ */
+const scorePages = (all: PrerenderedPage[]): PrerenderedPage[] => {
+  const quizPage = all.find((p) => p.page === QUIZ_PAGE)!;
+  const total = quiz.questions.length;
+  return Array.from({ length: total + 1 }, (_, score) => ({
+    ...quizPage,
+    file: `${QUIZ_PAGE}/${scorePath(score)}index.html`,
+    href: `${pageHref(QUIZ_PAGE)}${scorePath(score)}`,
+    title: `Flummox! score: ${score} out of ${total} (P${QUIZ_PAGE}) | Steve Robertson`,
+    description: shareMessage(quiz.message, score),
+    canonical: quizPage.href,
+    noindex: true,
+  }));
+};
+
+export const prerender = (): PrerenderedPage[] => {
+  const all = pages();
+  return [...all, ...scorePages(all)];
+};
