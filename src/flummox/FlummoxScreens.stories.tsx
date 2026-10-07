@@ -5,6 +5,7 @@ import { TeletextGrid } from '../components/TeletextGrid';
 import { GridLine } from '../components/GridLine';
 import { HeaderTicker } from '../components/HeaderTicker';
 import { FastTextBar } from '../components/FastTextBar';
+import { ScanlineOverlay } from '../components/ScanlineOverlay';
 import { GRID_MODES, type GridModeName } from '../display/gridModes';
 import { layoutBody } from '../display/layout';
 import { sidebarRows } from '../display/sidebar';
@@ -14,7 +15,7 @@ import { fillSlots, twoDigits } from './slots';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 
-const SCREENS = ['intro', 'intro (carry on)', 'question', 'correct', 'flummoxed', 'checkpoint', 'finished'] as const;
+const SCREENS = ['intro', 'intro (carry on)', 'question', 'correct', 'flummoxed', 'checkpoint', 'finished', 'share'] as const;
 type ScreenName = (typeof SCREENS)[number];
 
 interface FlummoxScreenProps {
@@ -23,6 +24,8 @@ interface FlummoxScreenProps {
   /** 1 to 12: which question (also picks the stage for flummoxed and checkpoint). */
   question: number;
   score: number;
+  /** The CRT scanlines and glow (page 888). */
+  crt?: boolean;
   fontSize?: number;
 }
 
@@ -44,6 +47,8 @@ const pick = (screen: ScreenName, question: number, score: number): CompiledScre
       return quiz.checkpoint[Math.max(stage - 1, 0)];
     case 'finished':
       return quiz.finished.find((f) => score >= f.min)!.screen;
+    case 'share':
+      return quiz.share[score];
   }
 };
 
@@ -51,7 +56,7 @@ const pick = (screen: ScreenName, question: number, score: number): CompiledScre
  * Every Flummox! screen (docs/flummox/SPEC.md §4), laid out from `quiz.json`
  * at build time, with its slots filled in as the game would.
  */
-const FlummoxScreen = ({ mode: name, screen, question, score, fontSize = 20 }: FlummoxScreenProps) => {
+const FlummoxScreen = ({ mode: name, screen, question, score, crt = false, fontSize = 20 }: FlummoxScreenProps) => {
   const mode = GRID_MODES[name];
   const compiled = pick(screen, question, score);
   const stage = quiz.stages.filter((s) => s < question).at(-1) ?? 0;
@@ -63,7 +68,7 @@ const FlummoxScreen = ({ mode: name, screen, question, score, fontSize = 20 }: F
     newbest: 'NEW BEST!',
   });
   return (
-    <div style={{ fontSize }}>
+    <div style={{ fontSize, position: 'relative' }} className={crt ? 'teletext-screen--crt' : undefined}>
       <TeletextGrid cols={mode.cols} rows={mode.rows}>
         <HeaderTicker bufferText="P152" currentPage={152} cols={mode.cols} />
         {layoutBody(mode, rows, SIDEBAR_ROWS).map(({ key, ...line }) => (
@@ -71,6 +76,7 @@ const FlummoxScreen = ({ mode: name, screen, question, score, fontSize = 20 }: F
         ))}
         <FastTextBar links={getPage(152)!.fastext} onNavigate={fn()} cols={mode.cols} row={mode.rows} />
       </TeletextGrid>
+      {crt && <ScanlineOverlay />}
     </div>
   );
 };
@@ -84,6 +90,7 @@ const meta: Meta<typeof FlummoxScreen> = {
     screen: { control: 'select', options: SCREENS },
     question: { control: { type: 'number', min: 1, max: 12 } },
     score: { control: { type: 'number', min: 0, max: 12 } },
+    crt: { control: 'boolean' },
   },
 };
 
@@ -100,3 +107,6 @@ export const Flummoxed: Story = { args: { screen: 'flummoxed', question: 6, scor
 export const Checkpoint: Story = { args: { screen: 'checkpoint', question: 5, score: 4 } };
 export const Finished: Story = { args: { screen: 'finished', score: 10 } };
 export const FinishedPerfect: Story = { args: { screen: 'finished', score: 12 } };
+export const Share: Story = { args: { screen: 'share', score: 9 } };
+/** With the CRT effect from page 888: dark text on light cells gets no glow, so the speech bubble stays sharp. */
+export const IntroCrt: Story = { args: { screen: 'intro', crt: true } };

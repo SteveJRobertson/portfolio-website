@@ -75,7 +75,7 @@ html, body {
 .bg-magenta { background-color: #cc00cc; color: #ffffff; }
 .bg-cyan    { background-color: #00aaaa; color: #000000; }
 .bg-white   { background-color: #ffffff; color: #000000; }
-/* Blue on white keeps its blue, as in Felix's speech bubble (8.6:1 contrast) */
+/* Blue on white keeps its blue, as in Felix's speech bubble (11.2:1 contrast) */
 .bg-white.c-blue { color: #0000cc; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
 
@@ -157,6 +157,11 @@ html, body {
    whole tube. Static, so it's safe with reduced motion; it starts off with reduced motion or more contrast. */
 .teletext-screen--crt .tt-grid {
   text-shadow: 0 0 0.12em currentColor;
+}
+/* Phosphor glows from light, so dark text on a light background gets no glow: on Felix's white
+   speech bubble it smudged the blue letters. */
+.teletext-screen--crt .tt-grid :is(.bg-white, .bg-yellow, .bg-green, .bg-cyan) {
+  text-shadow: none;
 }
 
 .crt-overlay {
