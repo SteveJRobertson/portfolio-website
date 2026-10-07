@@ -37,6 +37,10 @@ export interface GridSegment {
   leader?: boolean;
   /** The dots a leader was stretched into, once laid out (drawn solid when its linked line is hovered). */
   leaderDots?: boolean;
+  /** A `{slot:NAME}`: a fixed-width space the app fills at run time (a Flummox! score), never re-wrapped. */
+  slot?: string;
+  /** Inside `{answer:N}`: one of a Flummox! question's four answers (0 red to 3 cyan), answered by a click or tap. */
+  answer?: number;
 }
 
 export interface GridRow {
@@ -62,6 +66,8 @@ export interface SemanticInline {
   text: string;
   page?: number;
   href?: string;
+  /** Filled at run time, like the grid's `slot` segments. */
+  slot?: string;
 }
 
 /** One block of the semantic mirror (SPEC §9), built from the logical source rows. */

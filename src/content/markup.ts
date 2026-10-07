@@ -12,6 +12,8 @@ import { ICONS, type IconName } from '../icons/icons.ts';
  *                        {rule} is a solid mosaic bar; {rule:X} repeats X
  *   {dots}               a leader: dots that push the rest of the line to the right edge
  *   {icon:linkedin}      an icon (src/icons), two cells wide and one line tall
+ *   {slot:score}         a fixed-width space filled at run time (see SLOT_WIDTHS)
+ *   {answer:0}TEXT{/}    a Flummox! answer (0 red to 3 cyan), clickable in the grid
  *   {{                   a literal "{"
  *
  * Tags nest, `{/}` closes the most recent one, and every tag must be closed by
@@ -32,7 +34,25 @@ interface Style {
   color?: TeletextColor;
   bg?: TeletextColor;
   link?: number;
+  answer?: number;
 }
+
+/**
+ * The run-time slots and how many cells each takes. The width is fixed, so a
+ * screen that fits at build time still fits once the app fills it in.
+ */
+export const SLOT_WIDTHS: Record<string, number> = {
+  /** The Flummox! score, "07". */
+  score: 2,
+  /** The best score so far, "09", or "--". */
+  best: 2,
+  /** The question a game in progress carries on from, "05". */
+  resume: 2,
+  /** "+1 POINT" when an answer scored, blank when it was asked before. */
+  point: 8,
+  /** "NEW BEST!" when the game beat the best score, otherwise blank. */
+  newbest: 9,
+};
 
 /** What an icon takes up on the grid: two cells of non-breaking space, so wrapping never splits or trims it. */
 export const ICON_CELLS = '\u00a0\u00a0';
@@ -55,12 +75,22 @@ export const parseMarkup = (source: string): ParsedLine => {
 
   const push = (text: string) => {
     if (!text) return;
-    const { color, bg, link } = current();
+    const { color, bg, link, answer } = current();
     const style: GridSegment = { text, color: color ?? 'white' };
     if (bg) style.bg = bg;
     if (link !== undefined) style.link = link;
+    if (answer !== undefined) style.answer = answer;
     const last = segments[segments.length - 1];
-    if (last && !last.leader && last.color === style.color && last.bg === style.bg && last.link === style.link) last.text += text;
+    if (
+      last &&
+      !last.leader &&
+      last.slot === undefined &&
+      last.color === style.color &&
+      last.bg === style.bg &&
+      last.link === style.link &&
+      last.answer === style.answer
+    )
+      last.text += text;
     else segments.push(style);
   };
 
@@ -104,6 +134,15 @@ export const parseMarkup = (source: string): ParsedLine => {
       leaders++;
       const { color, link } = current();
       segments.push({ text: '.', color: color ?? 'white', leader: true, ...(link !== undefined ? { link } : {}) });
+    } else if (/^answer:[0-3]$/.test(tag)) {
+      stack.push({ ...current(), answer: Number(tag.slice(7)) });
+    } else if (tag.startsWith('slot:')) {
+      const name = tag.slice(5);
+      const width = SLOT_WIDTHS[name];
+      if (width) {
+        const { color, bg } = current();
+        segments.push({ text: '\u00a0'.repeat(width), color: color ?? 'white', slot: name, ...(bg ? { bg } : {}) });
+      } else errors.push(`unknown slot "${name}"; the slots are ${Object.keys(SLOT_WIDTHS).join(', ')}`);
     } else if (tag.startsWith('icon:')) {
       const name = tag.slice(5);
       if (name in ICONS) segments.push({ text: ICON_CELLS, icon: name as IconName });

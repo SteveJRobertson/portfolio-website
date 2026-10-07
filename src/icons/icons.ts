@@ -196,6 +196,24 @@ export const ICONS = {
       'ggg.gggg....',
     ],
   },
+  threads: {
+    // A white tile with the Threads mark cut out of it, like the app icon: a bare mark read as "@".
+    label: 'Threads',
+    grid: [
+      '.wwwwwwwwww.',
+      'wwwwwwwwwwww',
+      'wwww....wwww',
+      'www.wwww.www',
+      'ww.wwwwww.ww',
+      'ww.ww...w.ww',
+      'ww.w.ww.w.ww',
+      'ww.w.ww..www',
+      'ww.ww..w.www',
+      'www.wwww.www',
+      'wwww....wwww',
+      '.wwwwwwwwww.',
+    ],
+  },
 } satisfies Record<string, Icon>;
 
 export type IconName = keyof typeof ICONS;

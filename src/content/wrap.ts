@@ -19,6 +19,8 @@ interface StyledChar {
   link?: number;
   href?: string;
   icon?: GridSegment['icon'];
+  slot?: string;
+  answer?: number;
 }
 
 export interface LaidOutRows {
@@ -44,7 +46,9 @@ const toSegments = (styled: StyledChar[]): GridSegment[] => {
       last.link === style.link &&
       last.href === style.href &&
       last.icon === style.icon &&
-      last.leaderDots === style.leaderDots
+      last.leaderDots === style.leaderDots &&
+      last.slot === style.slot &&
+      last.answer === style.answer
     )
       last.text += ch;
     else segments.push({ text: ch, ...style });

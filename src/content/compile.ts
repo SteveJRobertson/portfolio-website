@@ -1,4 +1,11 @@
-import { TELETEXT_COLORS, type CompiledPage, type FastextLink, type GridRow, type TeletextColor } from '../types/teletext.ts';
+import {
+  TELETEXT_COLORS,
+  type CompiledPage,
+  type FastextLink,
+  type GridRow,
+  type SemanticBlock,
+  type TeletextColor,
+} from '../types/teletext.ts';
 import {
   BANNER_KEYS,
   IMAGE_KEYS,
@@ -116,7 +123,7 @@ const subpagesOf = (rows?: RowSource[], subpages?: RowSource[][]): RowSource[][]
  * portrait fits the picture to the width unless `mobileRows` says otherwise.
  * Pixel art is used as drawn, so its size is fixed by the PNG.
  */
-const imageRenderer =
+export const imageRenderer =
   (images: Readonly<Record<string, RgbaImage>>): ImageRenderer =>
   (source: ImageRowSource, width: number) => {
     const fail = (error: string) => ({ rows: [], cols: 0, errors: [error] });
@@ -145,6 +152,67 @@ const imageRenderer =
     if (cols > width) return fail(`image "${source.image}" is ${cols} cells wide at ${rows} rows; the limit is ${width}`);
     return { rows: toMosaic(picture, { ...source, rows }), cols, errors: [] };
   };
+
+/**
+ * Puts a one-line hint ("Press ← or → for more.") in the last body row, just
+ * above Fastext, with at least one blank row between it and the page.
+ */
+export const pinHint = (
+  rows: GridRow[],
+  hint: string,
+  width: number,
+  limit: number,
+  name = 'hint',
+): { rows: GridRow[]; errors: string[] } => {
+  const used = slotsUsed(rows);
+  if (used > limit - 2) {
+    const errors = used <= limit ? [`needs ${used} rows; the limit is ${limit - 2}, leaving a blank row and the ${name}`] : [];
+    return { rows, errors };
+  }
+  const laid = layoutRows([hint], width);
+  const errors = laid.errors.map((e) => `hint: ${e}`);
+  if (laid.rows.length > 1) errors.push(`the hint "${hint}" must fit on one line`);
+  return { rows: [...rows, ...Array.from({ length: limit - 1 - used }, () => ({ segments: [] })), laid.rows[0]], errors };
+};
+
+/** One screen laid out for both widths, with its semantic mirror. */
+export interface CompiledScreen {
+  wide: GridRow[];
+  narrow: GridRow[];
+  semantic: SemanticBlock[];
+}
+
+/**
+ * Lays out one screen that isn't a page of its own (a Flummox! screen) the way
+ * pages are laid out: wrapped at 38 and 32 columns, checked against the grid,
+ * with an optional hint pinned to the last body row. `narrowRows` can lay
+ * portrait out differently (the mirror always comes from `rows`). `where` names it in errors.
+ */
+export const compileScreen = (
+  rows: RowSource[],
+  where: string,
+  renderImage: ImageRenderer,
+  hint?: string,
+  narrowRows: RowSource[] = rows,
+): CompiledScreen & { errors: string[]; links: number[] } => {
+  const errors: string[] = [];
+  const links: number[] = [];
+  const layout = (mode: 'wide' | 'narrow'): GridRow[] => {
+    const width = mode === 'wide' ? WIDE_COLS : NARROW_COLS;
+    const limit = mode === 'wide' ? WIDE_BODY_ROWS : NARROW_BODY_ROWS;
+    const at = `${where} (${mode === 'wide' ? `${width} columns` : 'portrait'})`;
+    const result = layoutRows(mode === 'wide' ? rows : narrowRows, width, true, renderImage);
+    errors.push(...result.errors.map((e) => `${at}: ${e}`));
+    if (mode === 'wide') links.push(...result.links);
+    const used = slotsUsed(result.rows);
+    if (used > limit) errors.push(`${at}: needs ${used} rows; the limit is ${limit}`);
+    if (hint === undefined) return result.rows;
+    const pinned = pinHint(result.rows, hint, width, limit);
+    errors.push(...pinned.errors.map((e) => `${at}: ${e}`));
+    return pinned.rows;
+  };
+  return { wide: layout('wide'), narrow: layout('narrow'), semantic: buildSemantic(rows), errors, links };
+};
 
 /**
  * Validates and lays out every page (SPEC §7). Fails on: rows too wide, too
@@ -202,15 +270,9 @@ export const compilePages = (files: SourceFile[], images: Readonly<Record<string
     // Pages with sub-pages say how to step through them, always in the last body row, just above Fastext.
     const hint = page.hint ?? DEFAULT_HINT;
     const withHint = (rows: GridRow[], width: number, limit: number, where: string): GridRow[] => {
-      const used = slotsUsed(rows);
-      if (used > limit - 2) {
-        if (used <= limit) errors.push(`${where}: needs ${used} rows; the limit is ${limit - 2}, leaving a blank row and the ← → hint`);
-        return rows;
-      }
-      const laid = layoutRows([hint], width);
-      errors.push(...laid.errors.map((e) => `${where}: hint: ${e}`));
-      if (laid.rows.length > 1) errors.push(`${where}: the hint "${hint}" must fit on one line`);
-      return [...rows, ...Array.from({ length: limit - 1 - used }, () => ({ segments: [] })), laid.rows[0]];
+      const pinned = pinHint(rows, hint, width, limit, '← → hint');
+      errors.push(...pinned.errors.map((e) => `${where}: ${e}`));
+      return pinned.rows;
     };
 
     const fastext = page.fastext.map((f, i): FastextLink => {

@@ -1,0 +1,25 @@
+{
+  "page": 152,
+  "title": "Flummox!",
+  "description": "Flummox!, a Teletext quiz in the style of Bamboozle!. Felix Flummox asks 12 questions; press the coloured button for your answer. Can you flummox Felix?",
+  "label": "FLUMMOX",
+  "index": true,
+  "fastext": [{ "page": 100, "label": "HOME" }, { "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 400 }],
+  "rows": [
+    { "banner": "FLUMMOX!", "bg": "red" },
+    "",
+    {
+      "image": "felix",
+      "alt": "Felix Flummox, the quizmaster: a cartoon with green hair, cyan glasses and a red bow tie.",
+      "rows": 9,
+      "pixelArt": true,
+      "beside": [
+        "{yellow}Felix Flummox{/}, your quizmaster, has 12 questions for you.",
+        "",
+        "Press the coloured button for your answer. Get one wrong and you're {yellow}FLUMMOXED!{/}"
+      ]
+    },
+    "",
+    "Flummox! needs JavaScript to play. The quiz is in the style of Channel 4's Teletext classic, Bamboozle!."
+  ]
+}
