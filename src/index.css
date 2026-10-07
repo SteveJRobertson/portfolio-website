@@ -75,8 +75,9 @@ html, body {
 .bg-magenta { background-color: #cc00cc; color: #ffffff; }
 .bg-cyan    { background-color: #00aaaa; color: #000000; }
 .bg-white   { background-color: #ffffff; color: #000000; }
-/* Blue on white keeps its blue, as in Felix's speech bubble (11.2:1 contrast) */
-.bg-white.c-blue { color: #0000cc; }
+/* Blue on white is pure Teletext blue, as in Bamboozle!'s speech bubbles (8.6:1 contrast);
+   the lighter --tt-blue is for black backgrounds and would fail AA on white */
+.bg-white.c-blue { color: #0000ff; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
 
 /* Block graphics backgrounds: the same colours as the foreground, so a picture's cells blend */
@@ -158,10 +159,10 @@ html, body {
 .teletext-screen--crt .tt-grid {
   text-shadow: 0 0 0.12em currentColor;
 }
-/* Phosphor glows from light, so dark text on a light background gets no glow: on Felix's white
-   speech bubble it smudged the blue letters. */
+/* Dark text on a light background gets a softer glow: the full one smudged the letters in
+   Felix's white speech bubble, and none at all made them stand apart from the rest of the screen. */
 .teletext-screen--crt .tt-grid :is(.bg-white, .bg-yellow, .bg-green, .bg-cyan) {
-  text-shadow: none;
+  text-shadow: 0 0 0.05em currentColor;
 }
 
 .crt-overlay {
