@@ -45,4 +45,18 @@ describe('FastTextBar', () => {
     render(<FastTextBar links={links} onNavigate={vi.fn()} cols={20} row={36} />);
     expect(screen.getAllByRole('link').map((b) => b.textContent)).toEqual([' 100 ', ' 200 ', ' 300 ', ' 400 ']);
   });
+
+  it('draws action slots as buttons, and answer keys as blocks of colour', () => {
+    const play = vi.fn();
+    const answer = vi.fn();
+    const actions = [{ label: 'Play', name: 'Red: Play', onPress: play }, undefined, { name: 'Yellow: 1980', onPress: answer }, undefined];
+    const { container } = render(<FastTextBar links={links} onNavigate={vi.fn()} cols={40} row={24} actions={actions} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Red: Play' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Yellow: 1980' }));
+    expect(play).toHaveBeenCalledOnce();
+    expect(answer).toHaveBeenCalledOnce();
+    expect(screen.getAllByRole('link')).toHaveLength(2);
+    expect(container.textContent).toContain('███');
+    expect(container.textContent).toContain('Play');
+  });
 });

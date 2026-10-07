@@ -3,3 +3,9 @@ declare module 'virtual:pages' {
 
   export const pages: CompiledPage[];
 }
+
+declare module 'virtual:flummox' {
+  import type { CompiledQuiz } from './flummox/types';
+
+  export const quiz: CompiledQuiz;
+}

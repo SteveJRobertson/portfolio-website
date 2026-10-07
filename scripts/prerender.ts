@@ -24,6 +24,9 @@ interface PrerenderedPage {
   title: string;
   description: string;
   body: string;
+  canonical?: string;
+  noindex?: boolean;
+  image?: { path: string; alt: string };
 }
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -33,6 +36,7 @@ const ssr = path.join(root, 'dist-ssr');
 const SITE_URL = (process.env.SITE_URL ?? 'https://steverobertson.dev').replace(/\/+$/, '');
 const SITE_NAME = 'STEEVEFAX';
 const SHARE_IMAGE = 'share.png';
+const SHARE_IMAGE_ALT = "The STEEVEFAX index page: Steve Robertson's name in Teletext block letters.";
 
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -94,7 +98,7 @@ const sitemap = (pages: PrerenderedPage[]) =>
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...pages
-      .filter((page) => page.file !== '404.html')
+      .filter((page) => page.file !== '404.html' && !page.noindex)
       .map((page) => {
         const lastmod = lastModified(page.page);
         return `  <url><loc>${escape(`${SITE_URL}${page.href}`)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
@@ -108,12 +112,14 @@ const ROOT = '<div id="root"></div>';
 
 const head = (page: PrerenderedPage, base: string) => {
   const url = `${SITE_URL}${page.href}`;
-  const image = `${SITE_URL}${base}${SHARE_IMAGE}`;
+  const image = `${SITE_URL}${base}${page.image?.path ?? SHARE_IMAGE}`;
+  const imageAlt = page.image?.alt ?? SHARE_IMAGE_ALT;
   const tags = [
     `<title>${escape(page.title)}</title>`,
     `<meta name="description" content="${escape(page.description)}" />`,
-    // The not-found page has no URL of its own
-    ...(page.file === '404.html' ? ['<meta name="robots" content="noindex" />'] : [`<link rel="canonical" href="${url}" />`]),
+    // The not-found page has no URL of its own; a Flummox! score page is page 152's, kept out of search
+    ...(page.file === '404.html' ? [] : [`<link rel="canonical" href="${SITE_URL}${page.canonical ?? page.href}" />`]),
+    ...(page.file === '404.html' || page.noindex ? ['<meta name="robots" content="noindex" />'] : []),
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:title" content="${escape(page.title)}" />`,
@@ -122,7 +128,7 @@ const head = (page: PrerenderedPage, base: string) => {
     `<meta property="og:image" content="${image}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
-    `<meta property="og:image:alt" content="The STEEVEFAX index page: Steve Robertson's name in Teletext block letters." />`,
+    `<meta property="og:image:alt" content="${escape(imageAlt)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     ...(page.file === 'index.html' ? [`<script type="application/ld+json">${scriptJson(structuredData(url))}</script>`] : []),
   ];

@@ -1,14 +1,14 @@
 # Specification: Flummox! (page 152)
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Approved by Steve, 5 Oct 2026. The build waits until the pre-launch fixes to the other pages are done.
+**Status**: Approved by Steve, 5 Oct 2026. Built 7 Oct 2026 on the `feature/flummox` branch (see PLAN.md, Delivery), to be released to main in one go when Steve is happy.
 **Builds on**: the v1 spec in [archive/steevefax-v1/SPEC.md](../archive/steevefax-v1/SPEC.md). Section numbers like "v1 §5" point there.
 
 ---
 
 ## 1. Summary
 
-Flummox! is a multiple-choice quiz on page 152, in the style of Channel 4's Teletext quiz Bamboozle! (1993 to 2009). The quizmaster is **Felix Flummox**, a small mosaic caricature in the style of the page 101 cartoon of Steve. Each question has four answers, one per Fastext colour, and you answer by pressing the coloured key. Get one wrong and you're **FLUMMOXED!**, sent back to the last checkpoint. You score a point for every question you get right first time, the site remembers your best score, and at the end you can share your score on the usual social networks.
+Flummox! is a multiple-choice quiz on page 152, in the style of Channel 4's Teletext quiz Bamboozle! (1993 to 2009). The quizmaster is **Felix Flummox**, a mosaic cartoon 8 rows tall, drawn the way Bamber was: one face colour carved up by black lines (round glasses, a big grin), with flat colour for his green quiff, red bow tie and blue jacket. Like Bamber he raises a hand, a thumbs-up (an open hand when flummoxed), which makes him 16 cells wide; portrait screens use him without it (14 cells) so the speech bubble stays readable. Each question has four answers, one per Fastext colour, and you answer by pressing the coloured key. Get one wrong and you're **FLUMMOXED!**, sent back to the last checkpoint. You score a point for every question you get right first time, the site remembers your best score, and at the end you can share your score on the usual social networks.
 
 The questions live in one content file in the repo, so Steve can change them by editing it and merging.
 
@@ -43,7 +43,7 @@ The game is a small set of screens, all on page 152. Each is laid out like any o
 | **Question** | Banner, `QUESTION 3 OF 12` and `SCORE 02` on one line, the question (beside a small Felix in wide modes, under him in portrait), then the four answers, each a line starting with a solid block in its key's colour, the answer in that colour. A hint row (screen only): "Press a coloured button to answer." | The four answer keys (§8) |
 | **Correct** | Felix (normal) with Felix's line for that question (`quip`, or a stock line), "+1 POINT" when it counted, the score. | Home, Next, Restart, Contact |
 | **Flummoxed** | `FLUMMOXED!` in double height, Felix with his yellow face, "Back to question N", the score. The right answer is not shown, as in Bamboozle! (open question Q5). | Home, Try again, Restart, Contact |
-| **Checkpoint** | After questions 4 and 8: "CHECKPOINT! You're safe at question 5". | Home, Next, Restart, Contact |
+| **Checkpoint** | After questions 3, 6 and 9: "CHECKPOINT! You're safe at question 4". | Home, Next, Restart, Contact |
 | **Finished** | Felix, "You beat Felix!", the final score out of 12 and a verdict line by score band, "NEW BEST!" when it is. | Home, Play again, Share, Contact |
 | **Share** | "SHARE YOUR SCORE", the message that will be shared, then one line per network (§6, Sharing). | Home, Back, Copy, Contact |
 
@@ -72,7 +72,7 @@ P152 STEEVEFAX 152       MON 05 OCT 10:14
 ## 5. The game
 
 - A game is the 12 questions in the content file, in file order, so everyone plays the same quiz (as with a Bamboozle! edition).
-- **Checkpoints** after questions 4 and 8. The game starts at question 1; once you pass question 4 you never go back further than question 5, and once you pass 8, never further than 9.
+- **Checkpoints** after questions 3, 6 and 9, as on Bamboozle!. The game starts at question 1; once you pass question 3 you never go back further than question 4, and so on.
 - **Right answer**: the Correct screen, then Next moves to the next question (or a checkpoint, or the end).
 - **Wrong answer**: the Flummoxed screen, then Try again goes to the last checkpoint's first question. Questions you'd already passed are asked again.
 - **No time limit** anywhere (WCAG 2.2.1), and nothing flashes (WCAG 2.3.1). Sub-page cycling and HOLD don't apply to 152.
@@ -109,6 +109,7 @@ Steve asked for a way to share your score on social media at the end of a game.
 - **The shared link is a score page**, `/152/score/9/`, so every network's preview shows the score, including Facebook and LinkedIn, which take only a link (Q7, agreed 5 Oct). See "Share images and link previews" below.
 - **Privacy**: plain links only. No share buttons, scripts or tracking pixels from the networks are loaded, and nothing is sent anywhere until the visitor picks a network.
 - **Accessibility**: in the mirror the Share screen is a heading, the message as a paragraph, and a list of real links named "Share on Bluesky (opens in a new tab)"; Copy is a button. The score in the message is the same number the Finished screen shows.
+- **Icons**: each network's line starts with its icon from `src/icons` (`{icon:NAME}`); Threads got its own icon for this (7 Oct, Steve kept Threads in the list).
 - **Save picture**: a last line on the Share screen downloads the score picture (below), for networks with no share link, such as Instagram. On a phone that can share files (`navigator.canShare({ files })`), a "Share picture" line opens the share sheet with the picture attached as well. The Share key itself sends the message and link only, because some apps drop the link when a picture is attached.
 
 ### Share images and link previews
@@ -162,7 +163,7 @@ P152 STEEVEFAX 152                         MON 05 OCT
 ```json
 {
   "edition": "Autumn 2026",
-  "checkpoints": [4, 8],
+  "checkpoints": [3, 6, 9],
   "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
   "verdicts": [
     { "min": 12, "text": "Felix is utterly FLUMMOXED! A perfect game." },
@@ -241,6 +242,7 @@ Each has a default the plan uses if you don't say otherwise.
 | Q6 | List 152 on the index page and quick index? | Yes. |
 | Q7 | Should link previews on Facebook and LinkedIn show the score? | **Agreed 5 Oct: yes**, with score pages and score cards. |
 | Q8 | Which networks? | **Agreed 5 Oct**: Bluesky, X, Threads, Facebook, LinkedIn, WhatsApp and email, plus Copy and the phone's own share sheet. |
+| Q9 | After launch: how do we bring out new sets of questions on a schedule, and how often? Bamboozle! started weekly and went daily. | **Open, to settle once Flummox! is live.** Leading idea: a scheduled GitHub Action that drafts the next edition of `quiz.json` with Claude and opens a PR for Steve to check, so every set is reviewed and the site stays static. Weekly to start. |
 
 ## 12. Sources
 
@@ -257,6 +259,9 @@ These came from search summaries; the sandbox couldn't open the pages themselves
 | FLX-002 | Questions are a JSON content file in the repo, validated at build time. Updating means editing the file and merging. |
 | FLX-003 | Scores and the game in progress stay in the browser only (best score in `localStorage`, current game in `sessionStorage`). |
 | FLX-004 | The fourth answer key is cyan, matching the site's Fastext, with `B` and `C` both accepted. |
-| FLX-005 | Scoring: a point per question right at the first try; a wrong answer sends you back to the last checkpoint (after questions 4 and 8). |
+| FLX-005 | Scoring: a point per question right at the first try; a wrong answer sends you back to the last checkpoint (after questions 3, 6 and 9, as on Bamboozle!; Steve chose this on 7 Oct 2026). |
 | FLX-006 | Sharing uses the native share sheet where there is one, otherwise plain share links to each network and Copy. No third-party scripts. |
 | FLX-007 | Shared links go to a pre-rendered score page (`/152/score/N/`) with its own 1200 × 630 score card, so every network's preview shows the score. Cards are drawn by the Teletext grid, captured by Playwright, committed, and checked for staleness in Vitest. |
+| FLX-008 | 7 Oct: the screens follow the look of Channel 4's 1997 Bamboozle! pages (captures from the Teletext archive): a yellow mosaic logo, Felix on the right with a blue-on-white speech bubble, double-height answers beside colour blocks, "press any colour to continue", and red to start. |
+| FLX-009 | 7 Oct: Felix is drawn the way Bamber was, one face colour carved up by black lines, 8 rows tall, with a raised hand (thumbs-up, or an open hand when flummoxed). Portrait screens show him without the hand so the bubble stays readable. |
+| FLX-010 | 7 Oct: all Flummox! work goes to the long-lived `feature/flummox` branch and reaches main as one release; Vercel previews stand in for the live site until then. |

@@ -45,3 +45,23 @@ describe('GridLine', () => {
     expect(container.querySelectorAll('.tt-link')).toHaveLength(1);
   });
 });
+
+describe('GridLine: Flummox! answers', () => {
+  const answer: GridRow = {
+    segments: [
+      { text: ' ' },
+      { text: '   ', bg: 'green', answer: 1 },
+      { text: ' ITV', color: 'white', answer: 1 },
+    ],
+  };
+
+  it('answers on a click and outlines the answer whose button has focus', () => {
+    const onAnswer = vi.fn();
+    const { container, rerender } = render(<GridLine content={answer} row={2} width={38} onAnswer={onAnswer} />);
+    fireEvent.click(container.querySelectorAll('.tt-link')[1]);
+    expect(onAnswer).toHaveBeenCalledWith(1);
+    expect(container.querySelectorAll('.tt-twin-focus')).toHaveLength(0);
+    rerender(<GridLine content={answer} row={2} width={38} onAnswer={onAnswer} focusAnswer={1} />);
+    expect(container.querySelectorAll('.tt-twin-focus')).toHaveLength(2);
+  });
+});

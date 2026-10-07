@@ -1,0 +1,51 @@
+name: Update share images
+
+# After a change to the Flummox! cards (verdicts, Felix, the card layout): redraws
+# the link-preview pictures in public/share/ in the same image as the screenshots,
+# so the font renders the same, and commits them to the branch. Run it by hand on
+# a branch, or put "[update share images]" in a commit message pushed to one.
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore: ['main']
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[update share images]')
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Draw the share images
+        run: npm run share-images
+
+      - name: Commit share images
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/share
+          if git diff --cached --quiet; then
+            echo 'Share images unchanged'
+          else
+            git commit -m 'chore: update share images'
+            git push
+          fi

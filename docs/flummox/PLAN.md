@@ -4,7 +4,7 @@ How [SPEC.md](./SPEC.md) gets built. Task-by-task steps are in [TASKS.md](./TASK
 
 ## Delivery
 
-One branch and one PR for the build, squash-merged after Steve approves, as with the v1 phases. This docs PR comes first; the build starts once Steve says go. The build PR is reviewed in three checkpoints (below), each with screenshots at the four Playwright sizes plus iPhone Safari's portrait viewport (390 × 664).
+Flummox! is built on a long-lived branch, `feature/flummox`, and released to main in one PR when Steve is happy with it (his call, 7 Oct), so the live site doesn't change piecemeal. Each checkpoint is its own PR into `feature/flummox`; Vercel builds a preview of each. Each checkpoint PR is reviewed in three checkpoints (below), each with screenshots at the four Playwright sizes plus iPhone Safari's portrait viewport (390 × 664).
 
 ## Architecture
 

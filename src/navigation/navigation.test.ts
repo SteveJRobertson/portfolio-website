@@ -20,6 +20,13 @@ describe('paths', () => {
     expect(pageFromPath('/about')).toBe(404);
   });
 
+  it('reads a Flummox! score page as page 152', () => {
+    expect(pageFromPath('/152/score/7/')).toBe(152);
+    expect(pageFromPath('/152/score/12')).toBe(152);
+    expect(pageFromPath('/110/score/7/')).toBe(404);
+    expect(pageFromPath('/152/score/')).toBe(404);
+  });
+
   it('adds and removes the base path the site is served from', () => {
     const base = '/portfolio-website/';
     expect(pageHref(100, base)).toBe('/portfolio-website/');
@@ -53,6 +60,14 @@ describe('useNavigation', () => {
     const length = window.history.length;
     expect(renderHook(() => useNavigation()).result.current.page).toBe(404);
     expect(window.location.pathname).toBe('/404/');
+    expect(window.history.length).toBe(length);
+  });
+
+  it('takes a shared score link on to page 152 without adding a history entry', () => {
+    window.history.replaceState(null, '', '/152/score/9/');
+    const length = window.history.length;
+    expect(renderHook(() => useNavigation()).result.current.page).toBe(152);
+    expect(window.location.pathname).toBe('/152/');
     expect(window.history.length).toBe(length);
   });
 
