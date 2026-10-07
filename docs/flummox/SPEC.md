@@ -1,7 +1,7 @@
 # Specification: Flummox! (page 152)
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Approved by Steve, 5 Oct 2026. The build waits until the pre-launch fixes to the other pages are done.
+**Status**: Approved by Steve, 5 Oct 2026. Build started 7 Oct 2026 on the `feature/flummox` branch (see PLAN.md, Delivery).
 **Builds on**: the v1 spec in [archive/steevefax-v1/SPEC.md](../archive/steevefax-v1/SPEC.md). Section numbers like "v1 §5" point there.
 
 ---
@@ -109,6 +109,7 @@ Steve asked for a way to share your score on social media at the end of a game.
 - **The shared link is a score page**, `/152/score/9/`, so every network's preview shows the score, including Facebook and LinkedIn, which take only a link (Q7, agreed 5 Oct). See "Share images and link previews" below.
 - **Privacy**: plain links only. No share buttons, scripts or tracking pixels from the networks are loaded, and nothing is sent anywhere until the visitor picks a network.
 - **Accessibility**: in the mirror the Share screen is a heading, the message as a paragraph, and a list of real links named "Share on Bluesky (opens in a new tab)"; Copy is a button. The score in the message is the same number the Finished screen shows.
+- **Icons**: each network's line starts with its icon from `src/icons` (`{icon:NAME}`); Threads got its own icon for this (7 Oct, Steve kept Threads in the list).
 - **Save picture**: a last line on the Share screen downloads the score picture (below), for networks with no share link, such as Instagram. On a phone that can share files (`navigator.canShare({ files })`), a "Share picture" line opens the share sheet with the picture attached as well. The Share key itself sends the message and link only, because some apps drop the link when a picture is attached.
 
 ### Share images and link previews
