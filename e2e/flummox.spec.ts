@@ -88,7 +88,7 @@ test.describe('Flummox!', () => {
     for (let q = 0; q < 12; q++) {
       await page.keyboard.press(right(q));
       await page.keyboard.press('r');
-      if (q === 3 || q === 7) await page.keyboard.press('r');
+      if (quiz.checkpoints.includes(q + 1)) await page.keyboard.press('r');
     }
     await expect(heading(page)).toHaveText('You beat Felix!');
     await page.keyboard.press('y');
