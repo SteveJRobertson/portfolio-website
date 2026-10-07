@@ -48,7 +48,7 @@ export interface Flummox {
 }
 
 /** The game on page 152: the rules from `game.ts`, saved as SPEC §6 says. */
-export const useFlummox = (edition: string, rules: GameRules): Flummox => {
+export const useFlummox = (edition: string, rules: GameRules, onChange?: (next: GameState) => void): Flummox => {
   const reduce = useMemo(() => gameReducer(rules), [rules]);
   const count = rules.correct.length;
   const [game, setGame] = useState<GameState>(() => restoreGame(load(session, GAME_KEY, edition), count));
@@ -74,8 +74,9 @@ export const useFlummox = (edition: string, rules: GameRules): Flummox => {
       } else if (!ended(next.screen)) setNewBest(false);
       save(session, GAME_KEY, edition, next);
       setGame(next);
+      onChange?.(next);
     },
-    [reduce, game, best, edition],
+    [reduce, game, best, edition, onChange],
   );
 
   return { game, best, newBest, dispatch };

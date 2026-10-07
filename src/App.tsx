@@ -5,7 +5,7 @@ import { HeaderTicker } from './components/HeaderTicker';
 import { FastTextBar } from './components/FastTextBar';
 import { GridLine } from './components/GridLine';
 import { MobileKeypad } from './components/MobileKeypad';
-import { SemanticPage, type MirrorFocus } from './components/SemanticPage';
+import { SemanticPage, type MirrorAction, type MirrorFocus } from './components/SemanticPage';
 import { SettingsControls } from './components/SettingsControls';
 import { HoldButton } from './components/HoldButton';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage } from './content/registry';
@@ -21,10 +21,11 @@ import { useNavigation } from './navigation/useNavigation';
 import { crtEffectOn, useSettings, type Settings } from './settings/useSettings';
 import { quiz } from './flummox/quizData';
 import { useFlummox } from './flummox/useFlummox';
-import { flummoxView, quizRules, type FlummoxEffects } from './flummox/view';
+import { flummoxView, quizRules, resultAnnouncement, type FlummoxEffects } from './flummox/view';
+import type { GameState } from './flummox/game';
 import { SHARE_NETWORKS, scoreUrl, shareMessage } from './flummox/share';
 import { fillSemanticSlots, fillSlots } from './flummox/slots';
-import type { FastextActions } from './display/fastext';
+import { FASTEXT_ORDER, type FastextActions } from './display/fastext';
 import type { CompiledPage } from './types/teletext';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
@@ -69,8 +70,13 @@ export const App: React.FC = () => {
   const mode = useGridMode();
 
   // On the quiz page the body, mirror and Fastext come from the game's screen.
-  const flummox = useFlummox(quiz.edition, QUIZ_RULES);
   const [announcement, setAnnouncement] = useState('');
+  // Results are announced however the answer was given (SPEC §9).
+  const announceResult = useCallback((next: GameState) => {
+    const said = resultAnnouncement(next, quiz.questions.length);
+    if (said) setAnnouncement(said);
+  }, []);
+  const flummox = useFlummox(quiz.edition, QUIZ_RULES, announceResult);
   const shared = {
     message: shareMessage(quiz.message, flummox.game.score),
     url: scoreUrl(`${window.location.origin}${import.meta.env.BASE_URL}`, flummox.game.score),
@@ -125,6 +131,35 @@ export const App: React.FC = () => {
     : source;
   const heading = page.title;
   const visible = usePageVisible();
+
+  // The game's keys as buttons in the mirror (SPEC §9), so it can be played with a screen reader or in Text mode.
+  // A button press moves focus to the next screen's heading, since the button itself goes.
+  const focusResult = useRef(false);
+  const mirrorActions = view && {
+    label: flummox.game.screen === 'question' ? 'Answers' : 'Game',
+    items: view.fastext.flatMap((slot, i): MirrorAction[] => {
+      if ('page' in slot) return [];
+      const text = slot.name.replace(/^\w+: /, '');
+      return [
+        {
+          name: flummox.game.screen === 'question' ? slot.name : text,
+          text,
+          color: flummox.game.screen === 'question' ? FASTEXT_ORDER[i] : undefined,
+          twin: flummox.game.screen === 'question' ? `answer-${i}` : undefined,
+          onPress: () => {
+            focusResult.current = true;
+            slot.onPress();
+          },
+        },
+      ];
+    }).filter((action, i, all) => all.findIndex((a) => a.text === action.text) === i),
+  };
+  const { screen: gameScreen, question: gameQuestion } = flummox.game;
+  useEffect(() => {
+    if (!focusResult.current) return;
+    focusResult.current = false;
+    document.querySelector<HTMLElement>('#content section h2')?.focus();
+  }, [gameScreen, gameQuestion]);
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
   const moreContrast = useMediaQuery(MORE_CONTRAST);
   const crt = crtEffectOn(settings.crt, reducedMotion || moreContrast);
@@ -199,7 +234,7 @@ export const App: React.FC = () => {
     </div>
   );
 
-  const mirrorProps = { page, heading, headingRef, pages: PAGE_LIST, onNavigate: navigate };
+  const mirrorProps = { page, heading, headingRef, pages: PAGE_LIST, onNavigate: navigate, actions: mirrorActions };
 
   if (settings.textMode) {
     return (
@@ -225,8 +260,14 @@ export const App: React.FC = () => {
   const twin = mirrorFocus?.twin;
   const focusLink = twin?.startsWith('link-') ? Number(twin.slice(5)) : undefined;
   const focusHref = twin?.startsWith('href:') ? twin.slice(5) : undefined;
+  const focusAnswer = twin?.startsWith('answer-') ? Number(twin.slice(7)) : undefined;
   const twinOnScreen = lines.some((l) =>
-    l.content.segments.some((s) => (focusLink !== undefined && s.link === focusLink) || (focusHref !== undefined && s.href === focusHref)),
+    l.content.segments.some(
+      (s) =>
+        (focusLink !== undefined && s.link === focusLink) ||
+        (focusHref !== undefined && s.href === focusHref) ||
+        (focusAnswer !== undefined && s.answer === focusAnswer),
+    ),
   );
 
   return (
@@ -254,6 +295,7 @@ export const App: React.FC = () => {
               onOpen={openAddress}
               focusHref={focusHref}
               focusLink={focusLink}
+              focusAnswer={focusAnswer}
               onAnswer={
                 !view
                   ? undefined

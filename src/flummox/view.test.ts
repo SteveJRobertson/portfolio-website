@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { compileQuizFile } from '../../scripts/lib/pageFiles';
 import { gameReducer, newGame, type GameAction } from './game';
-import { flummoxView, quizRules } from './view';
+import { flummoxView, quizRules, resultAnnouncement } from './view';
 
 const { quiz } = compileQuizFile();
 const reduce = gameReducer(quizRules(quiz!));
@@ -45,5 +45,14 @@ describe('flummoxView', () => {
   it('shows the flummoxed screen for the stage you go back to', () => {
     const wrong: GameAction = { type: 'answer', slot: (quiz!.questions[0].correct + 1) % 4 };
     expect(flummoxView(quiz!, play([{ type: 'play' }, wrong]), undefined, false, vi.fn(), effects).screen).toBe(quiz!.flummoxed[0]);
+  });
+});
+
+describe('resultAnnouncement', () => {
+  it('says the result in words, as the live region reads it', () => {
+    expect(resultAnnouncement(play([{ type: 'play' }, right(0)]), 12)).toBe('Correct! Score 1.');
+    const wrong: GameAction = { type: 'answer', slot: (quiz!.questions[1].correct + 1) % 4 };
+    expect(resultAnnouncement(play([{ type: 'play' }, right(0), { type: 'next' }, wrong]), 12)).toBe('Flummoxed! Back to question 1. Score 1.');
+    expect(resultAnnouncement(play([{ type: 'play' }]), 12)).toBeUndefined();
   });
 });

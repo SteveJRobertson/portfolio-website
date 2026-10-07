@@ -30,9 +30,9 @@ Ordered build tasks for [PLAN.md](./PLAN.md). Each lists what's done when it's d
 
 ## Checkpoint 3: accessible and shipped
 
-- [ ] **T15. Mirror.** The `answers` block of four buttons, Felix's alt text, result headings, and the `answer-N` focus twin (SPEC §9). *Done when* axe passes on a question and a result screen.
-- [ ] **T16. Focus and announcements.** Focus to the result heading after an answer and to the next question's heading after Next or Try again; live-region messages. *Done when* tested in Vitest.
-- [ ] **T17. Text mode and shortcuts off.** *Done when* a game can be played in Text mode and with shortcuts off, using Tab and Enter.
-- [ ] **T18. No-JavaScript fallback.** The pre-rendered /152/ says the quiz needs JavaScript. *Done when* checked in the built HTML.
+- [x] **T15. Mirror.** The `answers` block of four buttons, Felix's alt text, result headings, and the `answer-N` focus twin (SPEC §9). *Done when* axe passes on a question and a result screen.
+- [x] **T16. Focus and announcements.** Focus to the result heading after an answer and to the next question's heading after Next or Try again; live-region messages. *Done when* tested in Vitest.
+- [x] **T17. Text mode and shortcuts off.** *Done when* a game can be played in Text mode and with shortcuts off, using Tab and Enter.
+- [x] **T18. No-JavaScript fallback.** The pre-rendered /152/ says the quiz needs JavaScript. *Done when* checked in the built HTML.
 - [ ] **T19. Playwright.** The journeys in PLAN §7, plus screenshots of the intro, a question and the Flummoxed screen at four sizes; baselines from the workflow. *Done when* CI is green.
 - [ ] **T20. Docs.** README section "Updating the Flummox! questions"; mark the spec as built and record any decisions taken during the build in its log. *Done when* merged with the build PR.

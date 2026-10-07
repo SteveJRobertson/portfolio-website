@@ -68,6 +68,11 @@ const scorePages = (all: PrerenderedPage[]): PrerenderedPage[] => {
     description: `${quiz.finished.find((f) => score >= f.min)!.text} Can you flummox Felix?`,
     canonical: quizPage.href,
     noindex: true,
+    // Without JavaScript the app can't send the visitor on, so the page says the score and links to the quiz
+    body: quizPage.body.replace(
+      '</h1>',
+      () => `</h1><p>Someone scored ${score} out of ${total} on Flummox! <a href="${pageHref(QUIZ_PAGE)}">Play Flummox! on page 152</a>.</p>`,
+    ),
     image: {
       path: `share/flummox-${score}.png`,
       alt: `A Teletext screen: Flummox! score ${score} out of ${total}, with Felix Flummox ${score >= 9 ? 'looking flummoxed' : 'giving a thumbs-up'}.`,

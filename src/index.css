@@ -636,6 +636,28 @@ html, body {
   flex: none;
 }
 
+/* Flummox!'s answers and game keys, as buttons in Text mode */
+.mirror__actions {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.text-mode .mirror__actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--text-bg);
+  color: var(--text-fg);
+  border: 2px solid var(--text-fg);
+  border-radius: 4px;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
 .mirror__pages ul {
   padding-left: 1.25rem;
 }

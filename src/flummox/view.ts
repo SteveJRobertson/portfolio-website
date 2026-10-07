@@ -111,3 +111,19 @@ export const flummoxView = (
     fastext,
   };
 };
+
+/** What the live region says when a game moves on to a result (SPEC §9), or nothing. */
+export const resultAnnouncement = (game: GameState, total: number): string | undefined => {
+  switch (game.screen) {
+    case 'correct':
+      return `Correct! Score ${game.score}.`;
+    case 'flummoxed':
+      return `Flummoxed! Back to question ${game.question + 1}. Score ${game.score}.`;
+    case 'checkpoint':
+      return `Checkpoint! Score ${game.score}.`;
+    case 'finished':
+      return `Finished! You scored ${game.score} of ${total}.`;
+    default:
+      return undefined;
+  }
+};

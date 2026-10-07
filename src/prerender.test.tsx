@@ -5,6 +5,10 @@ describe('prerender: Flummox! link previews (SPEC §6)', () => {
   const pages = prerender();
   const byFile = (file: string) => pages.find((p) => p.file === file)!;
 
+  it('says on page 152 that the quiz needs JavaScript', () => {
+    expect(byFile('152/index.html').body).toContain('Flummox! needs JavaScript to play.');
+  });
+
   it('gives page 152 its own picture, and every other page the site picture', () => {
     expect(byFile('152/index.html').image?.path).toBe('share/flummox.png');
     expect(byFile('101/index.html').image).toBeUndefined();
@@ -18,6 +22,7 @@ describe('prerender: Flummox! link previews (SPEC §6)', () => {
       description: 'Felix is impressed. Nearly perfect. Can you flummox Felix?',
       canonical: '/152/',
       noindex: true,
+      body: expect.stringContaining('<p>Someone scored 9 out of 12 on Flummox! <a href="/152/">Play Flummox! on page 152</a>.</p>'),
       image: { path: 'share/flummox-9.png', alt: 'A Teletext screen: Flummox! score 9 out of 12, with Felix Flummox looking flummoxed.' },
     });
   });
