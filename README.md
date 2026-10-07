@@ -38,7 +38,7 @@ Flummox!, the quiz on page 152, reads its questions from `src/content/flummox/qu
 4. If you changed a verdict, the link-preview pictures in `public/share/` are out of date and a test says so: run the **Update share images** workflow on your branch, or put `[update share images]` in a commit message. Locally, `npm run build-storybook && npm run share-images` redraws them.
 5. Screenshots of page 152 change too: run **Update visual baselines** as above.
 
-Felix's pictures are drawn by `/mnt/project-files/flummox/felix-art.mjs` outside the repo; the PNGs in `src/content/images/` are what the build uses.
+Felix and the Flummox! logo are pixel art drawn in code: `node scripts/art/felix.mjs src/content/images` and `node scripts/art/logo.mjs src/content/images` redraw the PNGs, and check every cell keeps to two colours.
 
 ## Deployment
 
