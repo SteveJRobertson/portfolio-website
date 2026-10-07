@@ -242,6 +242,7 @@ Each has a default the plan uses if you don't say otherwise.
 | Q6 | List 152 on the index page and quick index? | Yes. |
 | Q7 | Should link previews on Facebook and LinkedIn show the score? | **Agreed 5 Oct: yes**, with score pages and score cards. |
 | Q8 | Which networks? | **Agreed 5 Oct**: Bluesky, X, Threads, Facebook, LinkedIn, WhatsApp and email, plus Copy and the phone's own share sheet. |
+| Q9 | After launch: how do we bring out new sets of questions on a schedule, and how often? Bamboozle! started weekly and went daily. | **Open, to settle once Flummox! is live.** Leading idea: a scheduled GitHub Action that drafts the next edition of `quiz.json` with Claude and opens a PR for Steve to check, so every set is reviewed and the site stays static. Weekly to start. |
 
 ## 12. Sources
 
