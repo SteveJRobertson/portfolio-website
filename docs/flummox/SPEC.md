@@ -1,7 +1,7 @@
 # Specification: Flummox! (page 152)
 
 **Owner**: Steve Robertson (Product Owner)
-**Status**: Approved by Steve, 5 Oct 2026. Build started 7 Oct 2026 on the `feature/flummox` branch (see PLAN.md, Delivery).
+**Status**: Approved by Steve, 5 Oct 2026. Built 7 Oct 2026 on the `feature/flummox` branch (see PLAN.md, Delivery), to be released to main in one go when Steve is happy.
 **Builds on**: the v1 spec in [archive/steevefax-v1/SPEC.md](../archive/steevefax-v1/SPEC.md). Section numbers like "v1 §5" point there.
 
 ---
@@ -261,3 +261,6 @@ These came from search summaries; the sandbox couldn't open the pages themselves
 | FLX-005 | Scoring: a point per question right at the first try; a wrong answer sends you back to the last checkpoint (after questions 4 and 8). |
 | FLX-006 | Sharing uses the native share sheet where there is one, otherwise plain share links to each network and Copy. No third-party scripts. |
 | FLX-007 | Shared links go to a pre-rendered score page (`/152/score/N/`) with its own 1200 × 630 score card, so every network's preview shows the score. Cards are drawn by the Teletext grid, captured by Playwright, committed, and checked for staleness in Vitest. |
+| FLX-008 | 7 Oct: the screens follow the look of Channel 4's 1997 Bamboozle! pages (captures from the Teletext archive): a yellow mosaic logo, Felix on the right with a blue-on-white speech bubble, double-height answers beside colour blocks, "press any colour to continue", and red to start. |
+| FLX-009 | 7 Oct: Felix is drawn the way Bamber was, one face colour carved up by black lines, 8 rows tall, with a raised hand (thumbs-up, or an open hand when flummoxed). Portrait screens show him without the hand so the bubble stays readable. |
+| FLX-010 | 7 Oct: all Flummox! work goes to the long-lived `feature/flummox` branch and reaches main as one release; Vercel previews stand in for the live site until then. |

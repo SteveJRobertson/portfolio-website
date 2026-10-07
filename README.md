@@ -28,6 +28,18 @@ npm run test:e2e   # Playwright against the production build (see below)
 
 `npm run test:e2e` builds the site with the GitHub Pages base, serves it with `vite preview` and runs the tests in `e2e/` at four screen sizes: navigation, axe (with colour contrast) and screenshots. Screenshot baselines come from CI's Linux image, so they won't match a local machine; after an intended visual change, run the **Update visual baselines** workflow on your branch (or push a commit whose message contains `[update baselines]`) and it commits new ones. To use an installed Chromium locally, set `PLAYWRIGHT_CHROMIUM` to its path.
 
+## Updating the Flummox! questions
+
+Flummox!, the quiz on page 152, reads its questions from `src/content/flummox/quiz.json` (format in [docs/flummox/SPEC.md](docs/flummox/SPEC.md) §7):
+
+1. Edit the questions, answers, `correct` (0 red, 1 green, 2 yellow, 3 cyan), quips or verdicts.
+2. For a new set of questions, change `edition`: everyone's best score starts again.
+3. Run `npm run validate`. It checks the file and that every screen fits at every screen size, and names the question that doesn't.
+4. If you changed a verdict, the link-preview pictures in `public/share/` are out of date and a test says so: run the **Update share images** workflow on your branch, or put `[update share images]` in a commit message. Locally, `npm run build-storybook && npm run share-images` redraws them.
+5. Screenshots of page 152 change too: run **Update visual baselines** as above.
+
+Felix's pictures are drawn by `/mnt/project-files/flummox/felix-art.mjs` outside the repo; the PNGs in `src/content/images/` are what the build uses.
+
 ## Deployment
 
 Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with `GITHUB_PAGES=true` (base `/portfolio-website/`), pre-renders every page, builds Storybook into `/storybook/` and publishes to GitHub Pages. To serve it from a custom domain, set the repository variable `CUSTOM_DOMAIN` (e.g. `steverobertson.dev`) and add the same domain under Settings → Pages; the deploy then builds with `BASE_PATH=/` and `SITE_URL=https://<domain>`. With the variable unset it stays on `/portfolio-website/`. GitHub ignores a `CNAME` file when deploying from Actions, so there isn't one.
@@ -43,6 +55,9 @@ Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with
 | `src/components/` | Teletext UI components |
 | `src/navigation/` | Routing, the shared 3-digit buffer and hotkeys |
 | `src/settings/` | Saved Text mode, shortcut and CRT effect settings (page 888) |
+| `src/content/flummox/` | Flummox! questions (`quiz.json`) and the screens laid out from them at build time |
+| `src/flummox/` | The Flummox! game: rules, saved scores, Fastext and mirror, sharing, link-preview cards |
+| `public/share/` | Flummox! link-preview pictures, made by `npm run share-images` |
 | `scripts/` | `validatePages.ts`, the Vite plugin that compiles the pages, and `prerender.ts` (per-page HTML) |
 | `e2e/` | Playwright tests, screenshot baselines and `shareImage.ts` (retakes `public/share.png`) |
 | `src/design-system/` | Token stories and helpers |
