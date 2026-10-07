@@ -8,7 +8,10 @@ import { autolink } from './semantic.ts';
 export const MARGIN = 1;
 
 /** Lines starting like this indent their continuation lines to line up after the marker. */
-const HANGING_MARKERS = /^(\* |- |\d{3} +)/;
+const HANGING_MARKERS = /^([*■] |- |\d{3} +)/;
+
+/** What a "* " list marker becomes on screen. */
+export const BULLET = '■';
 
 interface StyledChar {
   ch: string;
@@ -228,6 +231,8 @@ export const layoutRows = (
       return;
     }
 
+    // A "* " list marker is drawn as a solid yellow square, as Teletext's bullets were
+    if (body[0].ch === '*' && body[1]?.ch === ' ') body[0] = { ...body[0], ch: BULLET, color: 'yellow' };
     const plain = body.map((c) => c.ch).join('');
     const hang = wrap ? (plain.match(HANGING_MARKERS)?.[0].length ?? 0) : 0;
     const indent = MARGIN + lead;

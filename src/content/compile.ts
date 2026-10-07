@@ -58,6 +58,7 @@ const isRow = (row: unknown): row is RowSource => {
     return (
       typeof fields.banner === 'string' &&
       TELETEXT_COLORS.includes(fields.bg as TeletextColor) &&
+      (fields.rule === undefined || TELETEXT_COLORS.includes(fields.rule as TeletextColor)) &&
       Object.keys(fields).every((k) => (BANNER_KEYS as readonly string[]).includes(k))
     );
   }
@@ -98,7 +99,7 @@ const shapeErrors = (data: unknown): string[] => {
   if ((page.rows === undefined) === (page.subpages === undefined)) {
     errors.push('needs exactly one of "rows" or "subpages"');
   }
-  const lineHelp = `a line object may only have ${ROW_KEYS.join(', ')}; an image needs image, alt and rows, and may have ${IMAGE_KEYS.slice(3).join(', ')}; a banner needs banner and bg`;
+  const lineHelp = `a line object may only have ${ROW_KEYS.join(', ')}; an image needs image, alt and rows, and may have ${IMAGE_KEYS.slice(3).join(', ')}; a banner needs banner and bg, and may have rule`;
   if (page.rows !== undefined && !isRowList(page.rows)) errors.push(`"rows" must be a list of lines (${lineHelp})`);
   if (page.subpages !== undefined && !isSubpageList(page.subpages)) errors.push(`"subpages" must be a list of line lists (${lineHelp})`);
   if (page.mobileRows !== undefined && !isRowList(page.mobileRows)) errors.push('"mobileRows" must be a list of lines');

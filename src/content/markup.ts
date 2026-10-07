@@ -1,4 +1,4 @@
-import { TELETEXT_COLORS, type GridSegment, type TeletextColor } from '../types/teletext.ts';
+import { TELETEXT_COLORS, THIN_LINE, type GridSegment, type TeletextColor } from '../types/teletext.ts';
 import { sextant } from './mosaic.ts';
 import { ICONS, type IconName } from '../icons/icons.ts';
 
@@ -9,6 +9,7 @@ import { ICONS, type IconName } from '../icons/icons.ts';
  *   {bg:blue}TEXT{/}     background colour
  *   {link:201}TEXT{/}    inline page link (cyan unless a colour is set inside it)
  *   {rule} / {rule:-}    a full-width rule; the only thing on its row, colour from the enclosing tag.
+ *   {line}               the same, as a thin solid line (under a masthead, or a quick index rule)
  *                        {rule} is a solid mosaic bar; {rule:X} repeats X
  *   {dots}               a leader: dots that push the rest of the line to the right edge
  *   {icon:linkedin}      an icon (src/icons), two cells wide and one line tall
@@ -108,8 +109,8 @@ export const parseMarkup = (source: string): ParsedLine => {
       const name = tag.slice(5);
       if (name in ICONS) segments.push({ text: ICON_CELLS, icon: name as IconName });
       else errors.push(`unknown icon "${name}"; the icons are ${Object.keys(ICONS).join(', ')}`);
-    } else if (tag === 'rule' || /^rule:.$/u.test(tag)) {
-      fill = tag === 'rule' ? RULE : tag.slice(5);
+    } else if (tag === 'rule' || tag === 'line' || /^rule:.$/u.test(tag)) {
+      fill = tag === 'rule' ? RULE : tag === 'line' ? THIN_LINE : tag.slice(5);
       fillColor = current().color ?? 'white';
     } else {
       errors.push(`unknown tag "{${tag}}"`);
@@ -120,7 +121,7 @@ export const parseMarkup = (source: string): ParsedLine => {
   if (leaders > 1) errors.push('only one "{dots}" fits on a line');
   if (stack.length > 0) errors.push(`${stack.length} tag(s) not closed with "{/}"`);
   if (fill !== undefined && segments.some((s) => s.text.trim() !== '')) {
-    errors.push('"{rule}" must be the only thing on its line');
+    errors.push('"{rule}" or "{line}" must be the only thing on its line');
   }
 
   return fill === undefined ? { segments, links, errors } : { segments: [], fill, fillColor, links, errors };

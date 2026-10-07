@@ -7,8 +7,8 @@
   "fastext": [{ "page": 101 }, { "page": 110, "label": "CAREER" }, { "page": 200 }, { "page": 400 }],
   "rows": [
     { "banner": "{white}STEVE{/} {yellow}ROBERTSON{/}", "bg": "blue" },
-    "{cyan}Frontend Software Engineer{/}",
-    "Edinburgh, Scotland",
+    "{yellow}Edinburgh, Scotland{/}",
+    { "text": "FRONTEND SOFTWARE ENGINEER", "doubleHeight": true },
     "",
     "{link:101}{white}About me{dots}{/}101{/}",
     "{link:110}{white}Experience{dots}{/}110{/}",
