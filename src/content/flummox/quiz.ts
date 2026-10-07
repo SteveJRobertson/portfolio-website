@@ -3,6 +3,9 @@ import { compileScreen, imageRenderer, type CompiledScreen, type ScreenHint } fr
 import { SLOT_WIDTHS, parseMarkup } from '../markup.ts';
 import { sextant, type RgbaImage } from '../mosaic.ts';
 import type { RowSource, TextRowSource } from '../schema.ts';
+import { blockBitmap } from '../blockFont.ts';
+import { layoutRows, slotsUsed } from '../wrap.ts';
+import type { GridRow } from '../../types/teletext.ts';
 import type { CompiledQuiz, QuizQuestionSource, QuizSource } from './types.ts';
 import { SHARE_NETWORKS, shareMessage } from '../../flummox/share.ts';
 
@@ -338,6 +341,72 @@ const screens = (quiz: QuizSource) => {
   };
 };
 
+/** A link-preview card is a widescreen Teletext screen: 56 columns, a header, then 23 rows. */
+export const CARD_COLS = 56;
+export const CARD_ROWS = 23;
+
+/** The card's content is laid out this wide and centred, so it survives a square crop (WhatsApp). */
+const CARD_INNER: Width = { cols: 44, felix: 'felix', bubble: 44 - 16 - 2 };
+const CARD_SHIFT = (CARD_COLS - CARD_INNER.cols) / 2;
+
+/** Text in the bold block font at twice its size: four rows of mosaic, centred across the card. */
+const bigText = (text: string, color: TeletextColor): GridRow[] => {
+  const bitmap = blockBitmap(text, 'bold').map((row) => Array.from(row, (ch) => ch + ch).join(''));
+  const tall = bitmap.flatMap((row) => [row, row]);
+  const cells = Math.ceil(tall[0].length / 2);
+  const before = Math.floor((CARD_COLS - cells) / 2);
+  return Array.from({ length: tall.length / 3 }, (_, r) => {
+    let line = '';
+    for (let c = 0; c < cells; c++) {
+      let bits = 0;
+      for (let p = 0; p < 6; p++) if (tall[3 * r + Math.floor(p / 2)][2 * c + (p % 2)] === '#') bits |= 1 << p;
+      line += sextant(bits);
+    }
+    return { segments: [{ text: ' '.repeat(before) }, { text: line, color, mosaic: true }] };
+  });
+};
+
+/** Moves laid-out rows to the middle of the card; a rule still runs edge to edge. */
+const centreRows = (rows: GridRow[]): GridRow[] =>
+  rows.map((row) => (row.fill !== undefined ? row : { ...row, segments: [{ text: ' '.repeat(CARD_SHIFT) }, ...row.segments] }));
+
+/**
+ * The link-preview cards (SPEC §6, Share images): page 152's own, and one per
+ * score with Felix saying the verdict, flummoxed himself for 9 and over.
+ */
+const cards = (quiz: QuizSource, renderImage: ReturnType<typeof imageRenderer>, errors: string[]): CompiledQuiz['cards'] => {
+  const total = quiz.questions.length;
+  const card = (where: string, top: RowSource[], score: GridRow[], bottom: RowSource[]): GridRow[] => {
+    const lay = (sources: RowSource[]) => {
+      const laid = layoutRows(sources, CARD_INNER.cols, true, renderImage);
+      errors.push(...laid.errors.map((e) => `quiz.json card ${where}: ${e}`));
+      return centreRows(laid.rows);
+    };
+    const rows = [...lay(top), ...score, ...lay(bottom)];
+    if (slotsUsed(rows) > CARD_ROWS) errors.push(`quiz.json card ${where}: needs ${slotsUsed(rows)} rows; a card has ${CARD_ROWS}`);
+    return rows;
+  };
+  const footer = [RULE, centred('{cyan}Can you flummox Felix?{/} {white}Key{/} {yellow}152{/} {white}on STEEVEFAX{/}', CARD_INNER)];
+  const verdicts = [...quiz.verdicts].sort((a, b) => b.min - a.min);
+  return {
+    intro: card(
+      'intro',
+      [LOGO, RULE, '', '', felix(`Hello! I'm Felix Flummox, and I have ${total} questions for you on page 152. Get one wrong and you're FLUMMOXED!`, CARD_INNER), ''],
+      [],
+      [centred('{yellow}CAN YOU FLUMMOX FELIX?{/}', CARD_INNER, true), '', RULE, centred('{white}Key{/} {yellow}152{/} {white}on STEEVEFAX{/}', CARD_INNER)],
+    ),
+    scores: Array.from({ length: total + 1 }, (_, score) => {
+      const verdict = plain(verdicts.find((v) => score >= v.min)!.text);
+      return card(
+        `score ${score}`,
+        [LOGO, RULE, centred('{white}I SCORED{/}', CARD_INNER, true)],
+        [...bigText(`${score}/${total}`, 'yellow'), { segments: [] }],
+        [felix(verdict, CARD_INNER, score >= 9), ...footer],
+      );
+    }),
+  };
+};
+
 /**
  * Checks `quiz.json` and lays out every screen of the game for both widths
  * (SPEC §7). Any screen that doesn't fit the grid is an error naming it.
@@ -375,6 +444,7 @@ export const compileQuiz = (data: unknown, images: Readonly<Record<string, RgbaI
       .sort((a, b) => b.min - a.min)
       .map((v) => ({ min: v.min, text: v.text, screen: build(`finished (${v.min}+)`, s.finished(v.text, v.min)) })),
     share: Array.from({ length: source.questions.length + 1 }, (_, score) => build(`share (${score})`, s.share(score))),
+    cards: cards(source, renderImage, errors),
   };
   return errors.length ? { errors } : { quiz, errors };
 };

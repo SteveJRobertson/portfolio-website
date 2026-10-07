@@ -13,6 +13,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "favicon": "tsx scripts/favicon.ts",
+    "share-images": "tsx scripts/shareImages.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prerender": "vite build --ssr src/prerender.tsx --outDir dist-ssr && tsx scripts/prerender.ts",

@@ -4,7 +4,7 @@ import { documentTitle, pageDescription } from './content/meta';
 import { NAVIGABLE_PAGES, NOT_FOUND_PAGE, PAGES } from './content/registry';
 import { pageHref } from './navigation/paths';
 import { quiz } from './flummox/quizData';
-import { scorePath, shareMessage } from './flummox/share';
+import { scorePath } from './flummox/share';
 
 /**
  * Server entry for `scripts/prerender.ts` (SPEC §5): for each page, its head
@@ -25,6 +25,8 @@ export interface PrerenderedPage {
   canonical?: string;
   /** Kept out of search results and the sitemap. */
   noindex?: boolean;
+  /** The link-preview picture under the site's base, and its alt text, when it isn't the site's own. */
+  image?: { path: string; alt: string };
 }
 
 const noop = () => {};
@@ -62,14 +64,24 @@ const scorePages = (all: PrerenderedPage[]): PrerenderedPage[] => {
     ...quizPage,
     file: `${QUIZ_PAGE}/${scorePath(score)}index.html`,
     href: `${pageHref(QUIZ_PAGE)}${scorePath(score)}`,
-    title: `Flummox! score: ${score} out of ${total} (P${QUIZ_PAGE}) | Steve Robertson`,
-    description: shareMessage(quiz.message, score),
+    title: `I scored ${score}/${total} on Flummox! | Steve Robertson`,
+    description: `${quiz.finished.find((f) => score >= f.min)!.text} Can you flummox Felix?`,
     canonical: quizPage.href,
     noindex: true,
+    image: {
+      path: `share/flummox-${score}.png`,
+      alt: `A Teletext screen: Flummox! score ${score} out of ${total}, with Felix Flummox ${score >= 9 ? 'looking flummoxed' : 'giving a thumbs-up'}.`,
+    },
   }));
 };
 
+/** Page 152's own link preview: the Flummox! card. */
+const QUIZ_IMAGE = {
+  path: 'share/flummox.png',
+  alt: 'A Teletext screen: Flummox!, with Felix Flummox giving a thumbs-up and asking "Can you flummox Felix?"',
+};
+
 export const prerender = (): PrerenderedPage[] => {
-  const all = pages();
+  const all = pages().map((p) => (p.page === QUIZ_PAGE && p.file !== '404.html' ? { ...p, image: QUIZ_IMAGE } : p));
   return [...all, ...scorePages(all)];
 };

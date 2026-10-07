@@ -1,4 +1,5 @@
 import type { CompiledScreen } from '../compile.ts';
+import type { GridRow } from '../../types/teletext.ts';
 
 /**
  * Flummox!, the quiz on page 152 (docs/flummox/SPEC.md). `quiz.json` is
@@ -62,4 +63,6 @@ export interface CompiledQuiz {
   finished: { min: number; text: string; screen: CompiledScreen }[];
   /** Where to share the score, one per score from 0 to 12, with the message in it. Its lines are answers 0 to 6, one per network. */
   share: CompiledScreen[];
+  /** Link-preview pictures (SPEC §6), 56 × 23 rows under a header: page 152's own, and one per score from 0 to 12. */
+  cards: { intro: GridRow[]; scores: GridRow[][] };
 }

@@ -26,6 +26,7 @@ interface PrerenderedPage {
   body: string;
   canonical?: string;
   noindex?: boolean;
+  image?: { path: string; alt: string };
 }
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -35,6 +36,7 @@ const ssr = path.join(root, 'dist-ssr');
 const SITE_URL = (process.env.SITE_URL ?? 'https://steverobertson.dev').replace(/\/+$/, '');
 const SITE_NAME = 'STEEVEFAX';
 const SHARE_IMAGE = 'share.png';
+const SHARE_IMAGE_ALT = "The STEEVEFAX index page: Steve Robertson's name in Teletext block letters.";
 
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -110,7 +112,8 @@ const ROOT = '<div id="root"></div>';
 
 const head = (page: PrerenderedPage, base: string) => {
   const url = `${SITE_URL}${page.href}`;
-  const image = `${SITE_URL}${base}${SHARE_IMAGE}`;
+  const image = `${SITE_URL}${base}${page.image?.path ?? SHARE_IMAGE}`;
+  const imageAlt = page.image?.alt ?? SHARE_IMAGE_ALT;
   const tags = [
     `<title>${escape(page.title)}</title>`,
     `<meta name="description" content="${escape(page.description)}" />`,
@@ -125,7 +128,7 @@ const head = (page: PrerenderedPage, base: string) => {
     `<meta property="og:image" content="${image}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
-    `<meta property="og:image:alt" content="The STEEVEFAX index page: Steve Robertson's name in Teletext block letters." />`,
+    `<meta property="og:image:alt" content="${escape(imageAlt)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     ...(page.file === 'index.html' ? [`<script type="application/ld+json">${scriptJson(structuredData(url))}</script>`] : []),
   ];
