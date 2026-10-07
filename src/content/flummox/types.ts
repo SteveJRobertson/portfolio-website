@@ -51,8 +51,10 @@ export interface CompiledQuiz {
   /** The shared message, with `{score}` where the score goes. */
   message: string;
   questions: CompiledQuestion[];
-  /** Before a game. Slots: best. */
+  /** Before a first game, with no best score yet. */
   intro: CompiledScreen;
+  /** Before a game, once there is a best score. Slots: best. */
+  introBest: CompiledScreen;
   /** A game under way. Slots: best, resume. */
   introResume: CompiledScreen;
   /** After a wrong answer, one per stage (back to that stage's first question). Slots: score. */

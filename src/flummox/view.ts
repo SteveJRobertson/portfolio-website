@@ -31,11 +31,12 @@ const CONTACT: FastextLink = { page: 400, label: 'Contact' };
 export const quizRules = (quiz: CompiledQuiz) => ({ correct: quiz.questions.map((q) => q.correct), stages: quiz.stages });
 
 /** The compiled screen for a state of the game. */
-export const screenFor = (quiz: CompiledQuiz, game: GameState): CompiledScreen => {
+export const screenFor = (quiz: CompiledQuiz, game: GameState, best?: number): CompiledScreen => {
   const stage = stageOf(quiz.stages, game.question);
   switch (game.screen) {
     case 'intro':
-      return game.underWay ? quiz.introResume : quiz.intro;
+      if (game.underWay) return quiz.introResume;
+      return best === undefined ? quiz.intro : quiz.introBest;
     case 'question':
       return quiz.questions[game.question].screen;
     case 'correct':
@@ -100,7 +101,7 @@ export const flummoxView = (
   }
 
   return {
-    screen: screenFor(quiz, game),
+    screen: screenFor(quiz, game, best),
     slots: {
       score: twoDigits(game.score),
       best: best === undefined ? '--' : twoDigits(best),
