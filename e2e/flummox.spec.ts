@@ -41,6 +41,14 @@ test.describe('Flummox!', () => {
     await expect(mirror(page)).toContainText('You got 11 of 12 right first time.');
   });
 
+  test('says hello on a first visit, and quotes your best score after that', async ({ page }) => {
+    await open(page, '152/');
+    await expect(mirror(page)).toContainText("Hello! I'm Felix. Think you can flummox me?");
+    await page.evaluate(() => localStorage.setItem('steevefax:flummox', JSON.stringify({ edition: 'Autumn 2026', value: 9 })));
+    await page.reload();
+    await expect(mirror(page)).toContainText('Welcome back! Your best so far is 09 out of 12.');
+  });
+
   test('plays by clicking the answers on screen', async ({ page }) => {
     await open(page, '152/');
     await page.locator('.fasttext-bar').getByRole('button').first().click();
