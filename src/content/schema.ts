@@ -86,6 +86,11 @@ export interface PageSource {
    * of every sub-page (on screen only), so it never moves.
    */
   hint?: string;
+  /**
+   * A double-height red promo bar above Fastext, linking to `page`, as Teletext
+   * advertised its other pages ("PLAY FLUMMOX! THE QUIZ p152"). Pages without sub-pages only.
+   */
+  promo?: { text: string; page: number };
   /** Portrait override, used line for line instead of the automatic wrap. */
   mobileRows?: RowSource[];
   mobileSubpages?: RowSource[][];

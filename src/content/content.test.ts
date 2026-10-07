@@ -240,6 +240,33 @@ describe('compilePages', () => {
     );
   });
 
+  it('puts a double-height red promo bar above Fastext, linked and in the mirror', () => {
+    const { pages, errors } = compilePages([file(source({ promo: { text: '{white}PLAY THE QUIZ p100{/}', page: 100 } }))]);
+    expect(errors).toEqual([]);
+    for (const [rows, limit, width] of [[pages[0].wide[0], WIDE_BODY_ROWS, 38], [pages[0].narrow[0], NARROW_BODY_ROWS, NARROW_COLS]] as const) {
+      expect(slotsUsed(rows)).toBe(limit);
+      const bar = rows.at(-1)!;
+      expect(bar.doubleHeight).toBe(true);
+      expect(rowLength(bar)).toBe(width);
+      expect(bar.segments.slice(1).every((s) => s.bg === 'red' && s.link === 100)).toBe(true);
+      expect(rowText(bar).trim()).toBe('PLAY THE QUIZ p100');
+    }
+    expect(pages[0].semantic[0].at(-1)).toEqual({ kind: 'paragraph', content: [{ text: 'PLAY THE QUIZ p100', page: 100 }] });
+  });
+
+  it('keeps the promo clear of the page and off pages with sub-pages', () => {
+    const full = Array.from({ length: WIDE_BODY_ROWS - 2 }, (_, i) => `Line ${i}`);
+    expect(errorsFor(file(source({ rows: full, promo: { text: 'X', page: 100 } })))).toContain(
+      `page100.json (38 columns): needs ${WIDE_BODY_ROWS - 2} rows; the limit is ${WIDE_BODY_ROWS - 3} with the promo`,
+    );
+    expect(errorsFor(file(source({ rows: undefined, subpages: [['A'], ['B']], promo: { text: 'X', page: 100 } })))).toContain(
+      'page100.json: "promo" is only for pages without "subpages"',
+    );
+    expect(errorsFor(file(source({ promo: { text: 'X', page: 999 } })))).toContain(
+      "page100.json (38 columns): the promo links to page 999, which doesn't exist",
+    );
+  });
+
   it('keeps a blank row and the hint clear of sub-page content', () => {
     const full = Array.from({ length: WIDE_BODY_ROWS - 1 }, (_, i) => `Line ${i}`);
     expect(errorsFor(file(source({ rows: undefined, subpages: [full, ['Two']] })))).toContain(
