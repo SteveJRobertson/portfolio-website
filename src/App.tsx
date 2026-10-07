@@ -21,7 +21,8 @@ import { useNavigation } from './navigation/useNavigation';
 import { crtEffectOn, useSettings, type Settings } from './settings/useSettings';
 import { quiz } from './flummox/quizData';
 import { useFlummox } from './flummox/useFlummox';
-import { flummoxView, quizRules } from './flummox/view';
+import { flummoxView, quizRules, type FlummoxEffects } from './flummox/view';
+import { SHARE_NETWORKS, scoreUrl, shareMessage } from './flummox/share';
 import { fillSemanticSlots, fillSlots } from './flummox/slots';
 import type { FastextActions } from './display/fastext';
 import type { CompiledPage } from './types/teletext';
@@ -69,7 +70,30 @@ export const App: React.FC = () => {
 
   // On the quiz page the body, mirror and Fastext come from the game's screen.
   const flummox = useFlummox(quiz.edition, QUIZ_RULES);
-  const view = requested === QUIZ_PAGE ? flummoxView(quiz, flummox.game, flummox.best, flummox.newBest, flummox.dispatch) : undefined;
+  const [announcement, setAnnouncement] = useState('');
+  const shared = {
+    message: shareMessage(quiz.message, flummox.game.score),
+    url: scoreUrl(`${window.location.origin}${import.meta.env.BASE_URL}`, flummox.game.score),
+  };
+  const effects: FlummoxEffects = {
+    // The phone's own share sheet where there is one; otherwise, or if it fails, the list of networks.
+    share: () => {
+      if (!navigator.share) return flummox.dispatch({ type: 'share' });
+      navigator.share({ text: shared.message, url: shared.url }).catch((e: unknown) => {
+        if (!(e instanceof DOMException && e.name === 'AbortError')) flummox.dispatch({ type: 'share' });
+      });
+    },
+    copy: () => {
+      const text = `${shared.message} ${shared.url}`;
+      if (!navigator.clipboard) return setAnnouncement("Copying isn't available here: select the message on screen.");
+      navigator.clipboard.writeText(text).then(
+        () => setAnnouncement('Copied the message and link.'),
+        () => setAnnouncement("Couldn't copy: select the message on screen."),
+      );
+    },
+  };
+  const view = requested === QUIZ_PAGE ? flummoxView(quiz, flummox.game, flummox.best, flummox.newBest, flummox.dispatch, effects) : undefined;
+  const shareLinks = SHARE_NETWORKS.map((n) => ({ name: n.name, href: n.href(shared.message, shared.url) }));
   const lastPage = useRef(requested);
   const { dispatch: dispatchGame } = flummox;
   useEffect(() => {
@@ -86,7 +110,14 @@ export const App: React.FC = () => {
         fastext: view.fastext.map((slot, i) => ('page' in slot ? slot : source.fastext[i])) as CompiledPage['fastext'],
         wide: [fillSlots(view.screen.wide, view.slots)],
         narrow: [fillSlots(view.screen.narrow, view.slots)],
-        semantic: [fillSemanticSlots(view.screen.semantic, view.slots)],
+        semantic: [
+          [
+            ...fillSemanticSlots(view.screen.semantic, view.slots),
+            ...(flummox.game.screen === 'share'
+              ? [{ kind: 'list' as const, items: shareLinks.map((l) => [{ text: `Share on ${l.name}`, href: l.href }]) }]
+              : []),
+          ],
+        ],
       }
     : source;
   const heading = page.title;
@@ -123,7 +154,6 @@ export const App: React.FC = () => {
   // Sub-page steps don't move focus, so the visitor's own steps and HOLD are announced.
   // Timed steps aren't (the mirror already has every part, so they'd only interrupt),
   // and neither are steps that follow focus into another part of the mirror.
-  const [announcement, setAnnouncement] = useState('');
   const stepSubpage = (delta: number) => {
     if (subpage.count < 2) return;
     subpage.step(delta);
@@ -221,7 +251,15 @@ export const App: React.FC = () => {
               onOpen={openAddress}
               focusHref={focusHref}
               focusLink={focusLink}
-              onAnswer={view && flummox.game.screen === 'question' ? (slot) => dispatchGame({ type: 'answer', slot }) : undefined}
+              onAnswer={
+                !view
+                  ? undefined
+                  : flummox.game.screen === 'question'
+                    ? (slot) => dispatchGame({ type: 'answer', slot })
+                    : flummox.game.screen === 'share'
+                      ? (slot) => openAddress(shareLinks[slot].href)
+                      : undefined
+              }
             />
           ))}
 

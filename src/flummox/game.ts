@@ -3,7 +3,7 @@
  * every rule is tested without React. `useFlummox` keeps the state and saves it.
  */
 
-export type GameScreen = 'intro' | 'question' | 'correct' | 'flummoxed' | 'checkpoint' | 'finished';
+export type GameScreen = 'intro' | 'question' | 'correct' | 'flummoxed' | 'checkpoint' | 'finished' | 'share';
 
 export interface GameState {
   screen: GameScreen;
@@ -32,7 +32,10 @@ export type GameAction =
   | { type: 'answer'; slot: number }
   | { type: 'next' }
   | { type: 'retry' }
-  | { type: 'restart' };
+  | { type: 'restart' }
+  /** From the end of a game to the list of places to share the score, and back. */
+  | { type: 'share' }
+  | { type: 'back' };
 
 export const newGame = (count: number): GameState => ({
   screen: 'intro',
@@ -84,6 +87,12 @@ export const gameReducer =
 
       case 'retry':
         return state.screen === 'flummoxed' ? { ...state, screen: 'question' } : state;
+
+      case 'share':
+        return state.screen === 'finished' ? { ...state, screen: 'share' } : state;
+
+      case 'back':
+        return state.screen === 'share' ? { ...state, screen: 'finished' } : state;
     }
   };
 
@@ -92,7 +101,7 @@ export const restoreGame = (saved: unknown, count: number): GameState => {
   const fresh = newGame(count);
   if (!saved || typeof saved !== 'object') return fresh;
   const s = saved as Partial<Record<keyof GameState, unknown>>;
-  const screens: GameScreen[] = ['intro', 'question', 'correct', 'flummoxed', 'checkpoint', 'finished'];
+  const screens: GameScreen[] = ['intro', 'question', 'correct', 'flummoxed', 'checkpoint', 'finished', 'share'];
   const ok =
     screens.includes(s.screen as GameScreen) &&
     Number.isInteger(s.question) &&

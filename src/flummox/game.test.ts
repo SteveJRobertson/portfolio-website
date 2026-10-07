@@ -63,6 +63,13 @@ describe('gameReducer', () => {
     expect(reduce(done, play)).toMatchObject({ screen: 'question', question: 0, score: 0 });
   });
 
+  it('goes from the end of a game to sharing and back', () => {
+    const done = run([play, ...rightRun(0, 3), next, ...rightRun(4, 7), next, ...rightRun(8, 11)]);
+    expect(reduce(done, { type: 'share' })).toMatchObject({ screen: 'share', score: 12 });
+    expect(run([{ type: 'share' }, { type: 'back' }], done)).toMatchObject({ screen: 'finished' });
+    expect(reduce(run([play]), { type: 'share' }).screen).toBe('question');
+  });
+
   it('restarts from question 1 with no score', () => {
     expect(run([play, right(0), next, { type: 'restart' }])).toMatchObject({ screen: 'question', question: 0, score: 0, answered: newGame(12).answered });
   });
@@ -92,6 +99,6 @@ describe('restoreGame', () => {
     expect(restoreGame(null, 12)).toEqual(newGame(12));
     expect(restoreGame({ ...run([play]), question: 12 }, 12)).toEqual(newGame(12));
     expect(restoreGame({ ...run([play]), answered: [true] }, 12)).toEqual(newGame(12));
-    expect(restoreGame({ ...run([play]), screen: 'share' }, 12)).toEqual(newGame(12));
+    expect(restoreGame({ ...run([play]), screen: 'scores' }, 12)).toEqual(newGame(12));
   });
 });

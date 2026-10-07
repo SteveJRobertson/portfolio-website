@@ -8,6 +8,14 @@ import { twoDigits, type SlotValues } from './slots';
 /** A Fastext slot on page 152: a page link, or something the game does. */
 export type FlummoxSlot = FastextLink | FastextAction;
 
+/** What the game asks of the page beyond its own state. */
+export interface FlummoxEffects {
+  /** Shares the score: the phone's share sheet where there is one, otherwise the Share screen. */
+  share: () => void;
+  /** Copies the message and link. */
+  copy: () => void;
+}
+
 export interface FlummoxView {
   screen: CompiledScreen;
   slots: SlotValues;
@@ -38,6 +46,8 @@ export const screenFor = (quiz: CompiledQuiz, game: GameState): CompiledScreen =
       return quiz.checkpoint[stage - 1];
     case 'finished':
       return quiz.finished.find((f) => game.score >= f.min)!.screen;
+    case 'share':
+      return quiz.share[game.score];
   }
 };
 
@@ -52,6 +62,7 @@ export const flummoxView = (
   best: number | undefined,
   newBest: boolean,
   dispatch: (action: GameAction) => void,
+  effects: FlummoxEffects,
 ): FlummoxView => {
   const action = (slot: number, label: string, run: GameAction): FastextAction => ({
     label,
@@ -81,7 +92,10 @@ export const flummoxView = (
       fastext = carryOn({ type: 'retry' });
       break;
     case 'finished':
-      fastext = [action(0, 'Again', { type: 'restart' }), HOME, ABOUT, CONTACT];
+      fastext = [action(0, 'Again', { type: 'restart' }), HOME, { label: 'Share', name: 'Yellow: Share your score', onPress: effects.share }, CONTACT];
+      break;
+    case 'share':
+      fastext = [HOME, action(1, 'Back', { type: 'back' }), { label: 'Copy', name: 'Yellow: Copy the message and link', onPress: effects.copy }, CONTACT];
       break;
   }
 

@@ -58,14 +58,15 @@ export const useFlummox = (edition: string, rules: GameRules): Flummox => {
     (action: GameAction) => {
       const next = reduce(game, action);
       if (next === game) return;
-      if (next.screen === 'finished') {
+      const ended = (screen: GameState['screen']) => screen === 'finished' || screen === 'share';
+      if (next.screen === 'finished' && !ended(game.screen)) {
         const beat = best === undefined || next.score > best;
         setNewBest(beat);
         if (beat) {
           setBest(next.score);
           save(local, BEST_KEY, edition, next.score);
         }
-      } else if (game.screen === 'finished') setNewBest(false);
+      } else if (!ended(next.screen)) setNewBest(false);
       save(session, GAME_KEY, edition, next);
       setGame(next);
     },

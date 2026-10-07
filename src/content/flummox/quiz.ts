@@ -4,6 +4,7 @@ import { SLOT_WIDTHS, parseMarkup } from '../markup.ts';
 import { sextant, type RgbaImage } from '../mosaic.ts';
 import type { RowSource, TextRowSource } from '../schema.ts';
 import type { CompiledQuiz, QuizQuestionSource, QuizSource } from './types.ts';
+import { SHARE_NETWORKS, shareMessage } from '../../flummox/share.ts';
 
 /** Exactly this many questions a game (SPEC §5). */
 export const QUESTION_COUNT = 12;
@@ -296,6 +297,21 @@ const screens = (quiz: QuizSource) => {
         [heading('Checkpoint!'), { kind: 'image', alt: FELIX_ALT }, paragraph(says), scoreParagraph],
       );
     },
+    share: (score: number): ScreenSource => {
+      const message = shareMessage(quiz.share, score);
+      return both(
+        () => [
+          LOGO,
+          RULE,
+          '{yellow}SHARE YOUR SCORE{/}',
+          `{white}${message.replace(/\{/g, '{{')}{/}`,
+          '',
+          ...SHARE_NETWORKS.map((n, i) => ({ text: `{answer:${i}}{icon:${n.icon}} {white}${n.name}{/}{/}`, screenOnly: true })),
+        ],
+        () => '{cyan}Pick one, or yellow to copy.{/}',
+        [heading('Share your score'), paragraph(message)],
+      );
+    },
     finished: (verdict: string, min: number): ScreenSource => {
       const says = `Well done! You got {slot:score} of ${total} right first time. ${verdict}`;
       return both(
@@ -334,7 +350,7 @@ export const compileQuiz = (data: unknown, images: Readonly<Record<string, RgbaI
   const quiz: CompiledQuiz = {
     edition: source.edition,
     stages: s.stages,
-    share: source.share,
+    message: source.share,
     questions: source.questions.map((q, i) => ({
       question: parseMarkup(q.question).segments.map((seg) => seg.text).join(''),
       answers: q.answers,
@@ -349,6 +365,7 @@ export const compileQuiz = (data: unknown, images: Readonly<Record<string, RgbaI
     finished: [...source.verdicts]
       .sort((a, b) => b.min - a.min)
       .map((v) => ({ min: v.min, text: v.text, screen: build(`finished (${v.min}+)`, s.finished(v.text, v.min)) })),
+    share: Array.from({ length: source.questions.length + 1 }, (_, score) => build(`share (${score})`, s.share(score))),
   };
   return errors.length ? { errors } : { quiz, errors };
 };

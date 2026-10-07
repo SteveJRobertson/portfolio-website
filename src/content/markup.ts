@@ -13,7 +13,7 @@ import { ICONS, type IconName } from '../icons/icons.ts';
  *   {dots}               a leader: dots that push the rest of the line to the right edge
  *   {icon:linkedin}      an icon (src/icons), two cells wide and one line tall
  *   {slot:score}         a fixed-width space filled at run time (see SLOT_WIDTHS)
- *   {answer:0}TEXT{/}    a Flummox! answer (0 red to 3 cyan), clickable in the grid
+ *   {answer:0}TEXT{/}    a Flummox! answer (0 red to 3 cyan) or share line, clickable in the grid
  *   {{                   a literal "{"
  *
  * Tags nest, `{/}` closes the most recent one, and every tag must be closed by
@@ -134,7 +134,7 @@ export const parseMarkup = (source: string): ParsedLine => {
       leaders++;
       const { color, link } = current();
       segments.push({ text: '.', color: color ?? 'white', leader: true, ...(link !== undefined ? { link } : {}) });
-    } else if (/^answer:[0-3]$/.test(tag)) {
+    } else if (/^answer:\d$/.test(tag)) {
       stack.push({ ...current(), answer: Number(tag.slice(7)) });
     } else if (tag.startsWith('slot:')) {
       const name = tag.slice(5);

@@ -47,7 +47,8 @@ export interface CompiledQuiz {
   edition: string;
   /** Index of the first question of each stage: [0, 4, 8] for checkpoints after 4 and 8. */
   stages: number[];
-  share: string;
+  /** The shared message, with `{score}` where the score goes. */
+  message: string;
   questions: CompiledQuestion[];
   /** Before a game. Slots: best. */
   intro: CompiledScreen;
@@ -59,4 +60,6 @@ export interface CompiledQuiz {
   checkpoint: CompiledScreen[];
   /** The end of a game, one per verdict, highest `min` first. Slots: score, newbest. */
   finished: { min: number; text: string; screen: CompiledScreen }[];
+  /** Where to share the score, one per score from 0 to 12, with the message in it. Its lines are answers 0 to 6, one per network. */
+  share: CompiledScreen[];
 }
