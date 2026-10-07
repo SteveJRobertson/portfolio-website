@@ -8,7 +8,7 @@
 
 ## 1. Summary
 
-Flummox! is a multiple-choice quiz on page 152, in the style of Channel 4's Teletext quiz Bamboozle! (1993 to 2009). The quizmaster is **Felix Flummox**, a small mosaic caricature in the style of the page 101 cartoon of Steve. Each question has four answers, one per Fastext colour, and you answer by pressing the coloured key. Get one wrong and you're **FLUMMOXED!**, sent back to the last checkpoint. You score a point for every question you get right first time, the site remembers your best score, and at the end you can share your score on the usual social networks.
+Flummox! is a multiple-choice quiz on page 152, in the style of Channel 4's Teletext quiz Bamboozle! (1993 to 2009). The quizmaster is **Felix Flummox**, a mosaic cartoon 14 cells wide and 8 rows tall, drawn the way Bamber was: one face colour carved up by black lines (round glasses, a big grin), with flat colour for his green quiff, red bow tie and blue jacket. Each question has four answers, one per Fastext colour, and you answer by pressing the coloured key. Get one wrong and you're **FLUMMOXED!**, sent back to the last checkpoint. You score a point for every question you get right first time, the site remembers your best score, and at the end you can share your score on the usual social networks.
 
 The questions live in one content file in the repo, so Steve can change them by editing it and merging.
 
