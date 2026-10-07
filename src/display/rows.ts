@@ -1,4 +1,4 @@
-import type { GridRow, GridSegment, TeletextColor } from '../types/teletext';
+import { THIN_LINE, type GridRow, type GridSegment, type TeletextColor } from '../types/teletext';
 
 export type { GridRow, GridSegment };
 
@@ -25,7 +25,7 @@ export const fitRow = (row: GridRow, width: number): GridRow => {
   if (row.fill) {
     const lead = chars(rowText(row)).slice(0, width).join('');
     const color = row.segments[0]?.color;
-    const rule: GridSegment = { text: row.fill.repeat(width - chars(lead).length), color };
+    const rule: GridSegment = { text: row.fill.repeat(width - chars(lead).length), color, ...(row.fill === THIN_LINE ? { line: true } : {}) };
     return { ...row, segments: lead ? [{ text: lead }, rule] : [rule] };
   }
   const segments: GridSegment[] = [];

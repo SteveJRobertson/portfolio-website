@@ -8,8 +8,7 @@
   "hint": "{white}Press ← or → for privacy.{/}",
   "subpages": [
     [
-      { "banner": "{black}ACCESSIBILITY{/}", "bg": "magenta" },
-      "",
+      { "banner": "{magenta}Accessibility{/}", "bg": "black", "rule": "cyan" },
       { "text": "Use the switches below the screen.", "screenOnly": true },
       { "text": "{cyan}TEXT MODE{/}", "heading": true },
       "Shows every page as plain text, without the TV screen. The site remembers your choice.",
@@ -21,8 +20,7 @@
       "Adds the lines and glow of an old TV. It's off at first if your device asks for less motion or more contrast."
     ],
     [
-      { "banner": "{black}ACCESSIBILITY{/}", "bg": "magenta" },
-      "",
+      { "banner": "{magenta}Accessibility{/}", "bg": "black", "rule": "cyan" },
       "Zoom in any time to make text bigger.",
       "",
       { "text": "{cyan}PRIVACY{/}", "heading": true },

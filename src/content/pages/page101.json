@@ -6,11 +6,10 @@
   "index": true,
   "fastext": [{ "page": 100, "label": "HOME" }, { "page": 110, "label": "CAREER" }, { "page": 300 }, { "page": 400 }],
   "rows": [
-    { "banner": "ABOUT ME", "bg": "red" },
-    "",
+    { "banner": "{red}About me{/}", "bg": "black", "rule": "yellow" },
     {
       "image": "steve",
-      "alt": "A cartoon of Steve in Teletext block graphics: a cyan cap, a white beard and a red jacket.",
+      "alt": "A cartoon of Steve in Teletext block graphics: a yellow face, a cyan baseball cap, a short white beard and a red fleece.",
       "rows": 10,
       "pixelArt": true,
       "beside": [

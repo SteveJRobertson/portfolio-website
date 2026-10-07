@@ -285,6 +285,14 @@ html, body {
   text-decoration: underline;
 }
 
+/* A {line} row, and the quick index rules: a thin solid line through the middle of its cells */
+.tt-thin-line {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 100% 0.12em;
+  background-position: 0 55%;
+}
+
 .tt-line-link:hover .tt-leader {
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;

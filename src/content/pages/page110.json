@@ -8,8 +8,7 @@
   "hint": "{white}Press ← or → for more roles.{/}",
   "subpages": [
     [
-      { "banner": "EXPERIENCE", "bg": "red" },
-      "",
+      { "banner": "{red}Experience{/}", "bg": "black", "rule": "yellow" },
       {
         "image": "motability",
         "alt": "The Motability Operations logo: the letters MO in blue.",
@@ -23,8 +22,7 @@
       "* Rolling the design system out across the company"
     ],
     [
-      { "banner": "EXPERIENCE", "bg": "red" },
-      "",
+      { "banner": "{red}Experience{/}", "bg": "black", "rule": "yellow" },
       {
         "image": "fanduel",
         "alt": "The FanDuel logo: a blue shield, split to form an F.",
@@ -39,8 +37,7 @@
       "* AWS staging environments (Route 53, S3, CloudFront) for new product domains"
     ],
     [
-      { "banner": "EXPERIENCE", "bg": "red" },
-      "",
+      { "banner": "{red}Experience{/}", "bg": "black", "rule": "yellow" },
       {
         "image": "woodmac",
         "alt": "The Wood Mackenzie logo: two blue shapes, like a sweet wrapper, split by a diagonal line.",
@@ -56,8 +53,7 @@
       "* Handed over to internal maintenance"
     ],
     [
-      { "banner": "EXPERIENCE", "bg": "red" },
-      "",
+      { "banner": "{red}Experience{/}", "bg": "black", "rule": "yellow" },
       {
         "image": "rbs",
         "alt": "The Royal Bank of Scotland logo: four magenta arrows pointing in to a circle in the centre.",
@@ -71,8 +67,7 @@
       "* Onboarded new developers on a time-critical project"
     ],
     [
-      { "banner": "EXPERIENCE", "bg": "red" },
-      "",
+      { "banner": "{red}Experience{/}", "bg": "black", "rule": "yellow" },
       {
         "image": "aegon",
         "alt": "The Aegon logo: the word aegon in blue.",
@@ -86,8 +81,7 @@
       "* Set up peer code review"
     ],
     [
-      { "banner": "EXPERIENCE", "bg": "red" },
-      "",
+      { "banner": "{red}Experience{/}", "bg": "black", "rule": "yellow" },
       { "text": "{yellow}Royal London{/}", "heading": true },
       "{cyan}Frontend Developer{/}",
       "Nov 2016 - Apr 2017",
@@ -95,8 +89,7 @@
       "* Content-managed customer site on EPiServer, Bootstrap, jQuery and Sass"
     ],
     [
-      { "banner": "EXPERIENCE", "bg": "red" },
-      "",
+      { "banner": "{red}Experience{/}", "bg": "black", "rule": "yellow" },
       { "text": "{yellow}Sopra Steria, Realise, Freelance{/}", "heading": true },
       "{cyan}Earlier career{/}",
       "2009 - 2016",

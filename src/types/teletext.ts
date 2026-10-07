@@ -33,6 +33,8 @@ export interface GridSegment {
   href?: string;
   /** Block graphics from a picture: the background uses the full-strength palette so neighbouring cells blend. */
   mosaic?: boolean;
+  /** A thin solid line drawn through the middle of these cells (a `{line}` row). */
+  line?: boolean;
   /** A `{dots}` leader: stretched with dots to push the rest of the line to the right edge. */
   leader?: boolean;
   /** The dots a leader was stretched into, once laid out (drawn solid when its linked line is hovered). */
@@ -95,3 +97,6 @@ export interface CompiledPage {
   /** One entry per sub-page: the same content as headings, paragraphs, lists and links. */
   semantic: SemanticBlock[][];
 }
+
+/** The fill character of a `{line}` row: blank cells that are drawn with a thin solid line through them. */
+export const THIN_LINE = '\u00a0';
