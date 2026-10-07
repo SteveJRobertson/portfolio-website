@@ -53,6 +53,7 @@ const isImageSource = (fields: Record<string, unknown>): boolean =>
   isFactor(fields.saturation) &&
   isFactor(fields.brightness) &&
   (fields.pixelArt === undefined || typeof fields.pixelArt === 'boolean') &&
+  (fields.align === undefined || fields.align === 'right') &&
   (fields.beside === undefined || (Array.isArray(fields.beside) && fields.beside.every((r) => isRow(r) && !(typeof r === 'object' && ('image' in r || 'banner' in r))))) &&
   Object.keys(fields).every((k) => (IMAGE_KEYS as readonly string[]).includes(k));
 
@@ -163,10 +164,12 @@ export const pinHint = (
   width: number,
   limit: number,
   name = 'hint',
+  gap = true,
 ): { rows: GridRow[]; errors: string[] } => {
   const used = slotsUsed(rows);
-  if (used > limit - 2) {
-    const errors = used <= limit ? [`needs ${used} rows; the limit is ${limit - 2}, leaving a blank row and the ${name}`] : [];
+  const room = limit - (gap ? 2 : 1);
+  if (used > room) {
+    const errors = used <= limit ? [`needs ${used} rows; the limit is ${room}, leaving ${gap ? 'a blank row and ' : ''}the ${name}`] : [];
     return { rows, errors };
   }
   const laid = layoutRows([hint], width);
@@ -174,6 +177,13 @@ export const pinHint = (
   if (laid.rows.length > 1) errors.push(`the hint "${hint}" must fit on one line`);
   return { rows: [...rows, ...Array.from({ length: limit - 1 - used }, () => ({ segments: [] })), laid.rows[0]], errors };
 };
+
+/** A hint for each width, and whether it needs a blank row above it (the default). */
+export interface ScreenHint {
+  wide: string;
+  narrow: string;
+  gap?: boolean;
+}
 
 /** One screen laid out for both widths, with its semantic mirror. */
 export interface CompiledScreen {
@@ -192,7 +202,7 @@ export const compileScreen = (
   rows: RowSource[],
   where: string,
   renderImage: ImageRenderer,
-  hint?: string,
+  hint?: string | ScreenHint,
   narrowRows: RowSource[] = rows,
 ): CompiledScreen & { errors: string[]; links: number[] } => {
   const errors: string[] = [];
@@ -207,7 +217,8 @@ export const compileScreen = (
     const used = slotsUsed(result.rows);
     if (used > limit) errors.push(`${at}: needs ${used} rows; the limit is ${limit}`);
     if (hint === undefined) return result.rows;
-    const pinned = pinHint(result.rows, hint, width, limit);
+    const text = typeof hint === 'string' ? hint : hint[mode];
+    const pinned = pinHint(result.rows, text, width, limit, 'hint', typeof hint === 'string' || hint.gap !== false);
     errors.push(...pinned.errors.map((e) => `${at}: ${e}`));
     return pinned.rows;
   };

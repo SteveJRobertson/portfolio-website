@@ -51,3 +51,31 @@ const SLOT_NAMES = ['Red', 'Green', 'Yellow', 'Cyan'];
 /** Accessible name for a slot, e.g. "Red: About, page 101". It contains the visible label or number (WCAG 2.5.3). */
 export const fastextName = (slot: number, link: FastextLink): string =>
   `${SLOT_NAMES[slot]}: ${fastextLabel(link)}, page ${link.page}`;
+
+/**
+ * A Fastext slot that does something on this page instead of going to one
+ * (Flummox!, page 152). With no label it is an answer key, drawn as a solid
+ * block of its colour as on Bamboozle!.
+ */
+export interface FastextAction {
+  label?: string;
+  /** The accessible name, e.g. "Red: Play" or "Red: BBC One". */
+  name: string;
+  onPress: () => void;
+}
+
+/** Red to cyan; a slot left undefined keeps the page's own link. */
+export type FastextActions = readonly (FastextAction | undefined)[];
+
+const BLOCK = '███';
+
+/** Labels for a bar where some slots are actions: each centred in its slot, a page number where a link's label won't fit. */
+export const slotLabels = (links: readonly FastextLink[], widths: number[], actions?: FastextActions): string[] => {
+  if (!actions?.some(Boolean)) return fastextLabels(links, widths);
+  return widths.map((width, i) => {
+    const action = actions[i];
+    if (action) return centre(action.label ?? BLOCK, width);
+    const label = fastextLabel(links[i]);
+    return centre(label.length < width ? label : String(links[i].page), width);
+  });
+};

@@ -13,13 +13,13 @@
       "question": "Which channel's Teletext service gave us Bamboozle!?",
       "answers": ["BBC One", "ITV", "Channel 4", "Channel 5"],
       "correct": 2,
-      "quip": "Right! Page 152 is the new 458."
+      "quip": "Right! It lived on page 458, then moved to 152. Sound familiar?"
     },
     {
       "question": "What was the BBC's Teletext service called?",
       "answers": ["Ceefax", "Oracle", "Prestel", "Teletext Ltd"],
       "correct": 0,
-      "quip": "Correct! \"See facts\", geddit?"
+      "quip": "Yes! \"See facts\", geddit?"
     },
     {
       "question": "In which year did Ceefax go on air?",

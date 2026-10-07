@@ -19,9 +19,19 @@ import { useDigitBuffer } from './navigation/useDigitBuffer';
 import { useHotkeys } from './navigation/useHotkeys';
 import { useNavigation } from './navigation/useNavigation';
 import { crtEffectOn, useSettings, type Settings } from './settings/useSettings';
+import { quiz } from './flummox/quizData';
+import { useFlummox } from './flummox/useFlummox';
+import { flummoxView, quizRules } from './flummox/view';
+import { fillSemanticSlots, fillSlots } from './flummox/slots';
+import type { FastextActions } from './display/fastext';
+import type { CompiledPage } from './types/teletext';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
+
+/** Flummox!, the quiz: its page shows the game's current screen (docs/flummox). */
+const QUIZ_PAGE = 152;
+const QUIZ_RULES = quizRules(quiz);
 
 /** Email opens the mail app; web addresses open in a new tab so the Teletext stays put. */
 const openAddress = (href: string) => {
@@ -57,7 +67,28 @@ export const App: React.FC = () => {
   );
   const mode = useGridMode();
 
-  const page = getPage(requested)!;
+  // On the quiz page the body, mirror and Fastext come from the game's screen.
+  const flummox = useFlummox(quiz.edition, QUIZ_RULES);
+  const view = requested === QUIZ_PAGE ? flummoxView(quiz, flummox.game, flummox.best, flummox.newBest, flummox.dispatch) : undefined;
+  const lastPage = useRef(requested);
+  const { dispatch: dispatchGame } = flummox;
+  useEffect(() => {
+    // Coming back to the quiz from another page shows the intro, which offers to carry on.
+    if (requested === QUIZ_PAGE && lastPage.current !== QUIZ_PAGE) dispatchGame({ type: 'open' });
+    lastPage.current = requested;
+  }, [requested, dispatchGame]);
+
+  const source = getPage(requested)!;
+  const fastextActions: FastextActions | undefined = view?.fastext.map((slot) => ('page' in slot ? undefined : slot));
+  const page: CompiledPage = view
+    ? {
+        ...source,
+        fastext: view.fastext.map((slot, i) => ('page' in slot ? slot : source.fastext[i])) as CompiledPage['fastext'],
+        wide: [fillSlots(view.screen.wide, view.slots)],
+        narrow: [fillSlots(view.screen.narrow, view.slots)],
+        semantic: [fillSemanticSlots(view.screen.semantic, view.slots)],
+      }
+    : source;
   const heading = page.title;
   const visible = usePageVisible();
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
@@ -109,7 +140,11 @@ export const App: React.FC = () => {
     arrowKeys: !settings.textMode,
     onDigit: buffer.digit,
     onClear: buffer.clear,
-    onFastext: (slot) => nav.fastext(page.fastext[slot].page),
+    onFastext: (slot) => {
+      const action = fastextActions?.[slot];
+      if (action) action.onPress();
+      else nav.fastext(page.fastext[slot].page);
+    },
     onSubpage: stepSubpage,
     onHold: () => {
       if (subpage.count > 1) toggleHold();
@@ -186,10 +221,11 @@ export const App: React.FC = () => {
               onOpen={openAddress}
               focusHref={focusHref}
               focusLink={focusLink}
+              onAnswer={view && flummox.game.screen === 'question' ? (slot) => dispatchGame({ type: 'answer', slot }) : undefined}
             />
           ))}
 
-          <FastTextBar links={page.fastext} onNavigate={nav.fastext} cols={mode.cols} row={mode.rows} />
+          <FastTextBar links={page.fastext} actions={fastextActions} onNavigate={nav.fastext} cols={mode.cols} row={mode.rows} />
         </TeletextScreen>
 
         <section className="control-strip" aria-label="Screen controls">
@@ -198,6 +234,7 @@ export const App: React.FC = () => {
             onDigit={buffer.digit}
             onClear={buffer.clear}
             fastext={page.fastext}
+            fastextActions={fastextActions}
             onNavigate={nav.remote}
             onSubpage={stepSubpage}
             hold={subpage.count > 1 ? { held: subpage.held, onToggle: toggleHold } : undefined}

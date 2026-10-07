@@ -137,7 +137,9 @@ const padTo = (row: GridRow, cells: number): GridSegment[] => {
 const layoutImage = (source: ImageRowSource, width: number, wrap: boolean, renderImage: ImageRenderer): LaidOutRows => {
   const image = renderImage(source, width);
   if (image.errors.length) return { rows: [], errors: image.errors, links: [] };
-  const left = MARGIN + image.cols + 1;
+  const right = source.align === 'right';
+  // On the right the picture meets the edge, and the text keeps its margin on the left.
+  const left = right ? image.cols + 1 : MARGIN + image.cols + 1;
   const besideWidth = width - left;
 
   if (source.beside && besideWidth >= MIN_BESIDE_COLS) {
@@ -145,8 +147,9 @@ const layoutImage = (source: ImageRowSource, width: number, wrap: boolean, rende
     const rows = Array.from({ length: Math.max(image.rows.length, text.rows.length) }, (_, i): GridRow => {
       if (i >= image.rows.length) return text.rows[i];
       const picture = padTo(image.rows[i], image.cols);
-      const words = text.rows[i]?.segments ?? [];
-      return { segments: [{ text: ' '.repeat(MARGIN) }, ...picture, { text: ' ' }, ...words] };
+      const words = text.rows[i] ?? { segments: [] };
+      if (right) return { segments: [...padTo(words, width - image.cols), ...picture] };
+      return { segments: [{ text: ' '.repeat(MARGIN) }, ...picture, { text: ' ' }, ...words.segments] };
     });
     return { rows, errors: text.errors.map((e) => `beside: ${e}`), links: text.links };
   }

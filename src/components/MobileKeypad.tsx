@@ -1,7 +1,7 @@
 import React, { useId, useRef, useState } from 'react';
 import type { FastextLink } from '../types/teletext';
 import { NAVIGABLE_PAGES } from '../content/registry';
-import { FASTEXT_ORDER, fastextName } from '../display/fastext';
+import { FASTEXT_ORDER, fastextName, type FastextActions } from '../display/fastext';
 
 interface MobileKeypadProps {
   /** The shared digit buffer's text, e.g. "P1--". */
@@ -10,6 +10,8 @@ interface MobileKeypadProps {
   onClear: () => void;
   /** The current page's Fastext links, red to cyan. */
   fastext: readonly FastextLink[];
+  /** Slots that act on this page instead of linking (Flummox!). */
+  fastextActions?: FastextActions;
   onNavigate: (page: number) => void;
   /** Steps through the current page's sub-pages (-1 or +1). */
   onSubpage: (delta: number) => void;
@@ -27,6 +29,7 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
   onDigit,
   onClear,
   fastext,
+  fastextActions,
   onNavigate,
   onSubpage,
   hold,
@@ -123,8 +126,12 @@ export const MobileKeypad: React.FC<MobileKeypadProps> = ({
               key={color}
               type="button"
               className={`remote-btn remote-fastext-btn bg-${color}`}
-              aria-label={fastextName(i, fastext[i])}
-              onClick={() => onNavigate(fastext[i].page)}
+              aria-label={fastextActions?.[i]?.name ?? fastextName(i, fastext[i])}
+              onClick={() => {
+                const action = fastextActions?.[i];
+                if (action) action.onPress();
+                else onNavigate(fastext[i].page);
+              }}
             />
           ))}
         </div>

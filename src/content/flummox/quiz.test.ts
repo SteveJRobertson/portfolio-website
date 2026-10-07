@@ -4,7 +4,7 @@ import { PNG } from 'pngjs';
 import { IMAGES_DIR, QUIZ_FILE, compileQuizFile } from '../../../scripts/lib/pageFiles';
 import { compileQuiz, quizErrors, MAX_ANSWER_LENGTH, QUESTION_COUNT } from './quiz';
 import { parseMarkup } from '../markup';
-import { layoutRows } from '../wrap';
+import { layoutRows, slotsUsed } from '../wrap';
 import { fillSemanticSlots, fillSlots, twoDigits } from '../../flummox/slots';
 import type { QuizSource } from './types';
 import type { GridRow } from '../../types/teletext';
@@ -12,7 +12,7 @@ import type { GridRow } from '../../types/teletext';
 const real = (): QuizSource => JSON.parse(fs.readFileSync(QUIZ_FILE, 'utf-8'));
 
 const images = Object.fromEntries(
-  ['felix', 'felix-flummoxed', 'felix-small'].map((name) => [name, PNG.sync.read(fs.readFileSync(`${IMAGES_DIR}/${name}.png`))]),
+  ['felix', 'felix-flummoxed', 'flummox-logo'].map((name) => [name, PNG.sync.read(fs.readFileSync(`${IMAGES_DIR}/${name}.png`))]),
 );
 
 const with_ = (change: (quiz: QuizSource) => void): QuizSource => {
@@ -21,7 +21,7 @@ const with_ = (change: (quiz: QuizSource) => void): QuizSource => {
   return quiz;
 };
 
-const text = (rows: GridRow[]) => rows.map((r) => r.segments.map((s) => s.text).join(''));
+const text = (rows: GridRow[]) => rows.map((r) => r.segments.map((s) => s.text).join('').replace(/\u00a0/g, ' '));
 
 describe('quiz.json', () => {
   it('compiles: every screen fits at 38 and 32 columns', () => {
@@ -99,10 +99,25 @@ describe('question screens', () => {
     expect(at.slice(1).map((n, i) => n - at[i])).toEqual([2, 2, 2]);
   });
 
-  it('pins the hint to the last body row', () => {
-    expect(text(quiz!.questions[0].screen.wide).at(-1)).toContain('Press a colour to answer.');
-    expect(quiz!.questions[0].screen.wide).toHaveLength(22);
-    expect(quiz!.questions[0].screen.narrow).toHaveLength(32);
+  it('puts the question in Felix\'s speech bubble, blue on white, with Felix at the right edge', () => {
+    const [first] = quiz!.questions[0].screen.wide;
+    expect(text([first])[0]).toMatch(/^ {2}Question 1\. /);
+    expect(first.segments.find((s) => s.bg === 'white')).toMatchObject({ color: 'blue' });
+    expect(Array.from(text([first])[0])).toHaveLength(38);
+    expect(first.segments.at(-1)?.mosaic).toBe(true);
+  });
+
+  it('sets the score into the red line under the question', () => {
+    const rule = quiz!.questions[0].screen.wide.find((r) => r.segments.some((s) => s.slot === 'score'));
+    expect(text([rule!])[0]).toMatch(/SCORE {4}\S+$/u);
+  });
+
+  it('pins the hint bar to the last body row', () => {
+    const last = quiz!.questions[0].screen.wide.at(-1)!;
+    expect(text([last])[0]).toContain('Press the colour of your choice');
+    expect(last.segments.find((s) => s.bg)).toMatchObject({ bg: 'blue' });
+    expect(slotsUsed(quiz!.questions[0].screen.wide)).toBe(22);
+    expect(slotsUsed(quiz!.questions[0].screen.narrow)).toBe(32);
   });
 
   it('keeps answers out of the mirror, which has a heading, the score and the question', () => {
