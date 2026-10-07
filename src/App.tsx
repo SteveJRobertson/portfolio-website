@@ -189,6 +189,16 @@ export const App: React.FC = () => {
     document.title = title;
   }, [title]);
 
+  // Flummox! has its own "F" favicon in place of the site's "S"
+  const quizOpen = requested === QUIZ_PAGE;
+  useEffect(() => {
+    const name = quizOpen ? 'favicon-flummox' : 'favicon';
+    document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]').forEach((link) => {
+      const href = link.getAttribute('href') ?? '';
+      link.setAttribute('href', href.replace(/favicon(-flummox)?(?=\.(ico|svg)$)/, name));
+    });
+  }, [quizOpen]);
+
   // Sub-page steps don't move focus, so the visitor's own steps and HOLD are announced.
   // Timed steps aren't (the mirror already has every part, so they'd only interrupt),
   // and neither are steps that follow focus into another part of the mirror.

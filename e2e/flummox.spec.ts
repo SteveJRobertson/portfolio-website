@@ -49,6 +49,18 @@ test.describe('Flummox!', () => {
     await expect(mirror(page)).toContainText('Welcome back! Your best so far is 09 out of 12.');
   });
 
+  test('shows the Flummox! favicon on page 152 and the site one elsewhere', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'keyboard journey');
+    const icon = page.locator('link[rel="icon"][type="image/svg+xml"]');
+    await open(page, '152/');
+    await expect(icon).toHaveAttribute('href', /\/favicon-flummox\.svg$/);
+    await page.keyboard.type('100');
+    await expect(page).toHaveURL(/\/$/);
+    await expect(icon).toHaveAttribute('href', /\/favicon\.svg$/);
+    await page.keyboard.type('152');
+    await expect(icon).toHaveAttribute('href', /\/favicon-flummox\.svg$/);
+  });
+
   test('plays by clicking the answers on screen', async ({ page }) => {
     await open(page, '152/');
     await page.locator('.fasttext-bar').getByRole('button').first().click();

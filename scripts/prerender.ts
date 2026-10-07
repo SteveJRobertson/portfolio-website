@@ -109,6 +109,8 @@ const sitemap = (pages: PrerenderedPage[]) =>
     '',
   ].join('\n');
 
+const QUIZ_PAGE = 152;
+
 const META = /<!-- page-meta[\s\S]*?<!-- \/page-meta -->/;
 const ROOT = '<div id="root"></div>';
 
@@ -149,7 +151,9 @@ const main = async () => {
 
   const pages = prerender();
   for (const page of pages) {
-    const html = template.replace(META, () => head(page, base)).replace(ROOT, () => `<div id="root">${page.body}</div>`);
+    let html = template.replace(META, () => head(page, base)).replace(ROOT, () => `<div id="root">${page.body}</div>`);
+    // Flummox! pages, page 152 and its score pages, show its "F" favicon from the first paint
+    if (page.page === QUIZ_PAGE) html = html.replace(/(rel="icon"[^>]*href="[^"]*)favicon\.(ico|svg)"/g, '$1favicon-flummox.$2"');
     const file = path.join(dist, page.file);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, html);
