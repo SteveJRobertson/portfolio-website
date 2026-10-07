@@ -17,6 +17,12 @@ describe('flummoxView', () => {
     expect(view.slots.best).toBe('--');
   });
 
+  it('welcomes you back with your best score once you have one', () => {
+    const view = flummoxView(quiz!, newGame(12), 9, false, vi.fn(), effects);
+    expect(view.screen).toBe(quiz!.introBest);
+    expect(view.slots.best).toBe('09');
+  });
+
   it('offers Resume and Restart once a game is under way', () => {
     const view = flummoxView(quiz!, play([{ type: 'play' }, right(0), { type: 'next' }, { type: 'open' }]), 7, false, vi.fn(), effects);
     expect(view.screen).toBe(quiz!.introResume);

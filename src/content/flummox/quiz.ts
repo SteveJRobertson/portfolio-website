@@ -254,9 +254,20 @@ const screens = (quiz: QuizSource) => {
   return {
     stages,
     intro: both(
-      (w) => [LOGO, RULE, introText, introAsk, felix('Hello! Welcome to page 152. Your best so far: {slot:best}. Press red to begin.', w)],
+      (w) => [LOGO, RULE, introText, introAsk, felix("Hello! I'm Felix. Think you can flummox me? Press red to begin.", w)],
       (w) => bar('Press red to begin', 'red', w),
-      [...introSemantic('Hello! Welcome to page 152. Your best so far:'), { kind: 'paragraph', content: [{ text: '', slot: 'best' }] }],
+      introSemantic("Hello! I'm Felix. Think you can flummox me? Press red to begin."),
+    ),
+    introBest: both(
+      (w) => [LOGO, RULE, introText, introAsk, felix(`Welcome back! Your best so far is {slot:best} out of ${total}. Press red to beat it.`, w)],
+      (w) => bar('Press red to begin', 'red', w),
+      [
+        ...introSemantic('').slice(0, -1),
+        {
+          kind: 'paragraph',
+          content: [{ text: 'Welcome back! Your best so far is ' }, { text: '', slot: 'best' }, { text: ` out of ${total}. Press red to beat it.` }],
+        },
+      ],
     ),
     introResume: both(
       (w) => [LOGO, RULE, introText, introAsk, felix('Welcome back! You were on question {slot:resume}. Press red to carry on, or green to start again.', w)],
@@ -437,6 +448,7 @@ export const compileQuiz = (data: unknown, images: Readonly<Record<string, RgbaI
       correctScreen: build(`question ${i + 1} (correct)`, s.correct(q, i)),
     })),
     intro: build('intro', s.intro),
+    introBest: build('intro (with a best score)', s.introBest),
     introResume: build('intro (carry on)', s.introResume),
     flummoxed: s.stages.map((stage) => build(`flummoxed (back to ${stage + 1})`, s.flummoxed(stage))),
     checkpoint: s.stages.slice(1).map((stage) => build(`checkpoint (${stage + 1})`, s.checkpoint(stage))),

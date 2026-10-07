@@ -15,7 +15,7 @@ import { fillSlots, twoDigits } from './slots';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 
-const SCREENS = ['intro', 'intro (carry on)', 'question', 'correct', 'flummoxed', 'checkpoint', 'finished', 'share'] as const;
+const SCREENS = ['intro', 'intro (best score)', 'intro (carry on)', 'question', 'correct', 'flummoxed', 'checkpoint', 'finished', 'share'] as const;
 type ScreenName = (typeof SCREENS)[number];
 
 interface FlummoxScreenProps {
@@ -35,6 +35,8 @@ const pick = (screen: ScreenName, question: number, score: number): CompiledScre
   switch (screen) {
     case 'intro':
       return quiz.intro;
+    case 'intro (best score)':
+      return quiz.introBest;
     case 'intro (carry on)':
       return quiz.introResume;
     case 'question':
@@ -98,6 +100,7 @@ export default meta;
 type Story = StoryObj<typeof FlummoxScreen>;
 
 export const Intro: Story = { args: { screen: 'intro' } };
+export const IntroBestScore: Story = { args: { screen: 'intro (best score)', score: 9 } };
 export const IntroCarryOn: Story = { args: { screen: 'intro (carry on)', question: 6 } };
 export const Question: Story = {};
 export const QuestionPortrait: Story = { args: { mode: 'portrait', fontSize: 14 } };
