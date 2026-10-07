@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { track } from '../analytics/track';
 import { gameReducer, restoreGame, type GameAction, type GameRules, type GameState } from './game';
 
 /** The best score, per edition (SPEC §6). */
@@ -59,6 +60,10 @@ export const useFlummox = (edition: string, rules: GameRules): Flummox => {
       const next = reduce(game, action);
       if (next === game) return;
       const ended = (screen: GameState['screen']) => screen === 'finished' || screen === 'share';
+      // What's counted (analytics SPEC §4.2): games begun, where people get flummoxed, and scores
+      if (next.screen === 'question' && next.question === 0 && (!game.underWay || action.type === 'restart')) track('Flummox start', { edition });
+      if (next.screen === 'flummoxed') track('Flummox flummoxed', { edition, question: game.question + 1 });
+      if (next.screen === 'finished' && !ended(game.screen)) track('Flummox finish', { edition, score: next.score });
       if (next.screen === 'finished' && !ended(game.screen)) {
         const beat = best === undefined || next.score > best;
         setNewBest(beat);

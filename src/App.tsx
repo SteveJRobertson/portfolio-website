@@ -79,7 +79,7 @@ export const App: React.FC = () => {
     // The phone's own share sheet where there is one; otherwise, or if it fails, the list of networks.
     share: () => {
       if (!navigator.share) return flummox.dispatch({ type: 'share' });
-      navigator.share({ text: shared.message, url: shared.url }).catch((e: unknown) => {
+      navigator.share({ text: shared.message, url: shared.url }).then(() => track('Flummox share', { network: 'share sheet' }), (e: unknown) => {
         if (!(e instanceof DOMException && e.name === 'AbortError')) flummox.dispatch({ type: 'share' });
       });
     },
@@ -87,7 +87,10 @@ export const App: React.FC = () => {
       const text = `${shared.message} ${shared.url}`;
       if (!navigator.clipboard) return setAnnouncement("Copying isn't available here: select the message on screen.");
       navigator.clipboard.writeText(text).then(
-        () => setAnnouncement('Copied the message and link.'),
+        () => {
+          track('Flummox share', { network: 'copy' });
+          setAnnouncement('Copied the message and link.');
+        },
         () => setAnnouncement("Couldn't copy: select the message on screen."),
       );
     },

@@ -36,3 +36,9 @@ export const scoreUrl = (site: string, score: number): string => `${site}152/${s
 
 /** A score page's path under page 152's, e.g. `score/7/`. */
 export const scorePath = (score: number): string => `score/${score}/`;
+
+/** Which network a share link is for, or none: so following one counts as a share, not a visit elsewhere. */
+export const shareNetworkOf = (href: string): string | undefined => {
+  const probe = SHARE_NETWORKS.map((n) => ({ name: n.name, prefix: n.href('', '').split('?')[0] }));
+  return probe.find((n) => href.startsWith(`${n.prefix}?`))?.name;
+};

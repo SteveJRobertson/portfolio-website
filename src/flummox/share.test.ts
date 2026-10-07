@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SHARE_NETWORKS, scoreUrl, shareMessage } from './share';
+import { SHARE_NETWORKS, scoreUrl, shareMessage, shareNetworkOf } from './share';
 
 const message = shareMessage('I scored {score}/12 on Flummox! & you?', 7);
 const url = scoreUrl('https://steverobertson.dev/', 7);
@@ -21,5 +21,13 @@ describe('share', () => {
     expect(href('WhatsApp')).toBe(`https://wa.me/?text=${both}`);
     expect(href('Email')).toBe(`mailto:?subject=Flummox!&body=${encodeURIComponent(`${message}\n\n${url}`)}`);
     expect(href('X')).not.toMatch(/[ &]you/);
+  });
+});
+
+describe('shareNetworkOf', () => {
+  it('names the network of a share link, and nothing else', () => {
+    expect(SHARE_NETWORKS.map((n) => shareNetworkOf(n.href(message, url)))).toEqual(SHARE_NETWORKS.map((n) => n.name));
+    expect(shareNetworkOf('https://x.com/stevejrobertson')).toBeUndefined();
+    expect(shareNetworkOf('mailto:hello@steverobertson.dev')).toBeUndefined();
   });
 });

@@ -2,6 +2,9 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BEST_KEY, GAME_KEY, loadBest, useFlummox } from './useFlummox';
 import type { GameAction, GameRules } from './game';
+import { track } from '../analytics/track';
+
+vi.mock('../analytics/track', () => ({ track: vi.fn() }));
 
 // Four questions, all answered red, one stage
 const rules: GameRules = { correct: [0, 0, 0, 0], stages: [0] };
@@ -11,6 +14,7 @@ const next: GameAction = { type: 'next' };
 
 describe('useFlummox', () => {
   afterEach(() => {
+    vi.mocked(track).mockClear();
     vi.restoreAllMocks();
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -69,5 +73,25 @@ describe('useFlummox', () => {
     act(() => result.current.dispatch({ type: 'play' }));
     act(() => result.current.dispatch(right));
     expect(result.current.game).toMatchObject({ screen: 'correct', score: 1 });
+  });
+
+  it('counts games begun, wrong answers and final scores', () => {
+    const { result } = renderHook(() => useFlummox('Autumn', rules));
+    act(() => result.current.dispatch({ type: 'play' }));
+    act(() => result.current.dispatch(right));
+    act(() => result.current.dispatch(next));
+    act(() => result.current.dispatch(wrong));
+    act(() => result.current.dispatch({ type: 'retry' }));
+    for (let i = 0; i < 4; i++) {
+      act(() => result.current.dispatch(right));
+      act(() => result.current.dispatch(next));
+    }
+    act(() => result.current.dispatch({ type: 'restart' }));
+    expect(vi.mocked(track).mock.calls).toEqual([
+      ['Flummox start', { edition: 'Autumn' }],
+      ['Flummox flummoxed', { edition: 'Autumn', question: 2 }],
+      ['Flummox finish', { edition: 'Autumn', score: 3 }],
+      ['Flummox start', { edition: 'Autumn' }],
+    ]);
   });
 });
