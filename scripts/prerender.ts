@@ -13,7 +13,8 @@ import { pathToFileURL } from 'node:url';
  * lists every page but 404, and at the root of a domain `robots.txt` points
  * search engines at it (SEO SPEC §3.2).
  *
- * `SITE_URL` is the site's origin for absolute links (default: the live site, steverobertson.dev).
+ * `SITE_URL` is the site's origin for absolute links. Vercel preview builds use their own
+ * deployment URL, so link previews of a preview show its pictures; otherwise it's the live site.
  */
 
 /** What `src/prerender.tsx` returns for each page. */
@@ -33,7 +34,8 @@ const root = path.resolve(import.meta.dirname, '..');
 const dist = path.join(root, 'dist');
 const ssr = path.join(root, 'dist-ssr');
 
-const SITE_URL = (process.env.SITE_URL ?? 'https://steverobertson.dev').replace(/\/+$/, '');
+const VERCEL_PREVIEW_URL = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
+const SITE_URL = (process.env.SITE_URL ?? VERCEL_PREVIEW_URL ?? 'https://steverobertson.dev').replace(/\/+$/, '');
 const SITE_NAME = 'STEEVEFAX';
 const SHARE_IMAGE = 'share.png';
 const SHARE_IMAGE_ALT = "The STEEVEFAX index page: Steve Robertson's name in Teletext block letters.";
