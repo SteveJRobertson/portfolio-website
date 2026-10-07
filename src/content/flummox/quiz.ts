@@ -21,8 +21,8 @@ const VERDICT_KEYS = ['min', 'text'];
 /** Felix's line after a right answer, when the question has no `quip`. */
 const STOCK_QUIPS = ['Right! Felix is impressed.', 'Correct! Felix nods slowly.', 'Spot on! Felix makes a note.'];
 
-const FELIX_ALT = 'Felix Flummox, the quizmaster: a cartoon with green hair, cyan glasses and a red bow tie.';
-const FELIX_FLUMMOXED_ALT = 'Felix Flummox, the quizmaster, gone yellow in the face and looking flummoxed.';
+const FELIX_ALT = 'Felix Flummox, the quizmaster: a grinning cartoon with a green quiff, round glasses, a red bow tie and a blue jacket.';
+const FELIX_FLUMMOXED_ALT = 'Felix Flummox, the quizmaster, gone yellow in the face, cross-eyed and open-mouthed, with a bead of sweat.';
 
 /** The logo in chunky yellow mosaic letters, as Bamboozle! had. */
 const LOGO: RowSource = { image: 'flummox-logo', alt: 'Flummox!', rows: 3, pixelArt: true };
@@ -36,7 +36,7 @@ const NBSP = '\u00a0';
 const BAR = sextant(0b001100);
 
 /** Felix's cells across, and so the room left for his speech bubble beside him. */
-const FELIX_COLS = 12;
+const FELIX_COLS = 14;
 
 interface Width {
   cols: number;
@@ -83,15 +83,25 @@ const bubble = (markup: string, width: number): TextRowSource[] => {
   return [...lines, { text: `${' '.repeat(width - 7)}{white}${tail}{/}`, screenOnly: true }];
 };
 
-/** Felix at the right edge, speaking. */
-const felix = (says: string, width: Width, flummoxed = false): RowSource => ({
-  image: flummoxed ? 'felix-flummoxed' : 'felix',
-  alt: flummoxed ? FELIX_FLUMMOXED_ALT : FELIX_ALT,
-  rows: 9,
-  pixelArt: true,
-  align: 'right',
-  beside: bubble(says, width.bubble),
-});
+/** Felix's height in rows: 8, as Bamber was. */
+const FELIX_ROWS = 8;
+
+/**
+ * Felix at the right edge, speaking. The bubble is centred on his face (all
+ * but his shoulders' row), so a short line leaves no gap below it.
+ */
+const felix = (says: string, width: Width, flummoxed = false): RowSource => {
+  const said = bubble(says, width.bubble);
+  const above = Math.max(0, Math.floor((FELIX_ROWS - 1 - said.length) / 2));
+  return {
+    image: flummoxed ? 'felix-flummoxed' : 'felix',
+    alt: flummoxed ? FELIX_FLUMMOXED_ALT : FELIX_ALT,
+    rows: FELIX_ROWS,
+    pixelArt: true,
+    align: 'right',
+    beside: [...Array.from({ length: above }, (): TextRowSource => ({ text: '', screenOnly: true })), ...said],
+  };
+};
 
 /** A line centred across the screen (less the margin), double height if `big`. */
 const centredText = (markup: string, width: Width): string =>

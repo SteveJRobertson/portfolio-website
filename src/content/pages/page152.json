@@ -10,8 +10,8 @@
     "",
     {
       "image": "felix",
-      "alt": "Felix Flummox, the quizmaster: a cartoon with green hair, cyan glasses and a red bow tie.",
-      "rows": 9,
+      "alt": "Felix Flummox, the quizmaster: a grinning cartoon with a green quiff, round glasses, a red bow tie and a blue jacket.",
+      "rows": 8,
       "pixelArt": true,
       "beside": [
         "{yellow}Felix Flummox{/}, your quizmaster, has 12 questions for you.",

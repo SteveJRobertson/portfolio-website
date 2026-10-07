@@ -100,7 +100,7 @@ describe('question screens', () => {
   });
 
   it('puts the question in Felix\'s speech bubble, blue on white, with Felix at the right edge', () => {
-    const [first] = quiz!.questions[0].screen.wide;
+    const first = quiz!.questions[0].screen.wide.find((r) => r.segments.some((s) => s.bg === 'white'))!;
     expect(text([first])[0]).toMatch(/^ {2}Question 1\. /);
     expect(first.segments.find((s) => s.bg === 'white')).toMatchObject({ color: 'blue' });
     expect(Array.from(text([first])[0])).toHaveLength(38);

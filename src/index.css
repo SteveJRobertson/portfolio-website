@@ -75,6 +75,8 @@ html, body {
 .bg-magenta { background-color: #cc00cc; color: #ffffff; }
 .bg-cyan    { background-color: #00aaaa; color: #000000; }
 .bg-white   { background-color: #ffffff; color: #000000; }
+/* Blue on white keeps its blue, as in Felix's speech bubble (8.6:1 contrast) */
+.bg-white.c-blue { color: #0000cc; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
 
 /* Block graphics backgrounds: the same colours as the foreground, so a picture's cells blend */
