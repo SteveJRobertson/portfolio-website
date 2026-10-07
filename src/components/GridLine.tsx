@@ -17,6 +17,10 @@ interface GridLineProps {
   focusLink?: number;
   /** Outline the text of this address: its twin in the semantic mirror has focus. */
   focusHref?: string;
+  /** Makes a Flummox! answer respond to a click or tap. Like `onLink`, never a tab stop: the answer keys are the Fastext buttons. */
+  onAnswer?: (answer: number) => void;
+  /** Outline this Flummox! answer: its button in the semantic mirror has focus. */
+  focusAnswer?: number;
 }
 
 /**
@@ -44,7 +48,7 @@ const linkedRange = (row: GridRow, link: number): [number, number] => [
  * in the quick index) is one link from label to number. Hovering it draws its
  * leader dots solid, or underlines it if it has none.
  */
-export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width, height = 1, onLink, onOpen, focusLink, focusHref }) => {
+export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width, height = 1, onLink, onOpen, focusLink, focusHref, onAnswer, focusAnswer }) => {
   const whole = onLink ? lineLink(content) : undefined;
   const span = (segment: GridRow['segments'][number], i: number) => {
     if (segment.icon) {
@@ -55,7 +59,7 @@ export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width
         </span>
       );
     }
-    const { link, href } = segment;
+    const { link, href, answer } = segment;
     const onClick =
       whole !== undefined
         ? undefined
@@ -63,8 +67,12 @@ export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width
           ? () => onLink(link)
           : href !== undefined && onOpen
             ? () => onOpen(href)
-            : undefined;
-    const focused = whole === undefined && ((link !== undefined && link === focusLink) || (href !== undefined && href === focusHref));
+            : answer !== undefined && onAnswer
+              ? () => onAnswer(answer)
+              : undefined;
+    const focused =
+      (whole === undefined && ((link !== undefined && link === focusLink) || (href !== undefined && href === focusHref))) ||
+      (answer !== undefined && answer === focusAnswer);
     return (
       <ColorSpan
         key={i}

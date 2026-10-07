@@ -28,8 +28,12 @@ To switch it off again, delete the variable and redeploy.
 | `Setting` | `name`, `on` | `text mode`, `shortcuts`, `crt`; `true` or `false` |
 | `Outbound` | `to` | `email`, `LinkedIn`, `GitHub`, or the site's host name |
 | `Not found` | `path` | the page number or path asked for, e.g. `/999/` |
+| `Flummox start` | `edition` | a game begun from question 1 (Play, or Again/Restart) |
+| `Flummox flummoxed` | `edition`, `question` | the question answered wrong, 1 to 12 |
+| `Flummox finish` | `edition`, `score` | the final score, 0 to 12 |
+| `Flummox share` | `network` | `Bluesky`, `X`, `Threads`, `Facebook`, `LinkedIn`, `WhatsApp`, `Email` (a share link followed, which isn't also counted as `Outbound`), `copy`, `share sheet` |
 
-Nothing identifies a visitor. The Flummox! events in SPEC §4.2 come with Flummox!.
+Nothing identifies a visitor: no answers, only which question and the score.
 
 ## How it's built
 

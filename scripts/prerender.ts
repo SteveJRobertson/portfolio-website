@@ -13,7 +13,8 @@ import { pathToFileURL } from 'node:url';
  * lists every page but 404, and at the root of a domain `robots.txt` points
  * search engines at it (SEO SPEC §3.2).
  *
- * `SITE_URL` is the site's origin for absolute links (default: the live site, steverobertson.dev).
+ * `SITE_URL` is the site's origin for absolute links. Vercel preview builds use their own
+ * deployment URL, so link previews of a preview show its pictures; otherwise it's the live site.
  */
 
 /** What `src/prerender.tsx` returns for each page. */
@@ -24,15 +25,20 @@ interface PrerenderedPage {
   title: string;
   description: string;
   body: string;
+  canonical?: string;
+  noindex?: boolean;
+  image?: { path: string; alt: string };
 }
 
 const root = path.resolve(import.meta.dirname, '..');
 const dist = path.join(root, 'dist');
 const ssr = path.join(root, 'dist-ssr');
 
-const SITE_URL = (process.env.SITE_URL ?? 'https://steverobertson.dev').replace(/\/+$/, '');
+const VERCEL_PREVIEW_URL = process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
+const SITE_URL = (process.env.SITE_URL ?? VERCEL_PREVIEW_URL ?? 'https://steverobertson.dev').replace(/\/+$/, '');
 const SITE_NAME = 'STEEVEFAX';
 const SHARE_IMAGE = 'share.png';
+const SHARE_IMAGE_ALT = "The STEEVEFAX index page: Steve Robertson's name in Teletext block letters.";
 
 const escape = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -94,7 +100,7 @@ const sitemap = (pages: PrerenderedPage[]) =>
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...pages
-      .filter((page) => page.file !== '404.html')
+      .filter((page) => page.file !== '404.html' && !page.noindex)
       .map((page) => {
         const lastmod = lastModified(page.page);
         return `  <url><loc>${escape(`${SITE_URL}${page.href}`)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
@@ -103,17 +109,21 @@ const sitemap = (pages: PrerenderedPage[]) =>
     '',
   ].join('\n');
 
+const QUIZ_PAGE = 152;
+
 const META = /<!-- page-meta[\s\S]*?<!-- \/page-meta -->/;
 const ROOT = '<div id="root"></div>';
 
 const head = (page: PrerenderedPage, base: string) => {
   const url = `${SITE_URL}${page.href}`;
-  const image = `${SITE_URL}${base}${SHARE_IMAGE}`;
+  const image = `${SITE_URL}${base}${page.image?.path ?? SHARE_IMAGE}`;
+  const imageAlt = page.image?.alt ?? SHARE_IMAGE_ALT;
   const tags = [
     `<title>${escape(page.title)}</title>`,
     `<meta name="description" content="${escape(page.description)}" />`,
-    // The not-found page has no URL of its own
-    ...(page.file === '404.html' ? ['<meta name="robots" content="noindex" />'] : [`<link rel="canonical" href="${url}" />`]),
+    // The not-found page has no URL of its own; a Flummox! score page is page 152's, kept out of search
+    ...(page.file === '404.html' ? [] : [`<link rel="canonical" href="${SITE_URL}${page.canonical ?? page.href}" />`]),
+    ...(page.file === '404.html' || page.noindex ? ['<meta name="robots" content="noindex" />'] : []),
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:title" content="${escape(page.title)}" />`,
@@ -122,7 +132,7 @@ const head = (page: PrerenderedPage, base: string) => {
     `<meta property="og:image" content="${image}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
-    `<meta property="og:image:alt" content="The STEEVEFAX index page: Steve Robertson's name in Teletext block letters." />`,
+    `<meta property="og:image:alt" content="${escape(imageAlt)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     ...(page.file === 'index.html' ? [`<script type="application/ld+json">${scriptJson(structuredData(url))}</script>`] : []),
   ];
@@ -141,7 +151,9 @@ const main = async () => {
 
   const pages = prerender();
   for (const page of pages) {
-    const html = template.replace(META, () => head(page, base)).replace(ROOT, () => `<div id="root">${page.body}</div>`);
+    let html = template.replace(META, () => head(page, base)).replace(ROOT, () => `<div id="root">${page.body}</div>`);
+    // Flummox! pages, page 152 and its score pages, show its "F" favicon from the first paint
+    if (page.page === QUIZ_PAGE) html = html.replace(/(rel="icon"[^>]*href="[^"]*)favicon\.(ico|svg)"/g, '$1favicon-flummox.$2"');
     const file = path.join(dist, page.file);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, html);

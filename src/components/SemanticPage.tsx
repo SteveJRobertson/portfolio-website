@@ -1,7 +1,20 @@
 import React, { Fragment, useEffect, useRef } from 'react';
-import type { CompiledPage, FastextLink, SemanticBlock, SemanticInline } from '../types/teletext';
+import type { CompiledPage, FastextLink, SemanticBlock, SemanticInline, TeletextColor } from '../types/teletext';
 import { FASTEXT_ORDER, fastextLabel, fastextName } from '../display/fastext';
 import { isPlainClick, pageHref } from '../navigation/paths';
+
+/** A button in the mirror for something the page does rather than a link: Flummox!'s answers and game keys. */
+export interface MirrorAction {
+  /** What a screen reader says, e.g. "Red: BBC One". */
+  name: string;
+  /** What Text mode shows on the button. */
+  text: string;
+  /** The Fastext colour it matches, shown as a swatch in Text mode. */
+  color?: TeletextColor;
+  /** Its twin on screen, outlined while the button has focus, e.g. "answer-2". */
+  twin?: string;
+  onPress: () => void;
+}
 
 /** Where focus is in the semantic mirror, so the grid can outline the same thing. */
 export interface MirrorFocus {
@@ -25,6 +38,8 @@ interface SemanticPageProps {
   onFocusChange?: (focus: MirrorFocus | null) => void;
   /** Set when the focused element has no twin on screen: it then shows itself as a caption instead. */
   caption?: boolean;
+  /** Buttons after the page content: the game's answers and keys on page 152. */
+  actions?: { label: string; items: MirrorAction[] };
   /** Shown at the end of the page content (the 888 switches in Text mode). */
   children?: React.ReactNode;
 }
@@ -69,8 +84,9 @@ const Inline: React.FC<{ content: SemanticInline[]; onNavigate: (page: number) =
 
 const Block: React.FC<{ block: SemanticBlock; onNavigate: (page: number) => void }> = ({ block, onNavigate }) => {
   if (block.kind === 'heading') {
+    // Focusable from script only: Flummox! moves focus to a result's heading
     return (
-      <h2>
+      <h2 tabIndex={-1}>
         <Inline content={block.content} onNavigate={onNavigate} />
       </h2>
     );
@@ -123,6 +139,7 @@ export const SemanticPage: React.FC<SemanticPageProps> = ({
   visible,
   onFocusChange,
   caption = false,
+  actions,
   children,
 }) => {
   const root = useRef<HTMLDivElement>(null);
@@ -140,7 +157,7 @@ export const SemanticPage: React.FC<SemanticPageProps> = ({
     const el = e.target as HTMLElement;
     if (!onFocusChange) return;
     // The heading takes focus after navigation so screen readers announce it; it isn't a control, so nothing is outlined.
-    if (el.tagName === 'H1' || !isFocusVisible(el)) return onFocusChange(null);
+    if (el.tagName === 'H1' || el.tagName === 'H2' || !isFocusVisible(el)) return onFocusChange(null);
     const twin = el.closest('[data-twin]')?.getAttribute('data-twin');
     const subpage = (el.closest('[data-subpage]') as HTMLElement | null)?.dataset.subpage;
     onFocusChange({ twin: twin && twin !== 'none' ? twin : null, subpage: subpage === undefined ? undefined : Number(subpage) });
@@ -163,6 +180,15 @@ export const SemanticPage: React.FC<SemanticPageProps> = ({
             ))}
           </section>
         ))}
+        {actions && actions.items.length > 0 && (
+          <div role="group" aria-label={actions.label} className="mirror__actions">
+            {actions.items.map((action) => (
+              <button key={action.name} type="button" aria-label={action.name} data-twin={action.twin ?? 'none'} onClick={action.onPress}>
+                {action.color && <span className={`mirror__swatch bg-${action.color}`} aria-hidden="true" />} {action.text}
+              </button>
+            ))}
+          </div>
+        )}
         {children}
       </main>
 

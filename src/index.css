@@ -75,6 +75,9 @@ html, body {
 .bg-magenta { background-color: #cc00cc; color: #ffffff; }
 .bg-cyan    { background-color: #00aaaa; color: #000000; }
 .bg-white   { background-color: #ffffff; color: #000000; }
+/* Blue on white is pure Teletext blue, as in Bamboozle!'s speech bubbles (8.6:1 contrast);
+   the lighter --tt-blue is for black backgrounds and would fail AA on white */
+.bg-white.c-blue { color: #0000ff; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
 
 /* Block graphics backgrounds: the same colours as the foreground, so a picture's cells blend */
@@ -155,6 +158,11 @@ html, body {
    whole tube. Static, so it's safe with reduced motion; it starts off with reduced motion or more contrast. */
 .teletext-screen--crt .tt-grid {
   text-shadow: 0 0 0.12em currentColor;
+}
+/* Dark text on a light background gets a softer glow: the full one smudged the letters in
+   Felix's white speech bubble, and none at all made them stand apart from the rest of the screen. */
+.teletext-screen--crt .tt-grid :is(.bg-white, .bg-yellow, .bg-green, .bg-cyan) {
+  text-shadow: 0 0 0.05em currentColor;
 }
 
 .crt-overlay {
@@ -632,6 +640,28 @@ html, body {
   width: 1rem;
   height: 1rem;
   flex: none;
+}
+
+/* Flummox!'s answers and game keys, as buttons in Text mode */
+.mirror__actions {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.text-mode .mirror__actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--text-bg);
+  color: var(--text-fg);
+  border: 2px solid var(--text-fg);
+  border-radius: 4px;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
 }
 
 .mirror__pages ul {

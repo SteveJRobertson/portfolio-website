@@ -87,14 +87,17 @@ export const buildSemantic = (rows: RowSource[]): SemanticBlock[] => {
 const collapse = (text: string) => text.replace(/\s+/g, ' ');
 
 /** Merges segments into runs (page link or plain), collapsing the screen's alignment spaces. */
-const inlines = (segments: { text: string; link?: number }[]): SemanticInline[] => {
+const inlines = (segments: { text: string; link?: number; slot?: string }[]): SemanticInline[] => {
   const runs: SemanticInline[] = [];
-  for (const { text, link } of segments) {
+  for (const { text, link, slot } of segments) {
     const last = runs[runs.length - 1];
-    if (last && last.page === link) last.text += text;
+    if (slot !== undefined) runs.push({ text: '', slot });
+    else if (last && last.slot === undefined && last.page === link) last.text += text;
     else runs.push(link === undefined ? { text } : { text, page: link });
   }
-  return runs.flatMap((run) => (run.page === undefined ? autolink(collapse(run.text)) : [{ ...run, text: collapse(run.text) }]));
+  return runs.flatMap((run) =>
+    run.slot !== undefined ? [run] : run.page === undefined ? autolink(collapse(run.text)) : [{ ...run, text: collapse(run.text) }],
+  );
 };
 
 const trimStart = (content: SemanticInline[], pattern: RegExp): SemanticInline[] => {
