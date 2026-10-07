@@ -24,8 +24,8 @@ const VERDICT_KEYS = ['min', 'text'];
 /** Felix's line after a right answer, when the question has no `quip`. */
 const STOCK_QUIPS = ['Right! Felix is impressed.', 'Correct! Felix nods slowly.', 'Spot on! Felix makes a note.'];
 
-const FELIX_ALT = 'Felix Flummox, the quizmaster: a grinning cartoon with a green quiff, round glasses, a red bow tie and a blue jacket.';
-const FELIX_FLUMMOXED_ALT = 'Felix Flummox, the quizmaster, gone yellow in the face, cross-eyed and open-mouthed, with a bead of sweat.';
+const FELIX_ALT = 'Felix Flummox, the quizmaster: a grinning yellow-faced cartoon with a green quiff, round glasses, a red bow tie and a blue jacket.';
+const FELIX_FLUMMOXED_ALT = 'Felix Flummox, the quizmaster, cross-eyed and open-mouthed, with a bead of sweat.';
 
 /** The logo in chunky yellow mosaic letters, as Bamboozle! had. */
 const LOGO: RowSource = { image: 'flummox-logo', alt: 'Flummox!', rows: 3, pixelArt: true };
