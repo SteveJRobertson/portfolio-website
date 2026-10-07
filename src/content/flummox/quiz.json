@@ -1,6 +1,6 @@
 {
   "edition": "Autumn 2026",
-  "checkpoints": [4, 8],
+  "checkpoints": [3, 6, 9],
   "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
   "verdicts": [
     { "min": 12, "text": "Felix is utterly FLUMMOXED! A perfect game." },

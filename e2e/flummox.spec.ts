@@ -4,6 +4,7 @@ import { open } from './helpers';
 
 // Flummox! on page 152, played as a visitor would (docs/flummox/PLAN.md §7)
 const quiz = JSON.parse(readFileSync(new URL('../src/content/flummox/quiz.json', import.meta.url), 'utf-8')) as {
+  checkpoints: number[];
   questions: { answers: string[]; correct: number }[];
 };
 const KEYS = ['r', 'g', 'y', 'c'];
@@ -30,7 +31,7 @@ test.describe('Flummox!', () => {
       await expect(heading(page)).toHaveText(`Question ${q + 1} of 12`);
       await page.keyboard.press(right(q));
       await page.keyboard.press('r');
-      if (q === 3 || q === 7) {
+      if (quiz.checkpoints.includes(q + 1)) {
         await expect(heading(page)).toHaveText('Checkpoint!');
         await page.keyboard.press('r');
       }

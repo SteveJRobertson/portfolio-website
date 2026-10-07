@@ -241,7 +241,7 @@ const ANY_COLOUR = (w: Width) => centredText('{cyan}PRESS ANY COLOUR TO CONTINUE
 const screens = (quiz: QuizSource) => {
   const total = quiz.questions.length;
   const stages = [0, ...quiz.checkpoints];
-  const checkpointText = quiz.checkpoints.join(' or ');
+  const checkpointText = quiz.checkpoints.length > 1 ? `${quiz.checkpoints.slice(0, -1).join(', ')} or ${quiz.checkpoints.at(-1)}` : `${quiz.checkpoints[0]}`;
   const introText = `Our resident quizmaster, {yellow}Felix Flummox{/}, will pose ${total} questions. Press the coloured key for your answer. Get one wrong and it's back to the last checkpoint, after question ${checkpointText}.`;
   const introAsk = `{yellow}Can you get all ${total} first time?{/}`;
   const introSemantic = (says: string): SemanticBlock[] => [

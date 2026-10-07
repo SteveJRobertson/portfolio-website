@@ -43,7 +43,7 @@ The game is a small set of screens, all on page 152. Each is laid out like any o
 | **Question** | Banner, `QUESTION 3 OF 12` and `SCORE 02` on one line, the question (beside a small Felix in wide modes, under him in portrait), then the four answers, each a line starting with a solid block in its key's colour, the answer in that colour. A hint row (screen only): "Press a coloured button to answer." | The four answer keys (§8) |
 | **Correct** | Felix (normal) with Felix's line for that question (`quip`, or a stock line), "+1 POINT" when it counted, the score. | Home, Next, Restart, Contact |
 | **Flummoxed** | `FLUMMOXED!` in double height, Felix with his yellow face, "Back to question N", the score. The right answer is not shown, as in Bamboozle! (open question Q5). | Home, Try again, Restart, Contact |
-| **Checkpoint** | After questions 4 and 8: "CHECKPOINT! You're safe at question 5". | Home, Next, Restart, Contact |
+| **Checkpoint** | After questions 3, 6 and 9: "CHECKPOINT! You're safe at question 4". | Home, Next, Restart, Contact |
 | **Finished** | Felix, "You beat Felix!", the final score out of 12 and a verdict line by score band, "NEW BEST!" when it is. | Home, Play again, Share, Contact |
 | **Share** | "SHARE YOUR SCORE", the message that will be shared, then one line per network (§6, Sharing). | Home, Back, Copy, Contact |
 
@@ -72,7 +72,7 @@ P152 STEEVEFAX 152       MON 05 OCT 10:14
 ## 5. The game
 
 - A game is the 12 questions in the content file, in file order, so everyone plays the same quiz (as with a Bamboozle! edition).
-- **Checkpoints** after questions 4 and 8. The game starts at question 1; once you pass question 4 you never go back further than question 5, and once you pass 8, never further than 9.
+- **Checkpoints** after questions 3, 6 and 9, as on Bamboozle!. The game starts at question 1; once you pass question 3 you never go back further than question 4, and so on.
 - **Right answer**: the Correct screen, then Next moves to the next question (or a checkpoint, or the end).
 - **Wrong answer**: the Flummoxed screen, then Try again goes to the last checkpoint's first question. Questions you'd already passed are asked again.
 - **No time limit** anywhere (WCAG 2.2.1), and nothing flashes (WCAG 2.3.1). Sub-page cycling and HOLD don't apply to 152.
@@ -163,7 +163,7 @@ P152 STEEVEFAX 152                         MON 05 OCT
 ```json
 {
   "edition": "Autumn 2026",
-  "checkpoints": [4, 8],
+  "checkpoints": [3, 6, 9],
   "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
   "verdicts": [
     { "min": 12, "text": "Felix is utterly FLUMMOXED! A perfect game." },
@@ -258,7 +258,7 @@ These came from search summaries; the sandbox couldn't open the pages themselves
 | FLX-002 | Questions are a JSON content file in the repo, validated at build time. Updating means editing the file and merging. |
 | FLX-003 | Scores and the game in progress stay in the browser only (best score in `localStorage`, current game in `sessionStorage`). |
 | FLX-004 | The fourth answer key is cyan, matching the site's Fastext, with `B` and `C` both accepted. |
-| FLX-005 | Scoring: a point per question right at the first try; a wrong answer sends you back to the last checkpoint (after questions 4 and 8). |
+| FLX-005 | Scoring: a point per question right at the first try; a wrong answer sends you back to the last checkpoint (after questions 3, 6 and 9, as on Bamboozle!; Steve chose this on 7 Oct 2026). |
 | FLX-006 | Sharing uses the native share sheet where there is one, otherwise plain share links to each network and Copy. No third-party scripts. |
 | FLX-007 | Shared links go to a pre-rendered score page (`/152/score/N/`) with its own 1200 × 630 score card, so every network's preview shows the score. Cards are drawn by the Teletext grid, captured by Playwright, committed, and checked for staleness in Vitest. |
 | FLX-008 | 7 Oct: the screens follow the look of Channel 4's 1997 Bamboozle! pages (captures from the Teletext archive): a yellow mosaic logo, Felix on the right with a blue-on-white speech bubble, double-height answers beside colour blocks, "press any colour to continue", and red to start. |

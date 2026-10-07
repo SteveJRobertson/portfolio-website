@@ -26,7 +26,7 @@ export interface QuizVerdictSource {
 export interface QuizSource {
   /** Names this set of questions; a new edition starts a new best score. */
   edition: string;
-  /** The questions after which a wrong answer no longer sends you back further, e.g. [4, 8]. */
+  /** The questions after which a wrong answer no longer sends you back further, e.g. [3, 6, 9]. */
   checkpoints: number[];
   /** The shared message; `{score}` becomes the final score. */
   share: string;
@@ -46,7 +46,7 @@ export interface CompiledQuestion {
 
 export interface CompiledQuiz {
   edition: string;
-  /** Index of the first question of each stage: [0, 4, 8] for checkpoints after 4 and 8. */
+  /** Index of the first question of each stage: [0, 3, 6, 9] for checkpoints after 3, 6 and 9. */
   stages: number[];
   /** The shared message, with `{score}` where the score goes. */
   message: string;

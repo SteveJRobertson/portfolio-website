@@ -28,9 +28,9 @@ describe('quiz.json', () => {
     const { quiz, errors } = compileQuizFile();
     expect(errors).toEqual([]);
     expect(quiz!.questions).toHaveLength(QUESTION_COUNT);
-    expect(quiz!.stages).toEqual([0, 4, 8]);
-    expect(quiz!.flummoxed).toHaveLength(3);
-    expect(quiz!.checkpoint).toHaveLength(2);
+    expect(quiz!.stages).toEqual([0, 3, 6, 9]);
+    expect(quiz!.flummoxed).toHaveLength(4);
+    expect(quiz!.checkpoint).toHaveLength(3);
     expect(quiz!.finished.map((f) => f.min)).toEqual([12, 9, 5, 0]);
   });
 });
