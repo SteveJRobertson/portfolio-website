@@ -36,7 +36,7 @@ describe('contrastRatio', () => {
     const pagesDir = path.join(__dirname, '../content/pages');
     const banners = fs
       .readdirSync(pagesDir)
-      .flatMap((file) => JSON.stringify(JSON.parse(fs.readFileSync(path.join(pagesDir, file), 'utf-8'))).match(/\{"banner":"(?:[^"\\]|\\.)*","bg":"\w+"\}/g) ?? [])
+      .flatMap((file) => JSON.stringify(JSON.parse(fs.readFileSync(path.join(pagesDir, file), 'utf-8'))).match(/\{"banner":"(?:[^"\\]|\\.)*","bg":"\w+"(?:,"rule":"\w+")?\}/g) ?? [])
       .map((json) => JSON.parse(json) as { banner: string; bg: string });
     expect(banners.length).toBeGreaterThan(10);
     for (const { banner, bg } of banners) {

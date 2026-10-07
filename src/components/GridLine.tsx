@@ -71,7 +71,7 @@ export const GridLine: React.FC<GridLineProps> = ({ content, row, col = 1, width
         color={segment.color ?? 'white'}
         bg={segment.bg}
         mosaic={segment.mosaic}
-        className={[onClick && 'tt-link', focused && 'tt-twin-focus', segment.leaderDots && 'tt-leader'].filter(Boolean).join(' ')}
+        className={[onClick && 'tt-link', focused && 'tt-twin-focus', segment.leaderDots && 'tt-leader', segment.line && 'tt-thin-line'].filter(Boolean).join(' ')}
         onClick={onClick}
       >
         {segment.text}

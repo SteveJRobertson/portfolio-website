@@ -106,3 +106,70 @@ export const blockBitmap = (text: string, weight: BlockWeight): string[] => {
     .filter((g): g is Glyph => g !== undefined);
   return Array.from({ length: BLOCK_HEIGHT }, (_, y) => glyphs.map((g) => g[y]).join('.'));
 };
+
+/**
+ * Mixed case, for mastheads on black: nine pixels (three rows) tall. Capitals
+ * are seven pixels, lowercase five, with ascenders to the top and descenders
+ * in the last two.
+ */
+const LOWER: Record<string, Glyph> = {
+  a: ['....', '....', '.##.', '...#', '.###', '#..#', '.###', '....', '....'],
+  b: ['#...', '#...', '###.', '#..#', '#..#', '#..#', '###.', '....', '....'],
+  c: ['....', '....', '.###', '#...', '#...', '#...', '.###', '....', '....'],
+  d: ['...#', '...#', '.###', '#..#', '#..#', '#..#', '.###', '....', '....'],
+  e: ['....', '....', '.##.', '#..#', '####', '#...', '.###', '....', '....'],
+  f: ['.##', '#..', '###', '#..', '#..', '#..', '#..', '...', '...'],
+  g: ['....', '....', '.###', '#..#', '#..#', '#..#', '.###', '...#', '###.'],
+  h: ['#...', '#...', '###.', '#..#', '#..#', '#..#', '#..#', '....', '....'],
+  i: ['#', '.', '#', '#', '#', '#', '#', '.', '.'],
+  j: ['..#', '...', '..#', '..#', '..#', '..#', '..#', '..#', '##.'],
+  k: ['#...', '#...', '#..#', '#.#.', '##..', '#.#.', '#..#', '....', '....'],
+  l: ['#', '#', '#', '#', '#', '#', '#', '.', '.'],
+  m: ['.....', '.....', '####.', '#.#.#', '#.#.#', '#.#.#', '#.#.#', '.....', '.....'],
+  n: ['....', '....', '###.', '#..#', '#..#', '#..#', '#..#', '....', '....'],
+  o: ['....', '....', '.##.', '#..#', '#..#', '#..#', '.##.', '....', '....'],
+  p: ['....', '....', '###.', '#..#', '#..#', '#..#', '###.', '#...', '#...'],
+  q: ['....', '....', '.###', '#..#', '#..#', '#..#', '.###', '...#', '...#'],
+  r: ['....', '....', '#.##', '##..', '#...', '#...', '#...', '....', '....'],
+  s: ['....', '....', '.###', '#...', '.##.', '...#', '###.', '....', '....'],
+  t: ['.#.', '.#.', '###', '.#.', '.#.', '.#.', '..#', '...', '...'],
+  u: ['....', '....', '#..#', '#..#', '#..#', '#..#', '.###', '....', '....'],
+  v: ['.....', '.....', '#...#', '#...#', '.#.#.', '.#.#.', '..#..', '.....', '.....'],
+  w: ['.....', '.....', '#...#', '#...#', '#.#.#', '#.#.#', '.#.#.', '.....', '.....'],
+  x: ['....', '....', '#..#', '#..#', '.##.', '#..#', '#..#', '....', '....'],
+  y: ['....', '....', '#..#', '#..#', '#..#', '#..#', '.###', '...#', '###.'],
+  z: ['....', '....', '####', '..#.', '.#..', '#...', '####', '....', '....'],
+};
+
+/** Lowercase letters whose one-pixel gaps would close up if emboldened. */
+const LOWER_BOLD: Record<string, Glyph> = {
+  m: ['.......', '.......', '######.', '##.##.#', '##.##.#', '##.##.#', '##.##.#', '.......', '.......'],
+  v: ['......', '......', '##..##', '##..##', '##..##', '.####.', '..##..', '......', '......'],
+  w: ['.......', '.......', '##...##', '##...##', '##.#.##', '###.###', '.##.##.', '.......', '.......'],
+};
+
+export const MIXED_HEIGHT = 9;
+
+/** A capital stretched to seven pixels (its second row doubled), on the nine-pixel grid. */
+const tallCapital = (glyph: Glyph): Glyph => {
+  const blank = '.'.repeat(glyph[0].length);
+  return [glyph[0], ...glyph.slice(1, 2), ...glyph.slice(1), blank, blank];
+};
+
+const mixedGlyph = (ch: string, weight: BlockWeight): Glyph | undefined => {
+  const lower = LOWER[ch];
+  if (lower) return weight === 'bold' ? (LOWER_BOLD[ch] ?? embolden(lower)) : heavyLeft(lower);
+  const capital = glyphFor(ch, weight);
+  return capital && tallCapital(capital);
+};
+
+/** Characters the mixed-case font can't draw. */
+export const unsupportedMixedChars = (text: string): string[] => [...new Set(Array.from(text).filter((ch) => !LOWER[ch] && !THIN[ch]))];
+
+/** Like `blockBitmap`, keeping the case: nine strings of `#` and `.`. */
+export const mixedBitmap = (text: string, weight: BlockWeight): string[] => {
+  const glyphs = Array.from(text)
+    .map((ch) => mixedGlyph(ch, weight))
+    .filter((g): g is Glyph => g !== undefined);
+  return Array.from({ length: MIXED_HEIGHT }, (_, y) => glyphs.map((g) => g[y]).join('.'));
+};

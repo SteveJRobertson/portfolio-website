@@ -6,7 +6,8 @@ import { parseMarkup } from './markup.ts';
  * Builds the semantic mirror (SPEC §9) from a sub-page's logical rows, before
  * any wrapping, so sentences are never cut at the screen width:
  *
- *   banner, double-height    dropped (the page title is the <h1>)
+ *   banner                   dropped (the page title is the <h1>)
+ *   double-height text       kept, like any other row
  *   { "heading": true }      heading
  *   "* " rows                list
  *   rows starting {link:NNN} list of page links ("201 Isolate UI")
@@ -45,7 +46,7 @@ export const buildSemantic = (rows: RowSource[]): SemanticBlock[] => {
       continue;
     }
     const row = typeof source === 'string' ? { text: source } : source;
-    if (row.doubleHeight || row.screenOnly) {
+    if (row.screenOnly) {
       endList();
       continue;
     }
