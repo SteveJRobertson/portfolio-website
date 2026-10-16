@@ -1,0 +1,176 @@
+{
+  "from": "2026-10-27",
+  "until": "2026-10-31",
+  "costume": "halloween",
+  "copy": [
+    {
+      "find": "PLAY FLUMMOX! THE QUIZ p152",
+      "replace": "HALLOWEEN FLUMMOX! QUIZ p152"
+    },
+    {
+      "find": "{yellow}NEW{/} {white}Flummox! quiz",
+      "replace": "{magenta}SPOOKY{/} {white}Flummox! quiz"
+    }
+  ],
+  "quiz": {
+    "edition": "Halloween 2026",
+    "title": "HALLOWEEN SPECIAL",
+    "greeting": "Happy Halloween! Dare you face my spooky questions? Press red to begin.",
+    "checkpoints": [
+      3,
+      6,
+      9
+    ],
+    "share": "I scored {score}/12 on Halloween Flummox!, the spooky Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
+    "verdicts": [
+      {
+        "min": 12,
+        "text": "Felix is scared stiff! A perfect game."
+      },
+      {
+        "min": 9,
+        "text": "Felix is impressed. Frightfully good."
+      },
+      {
+        "min": 5,
+        "text": "Not bad. Felix has seen scarier."
+      },
+      {
+        "min": 0,
+        "text": "Boo! Felix is not flummoxed in the slightest."
+      }
+    ],
+    "questions": [
+      {
+        "question": "Halloween grew out of Samhain, a festival from which country?",
+        "answers": [
+          "Germany",
+          "Mexico",
+          "Ireland",
+          "Greece"
+        ],
+        "correct": 2,
+        "quip": "Right! Samhain marked the end of the harvest and the start of winter."
+      },
+      {
+        "question": "Before pumpkins, what did people in Scotland and Ireland carve into lanterns?",
+        "answers": [
+          "Turnips",
+          "Potatoes",
+          "Apples",
+          "Marrows"
+        ],
+        "correct": 0,
+        "quip": "Yes! A neep lantern. Much harder to carve."
+      },
+      {
+        "question": "Who directed the 1978 film Halloween?",
+        "answers": [
+          "Wes Craven",
+          "Sam Raimi",
+          "George A. Romero",
+          "John Carpenter"
+        ],
+        "correct": 3,
+        "quip": "Correct! He wrote the music too."
+      },
+      {
+        "question": "Which 1992 BBC drama, shown on Halloween night, fooled viewers into thinking it was real?",
+        "answers": [
+          "Threads",
+          "Ghostwatch",
+          "Crimewatch",
+          "The Day Today"
+        ],
+        "correct": 1,
+        "quip": "Right! Even Michael Parkinson was in on it."
+      },
+      {
+        "question": "Which horror star does the spooky voice-over in Michael Jackson's Thriller?",
+        "answers": [
+          "Christopher Lee",
+          "Vincent Price",
+          "Peter Cushing",
+          "Boris Karloff"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "What is the green ghost in Ghostbusters (1984) called?",
+        "answers": [
+          "Gozer",
+          "Zuul",
+          "Vigo",
+          "Slimer"
+        ],
+        "correct": 3,
+        "quip": "Yes! He slimed Venkman in the Sedgewick Hotel."
+      },
+      {
+        "question": "Who wrote Frankenstein?",
+        "answers": [
+          "Mary Shelley",
+          "Bram Stoker",
+          "Edgar Allan Poe",
+          "Emily Brontë"
+        ],
+        "correct": 0,
+        "quip": "Correct! She started it at 18, on a stormy holiday by Lake Geneva."
+      },
+      {
+        "question": "Where does Dracula first come ashore in England?",
+        "answers": [
+          "Dover",
+          "Brighton",
+          "Whitby",
+          "Hull"
+        ],
+        "correct": 2,
+        "quip": "Right! As a large black dog, no less."
+      },
+      {
+        "question": "In ITV's Knightmare, what was the child in the helmet called?",
+        "answers": [
+          "Adventurer",
+          "Champion",
+          "Seeker",
+          "Dungeoneer"
+        ],
+        "correct": 3,
+        "quip": "Yes! Treguard would be proud."
+      },
+      {
+        "question": "What are The Simpsons' Halloween episodes called?",
+        "answers": [
+          "Treehouse of Horror",
+          "Fright Night",
+          "Spooky Shorts",
+          "Night of Terror"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "Anjelica Huston played the Grand High Witch in which 1990 film?",
+        "answers": [
+          "Hocus Pocus",
+          "Matilda",
+          "The Witches",
+          "The Addams Family"
+        ],
+        "correct": 2,
+        "quip": "Correct! From Roald Dahl's book."
+      },
+      {
+        "question": "What is the fear of the number 13 called?",
+        "answers": [
+          "Arachnophobia",
+          "Triskaidekaphobia",
+          "Coulrophobia",
+          "Nyctophobia"
+        ],
+        "correct": 1,
+        "quip": "Spot on! And this one was question 12. Phew."
+      }
+    ]
+  }
+}

@@ -20,14 +20,23 @@ const HAIR = [
   '....ggg.ggggggg.gggggggg.gg.',
   '....g..g......g.......g..g..',
 ];
+// Halloween: a pointed witch's hat in magenta (Teletext has no black to draw with).
+const WITCH_HAT = [
+  '...............mm...........',
+  '.............mmmm...........',
+  '...........mmmmmm...........',
+  '..........mmmmmmmm..........',
+  '.........mmmmmmmmmm.........',
+  '..mmmmmmmmmmmmmmmmmmmmmmmm..',
+];
 const BODY = [
   '..bbbbbbb.rrr..rrr.bbbbbbb..',
   '.bbbbbbbb.rrrrrrrr.bbbbbbbb.',
   'bbbbbbbbb.rrr..rrr.bbbbbbbbb',
 ];
 
-const happy = [
-  ...HAIR,
+const happyFace = (hair) => [
+  ...hair,
   '.....WWWWWWWWWWWWWWWWWW.....',
   '....WW.......WW.......WW....',
   '...WW.WWWWWW.WW.WWWWWW.WW...',
@@ -45,11 +54,12 @@ const happy = [
   '.........WWWWWWWWWW.........',
   ...BODY,
 ];
+const happy = happyFace(HAIR);
 
 // Flummoxed: worried brows, eyes crossed,
 // an "O" for a mouth and a cyan bead of sweat.
-const flummoxed = [
-  ...HAIR,
+const flummoxedFace = (hair) => [
+  ...hair,
   '.....WWWW....WW....WWWW.....',
   '.c..WW...WWWWWWWWWW...WW....',
   'cc.WW.WWWWWW.WW.WWWWWW.WW...',
@@ -67,6 +77,7 @@ const flummoxed = [
   '.........WWWWWWWWWW.........',
   ...BODY,
 ];
+const flummoxed = flummoxedFace(HAIR);
 
 // His raised hand, 4 columns more on the right, rows 0 to 20 (the body rows add his sleeve).
 const blank = '......';
@@ -79,6 +90,13 @@ const OPEN_HAND = handRows([
   '...W..', '.W.W.W', '.W.W.W', '.W.W.W', '.WWWWW', 'W.WWWW', 'WWWWWW',
   '.WWWW.', '..WWW.', '..WWW.', '..WWW.', '..WWW.', '..WWW.', '..WWW.',
 ]);
+// Halloween: a jack-o'-lantern held up in his hand (red, the nearest Teletext has to orange), its stalk green.
+const PUMPKIN = [
+  '......', '......', '......', '......', '......', '......',
+  '......', '...g..', '..gg..',
+  '.rrrr.', 'r.rr.r', 'rrrrrr', 'r....r', 'rr..rr', '.rrrr.',
+  '.WWWW.', 'WWWWWW', '.WWWW.', '..WWW.', '..WWW.', '..WWW.',
+];
 const SLEEVE = ['.bbbbb', 'bbbbbb', 'bbbbbb'];
 const withHand = (rows, hand) => rows.map((row, y) => row.slice(0, 26) + (y < 21 ? hand[y] : SLEEVE[y - 21]));
 
@@ -116,6 +134,18 @@ write(path.join(out, 'felix-flummoxed.png'), withHand(flummoxed, OPEN_HAND), 'y'
 // Portrait screens are too narrow for the hand and a readable bubble, so Felix goes without it there.
 write(path.join(out, 'felix-narrow.png'), happy, 'y', 1);
 write(path.join(out, 'felix-narrow-flummoxed.png'), flummoxed, 'y', 1);
+// Costumes for the dated specials (src/content/specials): felix-COSTUME.png and so on.
+const costumes = { halloween: { hat: WITCH_HAT, hand: PUMPKIN } };
+for (const [name, { hat, hand }] of Object.entries(costumes)) {
+  write(path.join(out, `felix-${name}.png`), withHand(happyFace(hat), hand), 'y', 1);
+  write(path.join(out, `felix-${name}-flummoxed.png`), withHand(flummoxedFace(hat), OPEN_HAND), 'y', 1);
+  write(path.join(out, `felix-narrow-${name}.png`), happyFace(hat), 'y', 1);
+  write(path.join(out, `felix-narrow-${name}-flummoxed.png`), flummoxedFace(hat), 'y', 1);
+  if (preview) {
+    write(path.join(preview, `felix-${name}-preview.png`), withHand(happyFace(hat), hand), 'y', 12);
+    write(path.join(preview, `felix-${name}-flummoxed-preview.png`), withHand(flummoxedFace(hat), OPEN_HAND), 'y', 12);
+  }
+}
 if (preview) {
   write(path.join(preview, 'felix-preview.png'), withHand(happy, THUMBS_UP), 'y', 12);
   write(path.join(preview, 'felix-flummoxed-preview.png'), withHand(flummoxed, OPEN_HAND), 'y', 12);

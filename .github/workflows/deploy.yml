@@ -1,11 +1,16 @@
 name: Deploy Teletext Portfolio to GitHub Pages
 
-# Deploys main once CI has passed on it, or by hand.
+# Deploys main once CI has passed on it, or by hand, and again each night so a
+# dated special (src/content/specials, docs/seasonal/README.md) comes and goes
+# on its own dates. 00:05 UTC is just after midnight in the UK in winter, and
+# just after 1am in summer.
 on:
   workflow_run:
     workflows: ['CI']
     types: [completed]
     branches: ['main']
+  schedule:
+    - cron: '5 0 * * *'
   workflow_dispatch:
 
 permissions:
@@ -19,8 +24,8 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    # Only a CI run for a push to main, and only when it passed
-    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    # By hand, nightly, or a CI run for a push to main when it passed
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

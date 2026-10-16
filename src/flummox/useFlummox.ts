@@ -2,7 +2,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { track } from '../analytics/track';
 import { gameReducer, restoreGame, type GameAction, type GameRules, type GameState } from './game';
 
-/** The best score, per edition (SPEC §6). */
+/**
+ * The best score for each edition (SPEC §6), as `{ "best": { "Autumn 2026": 9 } }`,
+ * so the regular best is still there after a special. Older visits saved
+ * one edition's, as `{ "edition": …, "value": … }`, which still reads.
+ */
 export const BEST_KEY = 'steevefax:flummox';
 /** The game in progress, for this visit only. */
 export const GAME_KEY = 'steevefax:flummox-game';
@@ -33,9 +37,28 @@ const save = <T>(storage: () => Storage, key: string, edition: string, value: T)
 const local = () => window.localStorage;
 const session = () => window.sessionStorage;
 
+const loadBests = (): Record<string, unknown> => {
+  try {
+    const saved = JSON.parse(local().getItem(BEST_KEY) ?? 'null') as { best?: unknown; edition?: unknown; value?: unknown } | null;
+    if (saved && typeof saved.best === 'object' && saved.best !== null) return saved.best as Record<string, unknown>;
+    if (saved && typeof saved.edition === 'string') return { [saved.edition]: saved.value };
+  } catch {
+    // Nothing saved that can be read
+  }
+  return {};
+};
+
 export const loadBest = (edition: string): number | undefined => {
-  const best = load<unknown>(local, BEST_KEY, edition);
+  const best = loadBests()[edition];
   return Number.isInteger(best) ? (best as number) : undefined;
+};
+
+const saveBest = (edition: string, score: number) => {
+  try {
+    local().setItem(BEST_KEY, JSON.stringify({ best: { ...loadBests(), [edition]: score } }));
+  } catch {
+    // Not saved, but the game still works for this visit.
+  }
 };
 
 export interface Flummox {
@@ -69,7 +92,7 @@ export const useFlummox = (edition: string, rules: GameRules, onChange?: (next: 
         setNewBest(beat);
         if (beat) {
           setBest(next.score);
-          save(local, BEST_KEY, edition, next.score);
+          saveBest(edition, next.score);
         }
       } else if (!ended(next.screen)) setNewBest(false);
       save(session, GAME_KEY, edition, next);

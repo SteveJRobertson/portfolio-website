@@ -38,6 +38,8 @@ Flummox!, the quiz on page 152, reads its questions from `src/content/flummox/qu
 4. If you changed a verdict, the link-preview pictures in `public/share/` are out of date and a test says so: run the **Update share images** workflow on your branch, or put `[update share images]` in a commit message. Locally, `npm run build-storybook && npm run share-images` redraws them.
 5. Screenshots of page 152 change too: run **Update visual baselines** as above.
 
+Seasonal specials, such as Halloween, are dated files in `src/content/specials/` that switch on and off by date: see [docs/seasonal/README.md](docs/seasonal/README.md).
+
 Felix and the Flummox! logo are pixel art drawn in code: `node scripts/art/felix.mjs src/content/images` and `node scripts/art/logo.mjs src/content/images` redraw the PNGs, and check every cell keeps to two colours.
 
 ## Deployment
@@ -56,6 +58,7 @@ Merging to `main` runs CI, and when it passes, `deploy.yml` builds the site with
 | `src/navigation/` | Routing, the shared 3-digit buffer and hotkeys |
 | `src/settings/` | Saved Text mode, shortcut and CRT effect settings (page 888) |
 | `src/content/flummox/` | Flummox! questions (`quiz.json`) and the screens laid out from them at build time |
+| `src/content/specials/` | Dated specials, such as Halloween: questions, Felix's costume and copy changes |
 | `src/flummox/` | The Flummox! game: rules, saved scores, Fastext and mirror, sharing, link-preview cards |
 | `public/share/` | Flummox! link-preview pictures, made by `npm run share-images` |
 | `scripts/` | `validatePages.ts`, the Vite plugin that compiles the pages, and `prerender.ts` (per-page HTML) |

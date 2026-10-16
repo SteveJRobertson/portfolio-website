@@ -26,6 +26,10 @@ export interface QuizVerdictSource {
 export interface QuizSource {
   /** Names this set of questions; a new edition starts a new best score. */
   edition: string;
+  /** A line under the logo on the intro, such as HALLOWEEN SPECIAL. */
+  title?: string;
+  /** What Felix says before a first game, in place of his usual hello. */
+  greeting?: string;
   /** The questions after which a wrong answer no longer sends you back further, e.g. [3, 6, 9]. */
   checkpoints: number[];
   /** The shared message; `{score}` becomes the final score. */
