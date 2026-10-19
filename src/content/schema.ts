@@ -28,6 +28,8 @@ export interface ImageRowSource {
   pixelArt?: boolean;
   /** Text laid out to the right of the picture, as on a Ceefax page; below it in portrait. */
   beside?: TextRowSource[];
+  /** `right` puts the picture at the right edge with the `beside` text to its left, as Bamboozle! drew its quizmaster. */
+  align?: 'right';
   /** Colours it may use (all eight when left out). */
   palette?: TeletextColor[];
   contrast?: number;
@@ -49,7 +51,7 @@ export interface BannerRowSource {
 export type RowSource = TextRowSource | ImageRowSource | BannerRowSource;
 
 export const ROW_KEYS = ['text', 'doubleHeight', 'heading', 'screenOnly'] as const;
-export const IMAGE_KEYS = ['image', 'alt', 'rows', 'mobileRows', 'pixelArt', 'beside', 'palette', 'contrast', 'saturation', 'brightness'] as const;
+export const IMAGE_KEYS = ['image', 'alt', 'rows', 'mobileRows', 'pixelArt', 'beside', 'align', 'palette', 'contrast', 'saturation', 'brightness'] as const;
 
 export const BANNER_KEYS = ['banner', 'bg', 'rule'] as const;
 
@@ -84,6 +86,11 @@ export interface PageSource {
    * of every sub-page (on screen only), so it never moves.
    */
   hint?: string;
+  /**
+   * A double-height red promo bar above Fastext, linking to `page`, as Teletext
+   * advertised its other pages ("PLAY FLUMMOX! THE QUIZ p152"). Pages without sub-pages only.
+   */
+  promo?: { text: string; page: number };
   /** Portrait override, used line for line instead of the automatic wrap. */
   mobileRows?: RowSource[];
   mobileSubpages?: RowSource[][];

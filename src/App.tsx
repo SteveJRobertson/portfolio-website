@@ -5,7 +5,7 @@ import { HeaderTicker } from './components/HeaderTicker';
 import { FastTextBar } from './components/FastTextBar';
 import { GridLine } from './components/GridLine';
 import { MobileKeypad } from './components/MobileKeypad';
-import { SemanticPage, type MirrorFocus } from './components/SemanticPage';
+import { SemanticPage, type MirrorAction, type MirrorFocus } from './components/SemanticPage';
 import { SettingsControls } from './components/SettingsControls';
 import { HoldButton } from './components/HoldButton';
 import { NAVIGABLE_PAGES, PAGES, QUICK_INDEX, getPage } from './content/registry';
@@ -19,9 +19,21 @@ import { useDigitBuffer } from './navigation/useDigitBuffer';
 import { useHotkeys } from './navigation/useHotkeys';
 import { useNavigation } from './navigation/useNavigation';
 import { crtEffectOn, useSettings, type Settings } from './settings/useSettings';
+import { quiz } from './flummox/quizData';
+import { useFlummox } from './flummox/useFlummox';
+import { flummoxView, quizRules, resultAnnouncement, type FlummoxEffects } from './flummox/view';
+import type { GameState } from './flummox/game';
+import { SHARE_NETWORKS, scoreUrl, shareMessage } from './flummox/share';
+import { fillSemanticSlots, fillSlots } from './flummox/slots';
+import { FASTEXT_ORDER, type FastextActions } from './display/fastext';
+import type { CompiledPage } from './types/teletext';
 
 const SIDEBAR_ROWS = sidebarRows(QUICK_INDEX);
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
+
+/** Flummox!, the quiz: its page shows the game's current screen (docs/flummox). */
+const QUIZ_PAGE = 152;
+const QUIZ_RULES = quizRules(quiz);
 
 /** Email opens the mail app; web addresses open in a new tab so the Teletext stays put. */
 const openAddress = (href: string) => {
@@ -57,9 +69,97 @@ export const App: React.FC = () => {
   );
   const mode = useGridMode();
 
-  const page = getPage(requested)!;
+  // On the quiz page the body, mirror and Fastext come from the game's screen.
+  const [announcement, setAnnouncement] = useState('');
+  // Results are announced however the answer was given (SPEC §9).
+  const announceResult = useCallback((next: GameState) => {
+    const said = resultAnnouncement(next, quiz.questions.length);
+    if (said) setAnnouncement(said);
+  }, []);
+  const flummox = useFlummox(quiz.edition, QUIZ_RULES, announceResult);
+  const shared = {
+    message: shareMessage(quiz.message, flummox.game.score),
+    url: scoreUrl(`${window.location.origin}${import.meta.env.BASE_URL}`, flummox.game.score),
+  };
+  const effects: FlummoxEffects = {
+    // The phone's own share sheet where there is one; otherwise, or if it fails, the list of networks.
+    share: () => {
+      if (!navigator.share) return flummox.dispatch({ type: 'share' });
+      navigator.share({ text: shared.message, url: shared.url }).then(() => track('Flummox share', { network: 'share sheet' }), (e: unknown) => {
+        if (!(e instanceof DOMException && e.name === 'AbortError')) flummox.dispatch({ type: 'share' });
+      });
+    },
+    copy: () => {
+      const text = `${shared.message} ${shared.url}`;
+      if (!navigator.clipboard) return setAnnouncement("Copying isn't available here: select the message on screen.");
+      navigator.clipboard.writeText(text).then(
+        () => {
+          track('Flummox share', { network: 'copy' });
+          setAnnouncement('Copied the message and link.');
+        },
+        () => setAnnouncement("Couldn't copy: select the message on screen."),
+      );
+    },
+  };
+  const view = requested === QUIZ_PAGE ? flummoxView(quiz, flummox.game, flummox.best, flummox.newBest, flummox.dispatch, effects) : undefined;
+  const shareLinks = SHARE_NETWORKS.map((n) => ({ name: n.name, href: n.href(shared.message, shared.url) }));
+  const lastPage = useRef(requested);
+  const { dispatch: dispatchGame } = flummox;
+  useEffect(() => {
+    // Coming back to the quiz from another page shows the intro, which offers to carry on.
+    if (requested === QUIZ_PAGE && lastPage.current !== QUIZ_PAGE) dispatchGame({ type: 'open' });
+    lastPage.current = requested;
+  }, [requested, dispatchGame]);
+
+  const source = getPage(requested)!;
+  const fastextActions: FastextActions | undefined = view?.fastext.map((slot) => ('page' in slot ? undefined : slot));
+  const page: CompiledPage = view
+    ? {
+        ...source,
+        fastext: view.fastext.map((slot, i) => ('page' in slot ? slot : source.fastext[i])) as CompiledPage['fastext'],
+        wide: [fillSlots(view.screen.wide, view.slots)],
+        narrow: [fillSlots(view.screen.narrow, view.slots)],
+        semantic: [
+          [
+            ...fillSemanticSlots(view.screen.semantic, view.slots),
+            ...(flummox.game.screen === 'share'
+              ? [{ kind: 'list' as const, items: shareLinks.map((l) => [{ text: `Share on ${l.name}`, href: l.href }]) }]
+              : []),
+          ],
+        ],
+      }
+    : source;
   const heading = page.title;
   const visible = usePageVisible();
+
+  // The game's keys as buttons in the mirror (SPEC §9), so it can be played with a screen reader or in Text mode.
+  // A button press moves focus to the next screen's heading, since the button itself goes.
+  const focusResult = useRef(false);
+  const mirrorActions = view && {
+    label: flummox.game.screen === 'question' ? 'Answers' : 'Game',
+    items: view.fastext.flatMap((slot, i): MirrorAction[] => {
+      if ('page' in slot) return [];
+      const text = slot.name.replace(/^\w+: /, '');
+      return [
+        {
+          name: flummox.game.screen === 'question' ? slot.name : text,
+          text,
+          color: flummox.game.screen === 'question' ? FASTEXT_ORDER[i] : undefined,
+          twin: flummox.game.screen === 'question' ? `answer-${i}` : undefined,
+          onPress: () => {
+            focusResult.current = true;
+            slot.onPress();
+          },
+        },
+      ];
+    }).filter((action, i, all) => all.findIndex((a) => a.text === action.text) === i),
+  };
+  const { screen: gameScreen, question: gameQuestion } = flummox.game;
+  useEffect(() => {
+    if (!focusResult.current) return;
+    focusResult.current = false;
+    document.querySelector<HTMLElement>('#content section h2')?.focus();
+  }, [gameScreen, gameQuestion]);
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
   const moreContrast = useMediaQuery(MORE_CONTRAST);
   const crt = crtEffectOn(settings.crt, reducedMotion || moreContrast);
@@ -89,10 +189,19 @@ export const App: React.FC = () => {
     document.title = title;
   }, [title]);
 
+  // Flummox! has its own "F" favicon in place of the site's "S"
+  const quizOpen = requested === QUIZ_PAGE;
+  useEffect(() => {
+    const name = quizOpen ? 'favicon-flummox' : 'favicon';
+    document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]').forEach((link) => {
+      const href = link.getAttribute('href') ?? '';
+      link.setAttribute('href', href.replace(/favicon(-flummox)?(?=\.(ico|svg)$)/, name));
+    });
+  }, [quizOpen]);
+
   // Sub-page steps don't move focus, so the visitor's own steps and HOLD are announced.
   // Timed steps aren't (the mirror already has every part, so they'd only interrupt),
   // and neither are steps that follow focus into another part of the mirror.
-  const [announcement, setAnnouncement] = useState('');
   const stepSubpage = (delta: number) => {
     if (subpage.count < 2) return;
     subpage.step(delta);
@@ -109,7 +218,11 @@ export const App: React.FC = () => {
     arrowKeys: !settings.textMode,
     onDigit: buffer.digit,
     onClear: buffer.clear,
-    onFastext: (slot) => nav.fastext(page.fastext[slot].page),
+    onFastext: (slot) => {
+      const action = fastextActions?.[slot];
+      if (action) action.onPress();
+      else nav.fastext(page.fastext[slot].page);
+    },
     onSubpage: stepSubpage,
     onHold: () => {
       if (subpage.count > 1) toggleHold();
@@ -131,7 +244,7 @@ export const App: React.FC = () => {
     </div>
   );
 
-  const mirrorProps = { page, heading, headingRef, pages: PAGE_LIST, onNavigate: navigate };
+  const mirrorProps = { page, heading, headingRef, pages: PAGE_LIST, onNavigate: navigate, actions: mirrorActions };
 
   if (settings.textMode) {
     return (
@@ -157,8 +270,14 @@ export const App: React.FC = () => {
   const twin = mirrorFocus?.twin;
   const focusLink = twin?.startsWith('link-') ? Number(twin.slice(5)) : undefined;
   const focusHref = twin?.startsWith('href:') ? twin.slice(5) : undefined;
+  const focusAnswer = twin?.startsWith('answer-') ? Number(twin.slice(7)) : undefined;
   const twinOnScreen = lines.some((l) =>
-    l.content.segments.some((s) => (focusLink !== undefined && s.link === focusLink) || (focusHref !== undefined && s.href === focusHref)),
+    l.content.segments.some(
+      (s) =>
+        (focusLink !== undefined && s.link === focusLink) ||
+        (focusHref !== undefined && s.href === focusHref) ||
+        (focusAnswer !== undefined && s.answer === focusAnswer),
+    ),
   );
 
   return (
@@ -186,10 +305,20 @@ export const App: React.FC = () => {
               onOpen={openAddress}
               focusHref={focusHref}
               focusLink={focusLink}
+              focusAnswer={focusAnswer}
+              onAnswer={
+                !view
+                  ? undefined
+                  : flummox.game.screen === 'question'
+                    ? (slot) => dispatchGame({ type: 'answer', slot })
+                    : flummox.game.screen === 'share'
+                      ? (slot) => openAddress(shareLinks[slot].href)
+                      : undefined
+              }
             />
           ))}
 
-          <FastTextBar links={page.fastext} onNavigate={nav.fastext} cols={mode.cols} row={mode.rows} />
+          <FastTextBar links={page.fastext} actions={fastextActions} onNavigate={nav.fastext} cols={mode.cols} row={mode.rows} />
         </TeletextScreen>
 
         <section className="control-strip" aria-label="Screen controls">
@@ -198,6 +327,7 @@ export const App: React.FC = () => {
             onDigit={buffer.digit}
             onClear={buffer.clear}
             fastext={page.fastext}
+            fastextActions={fastextActions}
             onNavigate={nav.remote}
             onSubpage={stepSubpage}
             hold={subpage.count > 1 ? { held: subpage.held, onToggle: toggleHold } : undefined}

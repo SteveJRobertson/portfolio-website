@@ -12,11 +12,16 @@ const BASE = import.meta.env.BASE_URL;
  */
 export const pageHref = (page: number, base = BASE): string => (page === HOME_PAGE ? base : `${base}${page}/`);
 
-/** The page a path asks for: the base is 100, `<base>NNN` is NNN (found or not, with or without a slash), anything else is the not-found page. */
+/**
+ * The page a path asks for: the base is 100, `<base>NNN` is NNN (found or not,
+ * with or without a slash), a Flummox! score page (`<base>152/score/N/`) is
+ * 152, anything else is the not-found page.
+ */
 export const pageFromPath = (path: string, base = BASE): number => {
   const local = path.startsWith(base) ? path.slice(base.length) : path;
   const clean = local.replace(/^\/+|\/+$/g, '');
   if (!clean) return HOME_PAGE;
+  if (/^152\/score\/\d{1,2}$/.test(clean)) return 152;
   return /^\d{3}$/.test(clean) ? Number(clean) : NOT_FOUND_PAGE;
 };
 

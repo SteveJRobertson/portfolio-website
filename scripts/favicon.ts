@@ -6,11 +6,12 @@ import { PNG } from 'pngjs';
  * Draws the site icon from one 16 × 16 pixel grid and writes `public/favicon.svg`,
  * `public/favicon.ico` (16, 32 and 48 px) and `public/apple-touch-icon.png`
  * (180 px): a yellow block "S" on a blue Ceefax banner over the four Fastext
- * colours. Run `npm run favicon` after changing the grid.
+ * colours. Flummox! on page 152 gets its own `favicon-flummox.svg` and `.ico`,
+ * the same with an "F". Run `npm run favicon` after changing a grid.
  */
 
 /** One character a pixel: b blue, y yellow, r red, g green, c cyan, k black. */
-const GRID = [
+const S_GRID = [
   'bbbbbbbbbbbbbbbb',
   'bbbbbyyyyyyyybbb',
   'bbbbbyyyyyyyybbb',
@@ -29,6 +30,22 @@ const GRID = [
   'rrrrggggyyyycccc',
 ];
 
+/** The "F" for Flummox!, in the same box as the "S". */
+const F_GRID = [
+  'bbbbbbbbbbbbbbbb',
+  'bbbyyyyyyyyyybbb',
+  'bbbyyyyyyyyyybbb',
+  'bbbyybbbbbbbbbbb',
+  'bbbyybbbbbbbbbbb',
+  'bbbyyyyyyyybbbbb',
+  'bbbyyyyyyyybbbbb',
+  'bbbyybbbbbbbbbbb',
+  'bbbyybbbbbbbbbbb',
+  'bbbyybbbbbbbbbbb',
+  'bbbyybbbbbbbbbbb',
+  ...S_GRID.slice(11),
+];
+
 /** Banner blue from `.bg-blue`, the rest the Teletext text colours in `index.css`. */
 const COLORS: Record<string, string> = {
   b: '#0000cc',
@@ -39,11 +56,11 @@ const COLORS: Record<string, string> = {
   k: '#000000',
 };
 
-const SIZE = GRID.length;
+const SIZE = S_GRID.length;
 const publicDir = path.resolve(import.meta.dirname, '../public');
 
 /** Horizontal runs of one colour, so the SVG stays small. */
-const svg = () => {
+const svg = (GRID: string[]) => {
   const rects = GRID.flatMap((row, y) =>
     [...row.matchAll(/(.)\1*/g)].map(
       (run) => `<rect x="${run.index}" y="${y}" width="${run[0].length}" height="1" fill="${COLORS[run[1]]}"/>`,
@@ -55,7 +72,7 @@ const svg = () => {
 const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
 /** The grid scaled up to `size` px, nearest neighbour, centred on black when it doesn't divide evenly. */
-const png = (size: number) => {
+const png = (GRID: string[], size: number) => {
   const image = new PNG({ width: size, height: size });
   const scale = Math.floor(size / SIZE);
   const offset = Math.floor((size - scale * SIZE) / 2);
@@ -72,8 +89,8 @@ const png = (size: number) => {
 };
 
 /** An ICO file holding PNG images, which every browser that asks for `/favicon.ico` reads. */
-const ico = (sizes: number[]) => {
-  const images = sizes.map(png);
+const ico = (GRID: string[], sizes: number[]) => {
+  const images = sizes.map((size) => png(GRID, size));
   const header = Buffer.alloc(6 + 16 * sizes.length);
   header.writeUInt16LE(0, 0);
   header.writeUInt16LE(1, 2);
@@ -92,7 +109,9 @@ const ico = (sizes: number[]) => {
   return Buffer.concat([header, ...images]);
 };
 
-fs.writeFileSync(path.join(publicDir, 'favicon.svg'), svg());
-fs.writeFileSync(path.join(publicDir, 'favicon.ico'), ico([16, 32, 48]));
-fs.writeFileSync(path.join(publicDir, 'apple-touch-icon.png'), png(180));
-console.log('Wrote public/favicon.svg, public/favicon.ico and public/apple-touch-icon.png');
+fs.writeFileSync(path.join(publicDir, 'favicon.svg'), svg(S_GRID));
+fs.writeFileSync(path.join(publicDir, 'favicon.ico'), ico(S_GRID, [16, 32, 48]));
+fs.writeFileSync(path.join(publicDir, 'apple-touch-icon.png'), png(S_GRID, 180));
+fs.writeFileSync(path.join(publicDir, 'favicon-flummox.svg'), svg(F_GRID));
+fs.writeFileSync(path.join(publicDir, 'favicon-flummox.ico'), ico(F_GRID, [16, 32, 48]));
+console.log('Wrote public/favicon.svg, .ico, apple-touch-icon.png and favicon-flummox.svg, .ico');

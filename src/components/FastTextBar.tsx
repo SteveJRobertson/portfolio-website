@@ -1,6 +1,6 @@
 import React from 'react';
 import type { FastextLink } from '../types/teletext';
-import { FASTEXT_ORDER, fastextLabels, fastextName, fastextSlotWidths } from '../display/fastext';
+import { FASTEXT_ORDER, fastextSlotWidths, fastextName, slotLabels, type FastextActions } from '../display/fastext';
 import { isPlainClick, pageHref } from '../navigation/paths';
 
 interface FastTextBarProps {
@@ -11,6 +11,8 @@ interface FastTextBarProps {
   cols: number;
   /** 1-based grid row (the last row of the screen). */
   row: number;
+  /** Slots that act on this page instead of linking (Flummox!). */
+  actions?: FastextActions;
 }
 
 /**
@@ -19,9 +21,9 @@ interface FastTextBarProps {
  * A plain click navigates in place; a modified click opens a new tab as usual.
  * The R/G/Y/B hotkeys live in useHotkeys.
  */
-export const FastTextBar: React.FC<FastTextBarProps> = ({ links, onNavigate, cols, row }) => {
+export const FastTextBar: React.FC<FastTextBarProps> = ({ links, onNavigate, cols, row, actions }) => {
   const widths = fastextSlotWidths(cols);
-  const labels = fastextLabels(links, widths);
+  const labels = slotLabels(links, widths, actions);
 
   return (
     <nav
@@ -29,22 +31,40 @@ export const FastTextBar: React.FC<FastTextBarProps> = ({ links, onNavigate, col
       aria-label="Fastext"
       style={{ gridRow: `${row} / span 1`, gridColumn: `1 / span ${cols}` }}
     >
-      {FASTEXT_ORDER.map((color, i) => (
-        <a
-          key={color}
-          href={pageHref(links[i].page)}
-          aria-label={fastextName(i, links[i])}
-          className={`fasttext-btn fasttext-btn--${color}`}
-          style={{ width: `calc(${widths[i]} * var(--tt-cell-w))` }}
-          onClick={(e) => {
-            if (!isPlainClick(e)) return;
-            e.preventDefault();
-            onNavigate(links[i].page);
-          }}
-        >
-          {labels[i]}
-        </a>
-      ))}
+      {FASTEXT_ORDER.map((color, i) => {
+        const action = actions?.[i];
+        const style = { width: `calc(${widths[i]} * var(--tt-cell-w))` };
+        if (action) {
+          return (
+            <button
+              key={color}
+              type="button"
+              aria-label={action.name}
+              className={`fasttext-btn fasttext-btn--${color}`}
+              style={style}
+              onClick={action.onPress}
+            >
+              {labels[i]}
+            </button>
+          );
+        }
+        return (
+          <a
+            key={color}
+            href={pageHref(links[i].page)}
+            aria-label={fastextName(i, links[i])}
+            className={`fasttext-btn fasttext-btn--${color}`}
+            style={style}
+            onClick={(e) => {
+              if (!isPlainClick(e)) return;
+              e.preventDefault();
+              onNavigate(links[i].page);
+            }}
+          >
+            {labels[i]}
+          </a>
+        );
+      })}
     </nav>
   );
 };

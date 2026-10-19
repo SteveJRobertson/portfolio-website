@@ -3,6 +3,8 @@ import { SemanticPage } from './components/SemanticPage';
 import { documentTitle, pageDescription } from './content/meta';
 import { NAVIGABLE_PAGES, NOT_FOUND_PAGE, PAGES } from './content/registry';
 import { pageHref } from './navigation/paths';
+import { quiz } from './flummox/quizData';
+import { scorePath } from './flummox/share';
 
 /**
  * Server entry for `scripts/prerender.ts` (SPEC §5): for each page, its head
@@ -19,12 +21,18 @@ export interface PrerenderedPage {
   title: string;
   description: string;
   body: string;
+  /** The page's canonical path, when it isn't `href`: a score page points at page 152. */
+  canonical?: string;
+  /** Kept out of search results and the sitemap. */
+  noindex?: boolean;
+  /** The link-preview picture under the site's base, and its alt text, when it isn't the site's own. */
+  image?: { path: string; alt: string };
 }
 
 const noop = () => {};
 const PAGE_LIST = PAGES.filter((p) => NAVIGABLE_PAGES.includes(p.page));
 
-export const prerender = (): PrerenderedPage[] =>
+const pages = (): PrerenderedPage[] =>
   PAGES.map((page) => ({
     page: page.page,
     file: page.page === NOT_FOUND_PAGE ? '404.html' : page.page === 100 ? 'index.html' : `${page.page}/index.html`,
@@ -42,3 +50,43 @@ export const prerender = (): PrerenderedPage[] =>
       </div>,
     ),
   }));
+
+const QUIZ_PAGE = 152;
+
+/**
+ * A page for each Flummox! score (docs/flummox/SPEC.md §6, Sharing): a shared
+ * link's preview shows the score, and the app takes a visitor on to page 152.
+ */
+const scorePages = (all: PrerenderedPage[]): PrerenderedPage[] => {
+  const quizPage = all.find((p) => p.page === QUIZ_PAGE)!;
+  const total = quiz.questions.length;
+  return Array.from({ length: total + 1 }, (_, score) => ({
+    ...quizPage,
+    file: `${QUIZ_PAGE}/${scorePath(score)}index.html`,
+    href: `${pageHref(QUIZ_PAGE)}${scorePath(score)}`,
+    title: `I scored ${score}/${total} on Flummox! | Steve Robertson`,
+    description: `${quiz.finished.find((f) => score >= f.min)!.text} Can you flummox Felix?`,
+    canonical: quizPage.href,
+    noindex: true,
+    // Without JavaScript the app can't send the visitor on, so the page says the score and links to the quiz
+    body: quizPage.body.replace(
+      '</h1>',
+      () => `</h1><p>Someone scored ${score} out of ${total} on Flummox! <a href="${pageHref(QUIZ_PAGE)}">Play Flummox! on page 152</a>.</p>`,
+    ),
+    image: {
+      path: `share/flummox-${score}.png`,
+      alt: `A Teletext screen: Flummox! score ${score} out of ${total}, with Felix Flummox ${score >= 9 ? 'looking flummoxed' : 'giving a thumbs-up'}.`,
+    },
+  }));
+};
+
+/** Page 152's own link preview: the Flummox! card. */
+const QUIZ_IMAGE = {
+  path: 'share/flummox.png',
+  alt: 'A Teletext screen: Flummox!, with Felix Flummox giving a thumbs-up and asking "Can you flummox Felix?"',
+};
+
+export const prerender = (): PrerenderedPage[] => {
+  const all = pages().map((p) => (p.page === QUIZ_PAGE && p.file !== '404.html' ? { ...p, image: QUIZ_IMAGE } : p));
+  return [...all, ...scorePages(all)];
+};

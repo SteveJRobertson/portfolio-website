@@ -229,3 +229,41 @@ describe('axe', () => {
     expect(await axeViolations()).toEqual([]);
   });
 });
+
+describe('Flummox! on page 152 (SPEC §9)', () => {
+  afterEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  const button = (name: string | RegExp) => screen.getByRole('button', { name });
+
+  it('can be played with the buttons in the mirror, with focus and the live region following', async () => {
+    const { quiz } = await import('./flummox/quizData');
+    const first = quiz.questions[0];
+    renderAt('/152/');
+    fireEvent.click(button('Play'));
+    expect(screen.getByRole('heading', { level: 2, name: 'Question 1 of 12' })).toBe(document.activeElement);
+    const answers = within(screen.getByRole('group', { name: 'Answers' })).getAllByRole('button');
+    expect(answers.map((a) => a.getAttribute('aria-label'))).toEqual(first.answers.map((a, i) => `${['Red', 'Green', 'Yellow', 'Cyan'][i]}: ${a}`));
+    fireEvent.click(answers[first.correct]);
+    expect(screen.getByRole('heading', { level: 2, name: 'Correct!' })).toBe(document.activeElement);
+    expect(screen.getByRole('status')).toHaveProperty('textContent', 'Correct! Score 1.');
+    expect(await axeViolations()).toEqual([]);
+
+    fireEvent.click(button('Continue'));
+    expect(screen.getByRole('heading', { level: 2, name: 'Question 2 of 12' })).toBe(document.activeElement);
+    fireEvent.click(within(screen.getByRole('group', { name: 'Answers' })).getAllByRole('button')[(quiz.questions[1].correct + 1) % 4]);
+    expect(screen.getByRole('heading', { level: 2, name: "Bad luck! You've been flummoxed!" })).toBe(document.activeElement);
+    expect(screen.getByRole('status')).toHaveProperty('textContent', 'Flummoxed! Back to question 1. Score 1.');
+    expect(await axeViolations()).toEqual([]);
+  });
+
+  it('can be played in Text mode', async () => {
+    const { quiz } = await import('./flummox/quizData');
+    renderAt('/152/', { textMode: true });
+    fireEvent.click(button('Play'));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Answers' })).getAllByRole('button')[quiz.questions[0].correct]);
+    expect(screen.getByRole('heading', { level: 2, name: 'Correct!' })).toBeTruthy();
+  });
+});

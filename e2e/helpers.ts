@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 export const BASE = '/';
 
 /** Every page in the registry, and the not-found page. */
-export const PAGES = [100, 101, 110, 200, 201, 202, 203, 300, 400, 888];
+export const PAGES = [100, 101, 110, 152, 200, 201, 202, 203, 300, 400, 888];
 
 /** A fixed time, so the header clock is the same in every screenshot. */
 const NOW = new Date('2026-10-05T19:30:00+01:00');

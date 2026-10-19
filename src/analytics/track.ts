@@ -8,6 +8,8 @@
  * `track` does nothing: local dev, tests, Storybook and pre-rendering never count.
  */
 
+import { shareNetworkOf } from '../flummox/share';
+
 const SCRIPT_SRC = 'https://cloud.umami.is/script.js';
 
 /** The custom events and their properties (SPEC §4.2). Page views are counted by the script itself. */
@@ -20,6 +22,14 @@ export interface Events {
   Outbound: { to: string };
   /** A page number or path that doesn't exist. */
   'Not found': { path: string };
+  /** A Flummox! game begun, from question 1. */
+  'Flummox start': { edition: string };
+  /** A wrong answer in Flummox!: which question catches people out. */
+  'Flummox flummoxed': { edition: string; question: number };
+  /** A Flummox! game finished, and its score. */
+  'Flummox finish': { edition: string; score: number };
+  /** A Flummox! score shared: a network, `copy`, or `share sheet`. */
+  'Flummox share': { network: string };
 }
 
 /** Typed or keyed-in digits, a coloured Fastext button or key, a link on the page, or the remote's other buttons. */
@@ -93,7 +103,12 @@ export const outboundName = (href: string): string => {
   }
 };
 
-export const trackOutbound = (href: string) => track('Outbound', { to: outboundName(href) });
+/** Following an address: a Flummox! share link counts as a share, anything else as leaving the site. */
+export const trackOutbound = (href: string) => {
+  const network = shareNetworkOf(href);
+  if (network) track('Flummox share', { network });
+  else track('Outbound', { to: outboundName(href) });
+};
 
 /** Addresses in the text view and the hidden mirror are plain links; the Teletext screen reports its own through `trackOutbound`. */
 const onAddressClick = (e: MouseEvent) => {
