@@ -69,7 +69,7 @@ describe('quizErrors (SPEC §7)', () => {
   });
 
   it('rule 6: unknown keys, links and tags in answers', () => {
-    expect(quizErrors({ ...real(), extra: 1 })).toContain('unknown key "extra"; the keys are edition, checkpoints, share, verdicts, questions');
+    expect(quizErrors({ ...real(), extra: 1 })).toContain('unknown key "extra"; the keys are edition, title, greeting, checkpoints, share, verdicts, questions');
     expect(quizErrors(with_((q) => (q.questions[0].question = 'See {link:100}100{/}')))).toContain("question 1: the question can't link to a page");
     expect(quizErrors(with_((q) => (q.questions[0].answers[0] = '{red}Red{/}')))).toContain('question 1: answer 1 ("{red}Red{/}") must be plain text');
   });

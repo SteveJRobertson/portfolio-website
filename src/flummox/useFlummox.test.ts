@@ -54,6 +54,18 @@ describe('useFlummox', () => {
     expect(loadBest('Autumn')).toBe(4);
   });
 
+  it("keeps each edition's best, so the regular one is back after a special", () => {
+    window.localStorage.setItem(BEST_KEY, JSON.stringify({ edition: 'Autumn', value: 7 }));
+    const { result } = renderHook(() => useFlummox('Halloween', rules));
+    act(() => result.current.dispatch({ type: 'play' }));
+    for (let i = 0; i < 4; i++) {
+      act(() => result.current.dispatch(right));
+      act(() => result.current.dispatch(next));
+    }
+    expect(loadBest('Halloween')).toBe(4);
+    expect(loadBest('Autumn')).toBe(7);
+  });
+
   it('starts a new best and a new game for a new edition', () => {
     window.localStorage.setItem(BEST_KEY, JSON.stringify({ edition: 'Summer', value: 9 }));
     window.sessionStorage.setItem(GAME_KEY, JSON.stringify({ edition: 'Summer', value: { screen: 'question' } }));

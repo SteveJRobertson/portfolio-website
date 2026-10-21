@@ -9,6 +9,9 @@ import { contentPlugin } from './scripts/lib/contentPlugin.ts'
  */
 const base = process.env.BASE_PATH ?? (process.env.GITHUB_PAGES === 'true' ? '/portfolio-website/' : '/')
 
+// Tests build the site as on an ordinary day, whatever special is on (docs/seasonal/README.md)
+if (process.env.VITEST && !process.env.SEASON_DATE) process.env.SEASON_DATE = '2026-09-01'
+
 // https://vite.dev/config/
 export default defineConfig({
   base,

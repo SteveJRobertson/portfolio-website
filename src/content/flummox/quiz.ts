@@ -17,7 +17,7 @@ export const MAX_ANSWER_LENGTH = 28;
 
 export const ANSWER_COLORS: readonly TeletextColor[] = ['red', 'green', 'yellow', 'cyan'];
 
-const QUIZ_KEYS = ['edition', 'checkpoints', 'share', 'verdicts', 'questions'];
+const QUIZ_KEYS = ['edition', 'title', 'greeting', 'checkpoints', 'share', 'verdicts', 'questions'];
 const QUESTION_KEYS = ['question', 'answers', 'correct', 'quip'];
 const VERDICT_KEYS = ['min', 'text'];
 
@@ -26,6 +26,30 @@ const STOCK_QUIPS = ['Right! Felix is impressed.', 'Correct! Felix nods slowly.'
 
 const FELIX_ALT = 'Felix Flummox, the quizmaster: a grinning yellow-faced cartoon with a green quiff, round glasses, a red bow tie and a blue jacket.';
 const FELIX_FLUMMOXED_ALT = 'Felix Flummox, the quizmaster, cross-eyed and open-mouthed, with a bead of sweat.';
+
+/** What Felix wears for a dated special (src/content/specials), added to his description. */
+const COSTUME_ALT: Record<string, string> = {
+  halloween: "Today his quiff is under a witch's hat, and he's holding up a jack-o'-lantern.",
+};
+const COSTUME_FLUMMOXED_ALT: Record<string, string> = {
+  halloween: "He's wearing a witch's hat.",
+};
+
+/** Felix's pictures and their descriptions, in a costume or not. */
+interface Look {
+  /** Added to the picture's name: `felix-halloween`, `felix-narrow-halloween-flummoxed`. */
+  costume?: string;
+  alt: string;
+  flummoxedAlt: string;
+}
+
+const lookFor = (costume?: string): Look =>
+  costume
+    ? { costume, alt: `${FELIX_ALT} ${COSTUME_ALT[costume] ?? ''}`.trim(), flummoxedAlt: `${FELIX_FLUMMOXED_ALT} ${COSTUME_FLUMMOXED_ALT[costume] ?? ''}`.trim() }
+    : { alt: FELIX_ALT, flummoxedAlt: FELIX_FLUMMOXED_ALT };
+
+/** The costumes Felix has pictures for (`scripts/art/felix.mjs`). */
+export const COSTUMES = Object.keys(COSTUME_ALT);
 
 /** The logo in chunky yellow mosaic letters, as Bamboozle! had. */
 const LOGO: RowSource = { image: 'flummox-logo', alt: 'Flummox!', rows: 3, pixelArt: true };
@@ -92,12 +116,13 @@ const FELIX_ROWS = 8;
  * Felix at the right edge, speaking. The bubble is centred on his face (all
  * but his shoulders' row), so a short line leaves no gap below it.
  */
-const felix = (says: string, width: Width, flummoxed = false): RowSource => {
+const felix = (says: string, width: Width, flummoxed = false, look: Look = lookFor()): RowSource => {
   const said = bubble(says, width.bubble);
   const above = Math.max(0, Math.floor((FELIX_ROWS - 1 - said.length) / 2));
+  const name = look.costume ? `${width.felix}-${look.costume}` : width.felix;
   return {
-    image: flummoxed ? `${width.felix}-flummoxed` : width.felix,
-    alt: flummoxed ? FELIX_FLUMMOXED_ALT : FELIX_ALT,
+    image: flummoxed ? `${name}-flummoxed` : name,
+    alt: flummoxed ? look.flummoxedAlt : look.alt,
     rows: FELIX_ROWS,
     pixelArt: true,
     align: 'right',
@@ -140,6 +165,8 @@ export const quizErrors = (data: unknown): string[] => {
   const errors: string[] = unknownKeys(quiz, QUIZ_KEYS).map((k) => `unknown key "${k}"; the keys are ${QUIZ_KEYS.join(', ')}`);
 
   if (!isText(quiz.edition)) errors.push('"edition" must name this set of questions');
+  if (quiz.title !== undefined && (!isText(quiz.title) || quiz.title.includes('{'))) errors.push('"title" must be plain text, shown under the logo');
+  if (quiz.greeting !== undefined && !isText(quiz.greeting)) errors.push('"greeting" must be what Felix says before a first game');
   if (!isText(quiz.share) || !quiz.share.includes('{score}')) errors.push('"share" must be the shared message, with {score} where the score goes');
 
   const questions = quiz.questions;
@@ -238,7 +265,11 @@ const both = (rows: (w: Width) => RowSource[], hint: (w: Width) => string, seman
 const ANY_COLOUR = (w: Width) => centredText('{cyan}PRESS ANY COLOUR TO CONTINUE{/}', w);
 
 /** Every screen of the game, in the style of Bamboozle!'s pages (SPEC §4). */
-const screens = (quiz: QuizSource) => {
+const screens = (quiz: QuizSource, look: Look) => {
+  const felixSays = (says: string, w: Width, flummoxed = false) => felix(says, w, flummoxed, look);
+  const greeting = quiz.greeting ?? "Hello! I'm Felix. Think you can flummox me? Press red to begin.";
+  // A special's title, such as HALLOWEEN SPECIAL, sits under the logo on the intro
+  const head = (w: Width): RowSource[] => (quiz.title ? [LOGO, centred(`{magenta}${quiz.title}{/}`, w), RULE] : [LOGO, RULE]);
   const total = quiz.questions.length;
   const stages = [0, ...quiz.checkpoints];
   const checkpointText = quiz.checkpoints.length > 1 ? `${quiz.checkpoints.slice(0, -1).join(', ')} or ${quiz.checkpoints.at(-1)}` : `${quiz.checkpoints[0]}`;
@@ -247,19 +278,19 @@ const screens = (quiz: QuizSource) => {
   const introSemantic = (says: string): SemanticBlock[] => [
     paragraph(parseMarkup(introText).segments.map((seg) => seg.text).join('')),
     paragraph(`Can you get all ${total} first time?`),
-    { kind: 'image', alt: FELIX_ALT },
+    { kind: 'image', alt: look.alt },
     paragraph(says),
   ];
 
   return {
     stages,
     intro: both(
-      (w) => [LOGO, RULE, introText, introAsk, felix("Hello! I'm Felix. Think you can flummox me? Press red to begin.", w)],
+      (w) => [...head(w), introText, introAsk, felixSays(greeting, w)],
       (w) => bar('Press red to begin', 'red', w),
-      introSemantic("Hello! I'm Felix. Think you can flummox me? Press red to begin."),
+      introSemantic(parseMarkup(greeting).segments.map((seg) => seg.text).join('')),
     ),
     introBest: both(
-      (w) => [LOGO, RULE, introText, introAsk, felix(`Welcome back! Your best so far is {slot:best} out of ${total}. Press red to beat it.`, w)],
+      (w) => [...head(w), introText, introAsk, felixSays(`Welcome back! Your best so far is {slot:best} out of ${total}. Press red to beat it.`, w)],
       (w) => bar('Press red to begin', 'red', w),
       [
         ...introSemantic('').slice(0, -1),
@@ -270,7 +301,7 @@ const screens = (quiz: QuizSource) => {
       ],
     ),
     introResume: both(
-      (w) => [LOGO, RULE, introText, introAsk, felix('Welcome back! You were on question {slot:resume}. Press red to carry on, or green to start again.', w)],
+      (w) => [...head(w), introText, introAsk, felixSays('Welcome back! You were on question {slot:resume}. Press red to carry on, or green to start again.', w)],
       (w) => bar('Press red to carry on', 'red', w),
       [
         ...introSemantic('Welcome back! You were on question'),
@@ -280,12 +311,12 @@ const screens = (quiz: QuizSource) => {
     ),
     question: (q: QuizQuestionSource, i: number): ScreenSource =>
       both(
-        (w) => [felix(`Question ${i + 1}. ${plain(q.question)}`, w), scoreRule(w), ...answerRows(q.answers, w)],
+        (w) => [felixSays(`Question ${i + 1}. ${plain(q.question)}`, w), scoreRule(w), ...answerRows(q.answers, w)],
         (w) => bar('Press the colour of your choice', 'blue', w),
         [
           heading(`Question ${i + 1} of ${total}`),
           scoreParagraph,
-          { kind: 'image', alt: FELIX_ALT },
+          { kind: 'image', alt: look.alt },
           paragraph(parseMarkup(q.question).segments.map((seg) => seg.text).join('')),
         ],
         false,
@@ -293,11 +324,11 @@ const screens = (quiz: QuizSource) => {
     correct: (q: QuizQuestionSource, i: number): ScreenSource => {
       const says = plain(q.quip ?? STOCK_QUIPS[i % STOCK_QUIPS.length]);
       return both(
-        (w) => [LOGO, RULE, felix(`${says} {slot:point}`, w), RULE, centred('{green}CORRECT!{/}', w, true), '', centred('{yellow}SCORE {slot:score}{/}', w, true)],
+        (w) => [LOGO, RULE, felixSays(`${says} {slot:point}`, w), RULE, centred('{green}CORRECT!{/}', w, true), '', centred('{yellow}SCORE {slot:score}{/}', w, true)],
         ANY_COLOUR,
         [
           heading('Correct!'),
-          { kind: 'image', alt: FELIX_ALT },
+          { kind: 'image', alt: look.alt },
           paragraph(says.replace(/\{\{/g, '{')),
           { kind: 'paragraph', content: [{ text: '', slot: 'point' }] },
           scoreParagraph,
@@ -307,17 +338,17 @@ const screens = (quiz: QuizSource) => {
     flummoxed: (stage: number): ScreenSource => {
       const says = `That's not the answer! Back you go to question ${stage + 1}.`;
       return both(
-        (w) => [LOGO, RULE, felix(says, w, true), RULE, centred('{white}BAD LUCK{/}', w, true), '', centred("{yellow}YOU'VE BEEN FLUMMOXED!{/}", w, true)],
+        (w) => [LOGO, RULE, felixSays(says, w, true), RULE, centred('{white}BAD LUCK{/}', w, true), '', centred("{yellow}YOU'VE BEEN FLUMMOXED!{/}", w, true)],
         ANY_COLOUR,
-        [heading("Bad luck! You've been flummoxed!"), { kind: 'image', alt: FELIX_FLUMMOXED_ALT }, paragraph(says), scoreParagraph],
+        [heading("Bad luck! You've been flummoxed!"), { kind: 'image', alt: look.flummoxedAlt }, paragraph(says), scoreParagraph],
       );
     },
     checkpoint: (stage: number): ScreenSource => {
       const says = `Well done! You're safe now: get one wrong and you only go back to question ${stage + 1}.`;
       return both(
-        (w) => [LOGO, RULE, felix(says, w), RULE, centred('{green}CHECKPOINT!{/}', w, true), '', centred('{yellow}SCORE {slot:score}{/}', w, true)],
+        (w) => [LOGO, RULE, felixSays(says, w), RULE, centred('{green}CHECKPOINT!{/}', w, true), '', centred('{yellow}SCORE {slot:score}{/}', w, true)],
         ANY_COLOUR,
-        [heading('Checkpoint!'), { kind: 'image', alt: FELIX_ALT }, paragraph(says), scoreParagraph],
+        [heading('Checkpoint!'), { kind: 'image', alt: look.alt }, paragraph(says), scoreParagraph],
       );
     },
     share: (score: number): ScreenSource => {
@@ -338,11 +369,11 @@ const screens = (quiz: QuizSource) => {
     finished: (verdict: string, min: number): ScreenSource => {
       const says = `Well done! You got {slot:score} of ${total} right first time. ${verdict}`;
       return both(
-        (w) => [LOGO, RULE, felix(says, w, min >= 9), RULE, centred(`{white}SCORE{/} {yellow}{slot:score}{/} {white}OF ${total}{/}`, w, true), '', centred('{green}{slot:newbest}{/}', w, true)],
+        (w) => [LOGO, RULE, felixSays(says, w, min >= 9), RULE, centred(`{white}SCORE{/} {yellow}{slot:score}{/} {white}OF ${total}{/}`, w, true), '', centred('{green}{slot:newbest}{/}', w, true)],
         (w) => bar('Press red to play again', 'red', w),
         [
           heading('You beat Felix!'),
-          { kind: 'image', alt: min >= 9 ? FELIX_FLUMMOXED_ALT : FELIX_ALT },
+          { kind: 'image', alt: min >= 9 ? look.flummoxedAlt : look.alt },
           { kind: 'paragraph', content: [{ text: 'You got ' }, { text: '', slot: 'score' }, { text: ` of ${total} right first time.` }] },
           paragraph(parseMarkup(verdict).segments.map((seg) => seg.text).join('')),
           { kind: 'paragraph', content: [{ text: '', slot: 'newbest' }] },
@@ -422,20 +453,24 @@ const cards = (quiz: QuizSource, renderImage: ReturnType<typeof imageRenderer>, 
  * Checks `quiz.json` and lays out every screen of the game for both widths
  * (SPEC §7). Any screen that doesn't fit the grid is an error naming it.
  */
-export const compileQuiz = (data: unknown, images: Readonly<Record<string, RgbaImage>>): { quiz?: CompiledQuiz; errors: string[] } => {
+export const compileQuiz = (
+  data: unknown,
+  images: Readonly<Record<string, RgbaImage>>,
+  { file = 'quiz.json', costume }: { file?: string; costume?: string } = {},
+): { quiz?: CompiledQuiz; errors: string[] } => {
   const shape = quizErrors(data);
-  if (shape.length) return { errors: shape.map((e) => `quiz.json: ${e}`) };
+  if (shape.length) return { errors: shape.map((e) => `${file}: ${e}`) };
   const source = data as QuizSource;
   const renderImage = imageRenderer(images);
   const errors: string[] = [];
   const build = (where: string, screen: ScreenSource): CompiledScreen => {
-    const compiled = compileScreen(screen.rows, `quiz.json ${where}`, renderImage, screen.hint, screen.narrowRows);
+    const compiled = compileScreen(screen.rows, `${file} ${where}`, renderImage, screen.hint, screen.narrowRows);
     errors.push(...compiled.errors);
-    if (compiled.links.length) errors.push(`quiz.json ${where}: can't link to pages`);
+    if (compiled.links.length) errors.push(`${file} ${where}: can't link to pages`);
     return { wide: compiled.wide, narrow: compiled.narrow, semantic: screen.semantic ?? compiled.semantic };
   };
 
-  const s = screens(source);
+  const s = screens(source, lookFor(costume));
   const quiz: CompiledQuiz = {
     edition: source.edition,
     stages: s.stages,

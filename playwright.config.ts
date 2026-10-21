@@ -39,7 +39,8 @@ export default defineConfig({
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}${BASE}`,
     // Built as the live site is: at the root of steverobertson.dev
-    env: { BASE_PATH: BASE, SITE_URL: 'https://steverobertson.dev' },
+    // on an ordinary day, so the screenshots don't change while a special is on (docs/seasonal/README.md)
+    env: { BASE_PATH: BASE, SITE_URL: 'https://steverobertson.dev', SEASON_DATE: '2026-09-01' },
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },
