@@ -22,7 +22,12 @@ The rest of the site (About, Career, Projects, Skills, the colours) stays as it 
 
 - `from` and `until` are the first and last days it's on, in UK time. Two specials can't overlap.
 - `quiz.title` is a line under the Flummox! logo on the intro; `quiz.greeting` is what Felix says before a first game. Both are optional, and `quiz.json` can use them too.
-- The link-preview cards for shared scores stay the regular ones, so the committed share images don't change with the date.
+- **Link previews**: its own pictures in `public/share/NAME/`: `flummox.png` and `flummox-0.png` to `flummox-12.png` for page 152 and the score pages (with its title and Felix's costume), and `share.png`, a picture of page 100 with its copy changes, for every other page. While it's on, the pages' `og:image` tags point there. `npm run validate` fails if they're missing.
+
+### Making a special's link previews
+
+1. `npm run build-storybook && npm run share-images` draws every set of cards, the regular ones and each special's, and records what they were drawn from in each folder's `manifest.json` (a unit test fails when they're out of date). The "Update share images" workflow does the same in CI's Playwright image.
+2. For `share.png`: `SEASON_DATE=2026-10-28 npm run build`, `npx vite preview`, then `npx tsx e2e/shareImage.ts http://localhost:4173/ public/share/halloween-2026/share.png`.
 
 ## How it switches
 

@@ -416,7 +416,9 @@ const centreRows = (rows: GridRow[]): GridRow[] =>
  * The link-preview cards (SPEC §6, Share images): page 152's own, and one per
  * score with Felix saying the verdict, flummoxed himself for 9 and over.
  */
-const cards = (quiz: QuizSource, renderImage: ReturnType<typeof imageRenderer>, errors: string[]): CompiledQuiz['cards'] => {
+const cards = (quiz: QuizSource, renderImage: ReturnType<typeof imageRenderer>, errors: string[], look: Look): CompiledQuiz['cards'] => {
+  // A special's title, such as HALLOWEEN SPECIAL, goes under the logo
+  const title: RowSource[] = quiz.title ? [centred(`{magenta}${quiz.title}{/}`, CARD_INNER)] : [];
   const total = quiz.questions.length;
   const card = (where: string, top: RowSource[], score: GridRow[], bottom: RowSource[]): GridRow[] => {
     const lay = (sources: RowSource[]) => {
@@ -433,7 +435,7 @@ const cards = (quiz: QuizSource, renderImage: ReturnType<typeof imageRenderer>, 
   return {
     intro: card(
       'intro',
-      [LOGO, RULE, '', '', felix(`Hello! I'm Felix Flummox, and I have ${total} questions for you on page 152. Get one wrong and you're FLUMMOXED!`, CARD_INNER), ''],
+      [LOGO, ...title, RULE, ...(title.length ? [''] : ['', '']), felix(`Hello! I'm Felix Flummox, and I have ${total} questions for you on page 152. Get one wrong and you're FLUMMOXED!`, CARD_INNER, false, look), ''],
       [],
       [centred('{yellow}CAN YOU FLUMMOX FELIX?{/}', CARD_INNER, true), '', RULE, centred('{white}Key{/} {yellow}152{/} {white}on STEEVEFAX{/}', CARD_INNER)],
     ),
@@ -441,9 +443,9 @@ const cards = (quiz: QuizSource, renderImage: ReturnType<typeof imageRenderer>, 
       const verdict = plain(verdicts.find((v) => score >= v.min)!.text);
       return card(
         `score ${score}`,
-        [LOGO, RULE, centred('{white}I SCORED{/}', CARD_INNER, true)],
+        [LOGO, ...title, RULE, centred('{white}I SCORED{/}', CARD_INNER, true)],
         [...bigText(`${score}/${total}`, 'yellow'), { segments: [] }],
-        [felix(verdict, CARD_INNER, score >= 9), ...footer],
+        [felix(verdict, CARD_INNER, score >= 9, look), ...footer],
       );
     }),
   };
@@ -491,7 +493,7 @@ export const compileQuiz = (
       .sort((a, b) => b.min - a.min)
       .map((v) => ({ min: v.min, text: v.text, screen: build(`finished (${v.min}+)`, s.finished(v.text, v.min)) })),
     share: Array.from({ length: source.questions.length + 1 }, (_, score) => build(`share (${score})`, s.share(score))),
-    cards: cards(source, renderImage, errors),
+    cards: cards(source, renderImage, errors, lookFor(costume)),
   };
   return errors.length ? { errors } : { quiz, errors };
 };

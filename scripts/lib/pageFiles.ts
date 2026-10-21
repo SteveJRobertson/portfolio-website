@@ -95,9 +95,8 @@ export const compilePageDir = (dir = PAGES_DIR, imagesDir = IMAGES_DIR, special?
 };
 
 /**
- * Compiles a special's Flummox! questions, with Felix in its costume. The
- * link-preview cards stay the regular quiz's, so the committed share images
- * don't change with the date.
+ * Compiles a special's Flummox! questions, with Felix in its costume, and its
+ * own link-preview cards (public/share/NAME/).
  */
 export const compileSpecialQuiz = (special: Special, regular: CompiledQuiz, imagesDir = IMAGES_DIR): { quiz?: CompiledQuiz; errors: string[] } => {
   if (special.quiz === undefined && special.costume === undefined) return { quiz: regular, errors: [] };
@@ -107,7 +106,7 @@ export const compileSpecialQuiz = (special: Special, regular: CompiledQuiz, imag
   const data = special.quiz ?? (JSON.parse(fs.readFileSync(QUIZ_FILE, 'utf-8')) as unknown);
   const file = special.quiz ? `specials/${special.name}.json quiz` : `quiz.json (as specials/${special.name}.json)`;
   const result = compileQuiz(data, pictures.images, { file, costume: special.costume });
-  return { quiz: result.quiz && { ...result.quiz, cards: regular.cards }, errors: [...errors, ...result.errors] };
+  return { quiz: result.quiz, errors: [...errors, ...result.errors] };
 };
 
 /** Reads and compiles the Flummox! questions (docs/flummox/SPEC.md §7). A file that isn't valid JSON is reported, not thrown. */
