@@ -1,5 +1,8 @@
 import { compilePageDir, compileQuizFile, compileSpecialQuiz, readSpecialsDir, seasonDate, IMAGES_DIR, PAGES_DIR } from './lib/pageFiles.ts';
+import fs from 'node:fs';
+import path from 'node:path';
 import { activeSpecial } from '../src/content/specials.ts';
+import { SHARE_DIR } from './lib/shareCards.ts';
 import { NARROW_COLS, WIDE_COLS } from '../src/content/schema.ts';
 import { missingDescriptions } from '../src/content/meta.ts';
 
@@ -10,6 +13,10 @@ const { specials, errors: specialErrors } = readSpecialsDir();
 const specialChecks = specials.flatMap((special) => [
   ...compilePageDir(PAGES_DIR, IMAGES_DIR, special).errors,
   ...(quiz ? compileSpecialQuiz(special, quiz).errors : []),
+  // Its link previews: page 100 (share.png) and the Flummox! cards, made by npm run share-images
+  ...['share.png', 'flummox.png']
+    .filter((file) => !fs.existsSync(path.join(SHARE_DIR, special.name, file)))
+    .map((file) => `public/share/${special.name}/${file} is missing: see docs/seasonal/README.md`),
 ]);
 // Search results and link previews use the page's own description (SEO SPEC §3.2.4)
 const errors = [

@@ -3,7 +3,7 @@ import { SemanticPage } from './components/SemanticPage';
 import { documentTitle, pageDescription } from './content/meta';
 import { NAVIGABLE_PAGES, NOT_FOUND_PAGE, PAGES } from './content/registry';
 import { pageHref } from './navigation/paths';
-import { quiz } from './flummox/quizData';
+import { quiz, special } from './flummox/quizData';
 import { scorePath } from './flummox/share';
 
 /**
@@ -57,6 +57,9 @@ const QUIZ_PAGE = 152;
  * A page for each Flummox! score (docs/flummox/SPEC.md §6, Sharing): a shared
  * link's preview shows the score, and the app takes a visitor on to page 152.
  */
+/** The link-preview pictures: the regular ones, or the dated special's that's on (src/content/specials). */
+const SHARE = special ? `share/${special}/` : 'share/';
+
 const scorePages = (all: PrerenderedPage[]): PrerenderedPage[] => {
   const quizPage = all.find((p) => p.page === QUIZ_PAGE)!;
   const total = quiz.questions.length;
@@ -74,7 +77,7 @@ const scorePages = (all: PrerenderedPage[]): PrerenderedPage[] => {
       () => `</h1><p>Someone scored ${score} out of ${total} on Flummox! <a href="${pageHref(QUIZ_PAGE)}">Play Flummox! on page 152</a>.</p>`,
     ),
     image: {
-      path: `share/flummox-${score}.png`,
+      path: `${SHARE}flummox-${score}.png`,
       alt: `A Teletext screen: Flummox! score ${score} out of ${total}, with Felix Flummox ${score >= 9 ? 'looking flummoxed' : 'giving a thumbs-up'}.`,
     },
   }));
@@ -82,11 +85,17 @@ const scorePages = (all: PrerenderedPage[]): PrerenderedPage[] => {
 
 /** Page 152's own link preview: the Flummox! card. */
 const QUIZ_IMAGE = {
-  path: 'share/flummox.png',
+  path: `${SHARE}flummox.png`,
   alt: 'A Teletext screen: Flummox!, with Felix Flummox giving a thumbs-up and asking "Can you flummox Felix?"',
 };
 
+/** While a dated special is on, every other page's link preview is its own picture of page 100. */
+const SPECIAL_IMAGE = special && {
+  path: `${SHARE}share.png`,
+  alt: "The STEEVEFAX index page: Steve Robertson's name in Teletext block letters, with this week's Flummox! special.",
+};
+
 export const prerender = (): PrerenderedPage[] => {
-  const all = pages().map((p) => (p.page === QUIZ_PAGE && p.file !== '404.html' ? { ...p, image: QUIZ_IMAGE } : p));
+  const all = pages().map((p) => (p.page === QUIZ_PAGE && p.file !== '404.html' ? { ...p, image: QUIZ_IMAGE } : SPECIAL_IMAGE ? { ...p, image: SPECIAL_IMAGE } : p));
   return [...all, ...scorePages(all)];
 };

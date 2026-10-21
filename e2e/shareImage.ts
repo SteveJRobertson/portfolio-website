@@ -4,10 +4,12 @@ import { chromium } from '@playwright/test';
 /**
  * Captures `public/share.png`, the 1200 × 630 link-preview image, from page 100
  * of a running preview (`GITHUB_PAGES=true npm run build && GITHUB_PAGES=true npx vite preview`), then
- * `npx tsx e2e/shareImage.ts [url]`. Run it again when page 100 changes.
+ * `npx tsx e2e/shareImage.ts [url] [out]`. Run it again when page 100 changes. For a
+ * dated special, build with `SEASON_DATE` set to one of its days and write to
+ * `public/share/NAME/share.png` (docs/seasonal/README.md).
  */
 const url = process.argv[2] ?? 'http://localhost:4173/';
-const out = path.resolve(import.meta.dirname, '../public/share.png');
+const out = path.resolve(process.argv[3] ?? path.join(import.meta.dirname, '../public/share.png'));
 
 const browser = await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM } : {});
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, reducedMotion: 'reduce' });

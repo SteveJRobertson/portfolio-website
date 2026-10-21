@@ -10,13 +10,15 @@ import {
   compilePageDir,
   compileQuizFile,
   compileSpecialQuiz,
+  readSpecialsDir,
   seasonDate,
   specialForBuild,
 } from './pageFiles.ts';
 
 const VIRTUAL_PAGES = 'virtual:pages';
 const VIRTUAL_QUIZ = 'virtual:flummox';
-const RESOLVED = new Map([VIRTUAL_PAGES, VIRTUAL_QUIZ].map((id) => [id, '\0' + id]));
+const VIRTUAL_CARDS = 'virtual:flummox-cards';
+const RESOLVED = new Map([VIRTUAL_PAGES, VIRTUAL_QUIZ, VIRTUAL_CARDS].map((id) => [id, '\0' + id]));
 
 /**
  * Compiles `src/content/pages/*.json` into `virtual:pages` (SPEC §7): validated,
@@ -63,7 +65,26 @@ export const contentPlugin = (): Plugin => {
           for (const s of currentAndUpcoming(specials, seasonDate())) previews[s.name] = s === special ? quiz : forSpecial(s);
         }
         if (errors.length) this.error(`Flummox! content errors:\n${errors.map((e) => `  ${e}`).join('\n')}`);
-        return `export const quiz = ${JSON.stringify(quiz)};\nexport const previews = ${JSON.stringify(previews)};`;
+        return [
+          `export const quiz = ${JSON.stringify(quiz)};`,
+          `export const previews = ${JSON.stringify(previews)};`,
+          `export const special = ${JSON.stringify(special?.name ?? null)};`,
+        ].join('\n');
+      }
+      if (id === RESOLVED.get(VIRTUAL_CARDS)) {
+        // Every special's link-preview cards, for the Flummox/Card story that npm run share-images captures
+        const regular = compileQuizFile();
+        const { specials, errors: specialErrors, files: specialFiles } = readSpecialsDir();
+        [...regular.files, ...specialFiles].forEach((file) => this.addWatchFile(file));
+        const errors = [...regular.errors, ...specialErrors];
+        const bySpecial: Record<string, CompiledQuiz['cards']> = {};
+        for (const s of specials) {
+          const compiled = compileSpecialQuiz(s, regular.quiz!);
+          errors.push(...compiled.errors);
+          if (compiled.quiz) bySpecial[s.name] = compiled.quiz.cards;
+        }
+        if (errors.length) this.error(`Flummox! content errors:\n${errors.map((e) => `  ${e}`).join('\n')}`);
+        return `export const cards = ${JSON.stringify(regular.quiz!.cards)};\nexport const specialCards = ${JSON.stringify(bySpecial)};`;
       }
     },
     configureServer(server) {
