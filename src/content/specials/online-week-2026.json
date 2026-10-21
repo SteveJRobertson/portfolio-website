@@ -1,0 +1,162 @@
+{
+  "from": "2026-11-22",
+  "until": "2026-11-28",
+  "quiz": {
+    "edition": "Online Week 2026",
+    "title": "ONLINE WEEK",
+    "greeting": "You've got mail! This week's questions have logged on. Press red to begin.",
+    "checkpoints": [
+      3,
+      6,
+      9
+    ],
+    "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
+    "verdicts": [
+      {
+        "min": 12,
+        "text": "Felix is utterly FLUMMOXED! A perfect game."
+      },
+      {
+        "min": 9,
+        "text": "Felix is impressed. Nearly perfect."
+      },
+      {
+        "min": 5,
+        "text": "Not bad. Felix has seen worse."
+      },
+      {
+        "min": 0,
+        "text": "Felix is not flummoxed in the slightest."
+      }
+    ],
+    "questions": [
+      {
+        "question": "What was the first thing ever sold on eBay?",
+        "answers": [
+          "A broken laser pointer",
+          "A Beanie Baby",
+          "A used car",
+          "A pair of trainers"
+        ],
+        "correct": 0,
+        "quip": "Right! For $14.83."
+      },
+      {
+        "question": "In which year did Google launch?",
+        "answers": [
+          "1994",
+          "1996",
+          "1998",
+          "2001"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "What does the S in HTTPS stand for?",
+        "answers": [
+          "Server",
+          "Secure",
+          "Standard",
+          "Session"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which box screeched as it got you online in the 1990s?",
+        "answers": [
+          "Router",
+          "Switch",
+          "Modem",
+          "Firewall"
+        ],
+        "correct": 2,
+        "quip": "Correct! And nobody could use the phone."
+      },
+      {
+        "question": "Amazon started out selling what?",
+        "answers": [
+          "Books",
+          "CDs",
+          "Toys",
+          "Electronics"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "How many bits are in a byte?",
+        "answers": [
+          "4",
+          "8",
+          "16",
+          "32"
+        ],
+        "correct": 1,
+        "quip": "Correct! And four bits make a nibble."
+      },
+      {
+        "question": "What does a 404 error mean?",
+        "answers": [
+          "Server down",
+          "Page not found",
+          "Access denied",
+          "Too many requests"
+        ],
+        "correct": 1,
+        "quip": "Right! Try page 404 here."
+      },
+      {
+        "question": "Which social network began in a Harvard dorm in 2004?",
+        "answers": [
+          "Myspace",
+          "Twitter",
+          "Bebo",
+          "Facebook"
+        ],
+        "correct": 3
+      },
+      {
+        "question": "Which Bletchley Park codebreaker devised a test for machine intelligence?",
+        "answers": [
+          "Alan Turing",
+          "Charles Babbage",
+          "Ada Lovelace",
+          "Grace Hopper"
+        ],
+        "correct": 0,
+        "quip": "Correct! He's on the £50 note."
+      },
+      {
+        "question": "Ada Lovelace wrote about which of Charles Babbage's machines?",
+        "answers": [
+          "Difference Engine",
+          "Enigma",
+          "Colossus",
+          "Analytical Engine"
+        ],
+        "correct": 3
+      },
+      {
+        "question": "How many hearts does an octopus have?",
+        "answers": [
+          "One",
+          "Two",
+          "Three",
+          "Eight"
+        ],
+        "correct": 2,
+        "quip": "Right! And blue blood, too."
+      },
+      {
+        "question": "Junk email is called spam after what?",
+        "answers": [
+          "An Army ration code",
+          "A US senator",
+          "A computer virus",
+          "A Monty Python sketch"
+        ],
+        "correct": 3,
+        "quip": "Spam, spam, spam, spam! Correct."
+      }
+    ]
+  }
+}

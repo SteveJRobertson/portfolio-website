@@ -1,0 +1,164 @@
+{
+  "from": "2026-11-01",
+  "until": "2026-11-07",
+  "quiz": {
+    "edition": "Bonfire Night 2026",
+    "title": "BONFIRE NIGHT EDITION",
+    "greeting": "Remember, remember! Twelve sparkling questions await. Press red to begin.",
+    "checkpoints": [
+      3,
+      6,
+      9
+    ],
+    "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
+    "verdicts": [
+      {
+        "min": 12,
+        "text": "Felix is utterly FLUMMOXED! A perfect game."
+      },
+      {
+        "min": 9,
+        "text": "Felix is impressed. Nearly perfect."
+      },
+      {
+        "min": 5,
+        "text": "Not bad. Felix has seen worse."
+      },
+      {
+        "min": 0,
+        "text": "Felix is not flummoxed in the slightest."
+      }
+    ],
+    "questions": [
+      {
+        "question": "In which year was the Gunpowder Plot?",
+        "answers": [
+          "1588",
+          "1666",
+          "1605",
+          "1715"
+        ],
+        "correct": 2,
+        "quip": "Right! And we've lit bonfires ever since."
+      },
+      {
+        "question": "Remember, remember the fifth of November: gunpowder, treason and what?",
+        "answers": [
+          "Fire",
+          "Plot",
+          "Spark",
+          "Night"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Guy Fawkes was caught with the gunpowder under which building?",
+        "answers": [
+          "Tower of London",
+          "St Paul's Cathedral",
+          "Westminster Abbey",
+          "House of Lords"
+        ],
+        "correct": 3,
+        "quip": "Right! In a cellar, just before midnight."
+      },
+      {
+        "question": "Which metal gives fireworks a green colour?",
+        "answers": [
+          "Barium",
+          "Copper",
+          "Sodium",
+          "Strontium"
+        ],
+        "correct": 0,
+        "quip": "Correct! Strontium makes red, copper makes blue."
+      },
+      {
+        "question": "Which ITV Teletext service took over from ORACLE in 1993?",
+        "answers": [
+          "Ceefax",
+          "Prestel",
+          "4-Tel",
+          "Teletext Ltd"
+        ],
+        "correct": 3,
+        "quip": "Right! It ran on ITV until 2009."
+      },
+      {
+        "question": "Where is the Up Helly Aa fire festival held?",
+        "answers": [
+          "Inverness",
+          "Lerwick",
+          "Oban",
+          "Stornoway"
+        ],
+        "correct": 1,
+        "quip": "Right! In Shetland, where they burn a Viking longship."
+      },
+      {
+        "question": "Which ginger cake is a Bonfire Night favourite in Yorkshire?",
+        "answers": [
+          "Tablet",
+          "Flapjack",
+          "Parkin",
+          "Shortbread"
+        ],
+        "correct": 2,
+        "quip": "Yes! Best left a few days to get sticky."
+      },
+      {
+        "question": "Who sang the 2010 hit Firework?",
+        "answers": [
+          "Rihanna",
+          "Katy Perry",
+          "Lady Gaga",
+          "Kesha"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which 1982 Sinclair home computer had rubber keys?",
+        "answers": [
+          "ZX Spectrum",
+          "Commodore 64",
+          "BBC Micro",
+          "Amstrad CPC"
+        ],
+        "correct": 0,
+        "quip": "Yes! 48K of pure joy."
+      },
+      {
+        "question": "In Minecraft, which green mob hisses, then explodes?",
+        "answers": [
+          "Zombie",
+          "Enderman",
+          "Skeleton",
+          "Creeper"
+        ],
+        "correct": 3
+      },
+      {
+        "question": "Which programming language is named after a comedy group?",
+        "answers": [
+          "Ruby",
+          "Perl",
+          "Python",
+          "Rust"
+        ],
+        "correct": 2,
+        "quip": "Correct! Monty Python, not the snake."
+      },
+      {
+        "question": "Which firework spins round on a pin?",
+        "answers": [
+          "Roman candle",
+          "Catherine wheel",
+          "Rocket",
+          "Sparkler"
+        ],
+        "correct": 1,
+        "quip": "Right! Nail it on firmly."
+      }
+    ]
+  }
+}

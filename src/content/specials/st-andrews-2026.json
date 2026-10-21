@@ -1,0 +1,161 @@
+{
+  "from": "2026-11-29",
+  "until": "2026-12-05",
+  "quiz": {
+    "edition": "St Andrew's 2026",
+    "title": "ST ANDREW'S EDITION",
+    "greeting": "Happy St Andrew's Day! This week's questions have a Scottish flavour. Press red to begin.",
+    "checkpoints": [
+      3,
+      6,
+      9
+    ],
+    "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
+    "verdicts": [
+      {
+        "min": 12,
+        "text": "Felix is utterly FLUMMOXED! A perfect game."
+      },
+      {
+        "min": 9,
+        "text": "Felix is impressed. Nearly perfect."
+      },
+      {
+        "min": 5,
+        "text": "Not bad. Felix has seen worse."
+      },
+      {
+        "min": 0,
+        "text": "Felix is not flummoxed in the slightest."
+      }
+    ],
+    "questions": [
+      {
+        "question": "St Andrew is the patron saint of Scotland and which island nation?",
+        "answers": [
+          "Malta",
+          "Ireland",
+          "Barbados",
+          "Cyprus"
+        ],
+        "correct": 2,
+        "quip": "Right! Barbados celebrates its independence on 30 November too."
+      },
+      {
+        "question": "What is the Scottish flag, a white cross on blue, called?",
+        "answers": [
+          "The Saltire",
+          "The Lion Rampant",
+          "The Union Flag",
+          "The Tartan"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "What is Scotland's national animal?",
+        "answers": [
+          "Stag",
+          "Lion",
+          "Golden eagle",
+          "Unicorn"
+        ],
+        "correct": 3,
+        "quip": "Correct! Always shown in chains, just in case."
+      },
+      {
+        "question": "In which city is the Royal Mile?",
+        "answers": [
+          "Glasgow",
+          "Edinburgh",
+          "Stirling",
+          "Perth"
+        ],
+        "correct": 1,
+        "quip": "Yes! From the castle down to Holyrood."
+      },
+      {
+        "question": "What is the highest mountain in the UK?",
+        "answers": [
+          "Snowdon",
+          "Scafell Pike",
+          "Ben Macdui",
+          "Ben Nevis"
+        ],
+        "correct": 3
+      },
+      {
+        "question": "What is the longest river in Scotland?",
+        "answers": [
+          "Clyde",
+          "Tay",
+          "Spey",
+          "Forth"
+        ],
+        "correct": 1
+      },
+      {
+        "question": "Which Scot is credited with inventing the telephone?",
+        "answers": [
+          "Alexander Graham Bell",
+          "James Watt",
+          "John Logie Baird",
+          "Alexander Fleming"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "Which Edinburgh-born author created Sherlock Holmes?",
+        "answers": [
+          "Robert Louis Stevenson",
+          "Walter Scott",
+          "Arthur Conan Doyle",
+          "J. M. Barrie"
+        ],
+        "correct": 2
+      },
+      {
+        "question": "Which Dundee-made game had you saving green-haired creatures?",
+        "answers": [
+          "Lemmings",
+          "Worms",
+          "Populous",
+          "Dizzy"
+        ],
+        "correct": 0,
+        "quip": "Correct! Oh no!"
+      },
+      {
+        "question": "Which poet wrote the words of Auld Lang Syne?",
+        "answers": [
+          "Walter Scott",
+          "Robert Burns",
+          "Hugh MacDiarmid",
+          "James Hogg"
+        ],
+        "correct": 1,
+        "quip": "Correct! Save it for Hogmanay."
+      },
+      {
+        "question": "Dolly the sheep, the first mammal cloned from an adult cell, was born near which city?",
+        "answers": [
+          "Aberdeen",
+          "Glasgow",
+          "Dundee",
+          "Edinburgh"
+        ],
+        "correct": 3
+      },
+      {
+        "question": "What is a haar, on Scotland's east coast?",
+        "answers": [
+          "A wee dram",
+          "A bagpipe tune",
+          "A sea fog",
+          "A small hill"
+        ],
+        "correct": 2,
+        "quip": "Right! It rolls in off the North Sea."
+      }
+    ]
+  }
+}
