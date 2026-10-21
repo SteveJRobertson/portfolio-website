@@ -9,7 +9,7 @@
     },
     {
       "find": "{yellow}NEW{/} {white}Flummox! quiz",
-      "replace": "{magenta}SPOOKY{/} {white}Flummox! quiz"
+      "replace": "{magenta}NEW{/} {white}Halloween Flummox!"
     }
   ],
   "quiz": {
