@@ -6,6 +6,7 @@ A special, such as Halloween, is a dated file in `src/content/specials/`. It swi
 
 - **Flummox! questions**: its own set of 12, in the same shape as `quiz.json`, with a new `edition` so it keeps its own best score. Without a `quiz`, the regular questions stay.
 - **Felix's costume**: a name from `scripts/art/felix.mjs` (`halloween`: a witch's hat and a jack-o'-lantern). Portrait screens have no room for his hand, so they show the hat only.
+- **Colours**: a costume can also recolour page 152 (`COSTUME_COLOURS` in `src/content/flummox/quiz.ts`). Halloween's adds orange and purple, which real Teletext never had: an orange logo (`flummox-logo-halloween.png`, from `scripts/art/logo.mjs`), purple lines, purple speech, orange highlights and a green title. The answer colours and the "Press red" bars never change, so they match the remote's keys. Pages can't use `{orange}` or `{purple}`: the validator keeps them to Teletext's eight colours.
 - **Copy**: small changes to the pages, each a `find` and a `replace` in any page's text, such as the promo bar on pages 100, 200 and 400.
 
 The rest of the site (About, Career, Projects, Skills, the colours) stays as it is, so the portfolio reads the same to anyone who lands on it.

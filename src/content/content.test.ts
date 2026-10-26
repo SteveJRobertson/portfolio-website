@@ -56,7 +56,7 @@ describe('parseMarkup', () => {
   });
 
   it.each([
-    ['{orange}X{/}', 'unknown tag "{orange}"'],
+    ['{pink}X{/}', 'unknown tag "{pink}"'],
     ['{cyan}X', 'not closed'],
     ['X{/}', 'nothing to close'],
     ['{cyan', 'unclosed "{"'],
@@ -301,7 +301,12 @@ describe('compilePages', () => {
   });
 
   it('reports tag errors with the file and line', () => {
-    expect(errorsFor(file(source({ rows: ['ok', '{orange}X{/}'] })))).toContain('page100.json (38 columns): line 2: unknown tag "{orange}"');
+    expect(errorsFor(file(source({ rows: ['ok', '{pink}X{/}'] })))).toContain('page100.json (38 columns): line 2: unknown tag "{pink}"');
+  });
+
+  it("keeps pages to Teletext's eight colours: orange and purple are for Flummox! specials", () => {
+    expect(errorsFor(file(source({ rows: ['{orange}X{/}'] })))).toContain("page100.json: {orange} is only for Flummox! specials");
+    expect(errorsFor(file(source({ rows: ['{bg:purple}X{/}'] })))).toContain("page100.json: {purple} is only for Flummox! specials");
   });
 
   it('rejects mismatched file names, duplicates and bad shapes', () => {

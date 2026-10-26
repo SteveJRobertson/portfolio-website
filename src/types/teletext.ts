@@ -6,7 +6,15 @@ export type TeletextColor =
   | 'magenta'
   | 'cyan'
   | 'white'
-  | 'black';
+  | 'black'
+  | SpecialColor;
+
+/**
+ * Colours real Teletext never had, for Flummox! specials only (Halloween's
+ * orange and purple). Pages keep to the eight in `TELETEXT_COLORS`.
+ */
+export type SpecialColor = 'orange' | 'purple';
+export const SPECIAL_COLORS: readonly SpecialColor[] = ['orange', 'purple'];
 
 export const TELETEXT_COLORS: readonly TeletextColor[] = [
   'red',

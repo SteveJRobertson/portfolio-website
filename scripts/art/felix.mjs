@@ -9,7 +9,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(path.join(process.cwd(), 'package.json'));
 const { PNG } = require('pngjs');
 
-const RGB = { w: [255,255,255], y: [255,255,0], c: [0,255,255], r: [255,51,51], b: [77,121,255], g: [0,255,0], m: [255,0,255], '.': null };
+const RGB = { w: [255,255,255], y: [255,255,0], c: [0,255,255], r: [255,51,51], b: [77,121,255], g: [0,255,0], m: [255,0,255], o: [255,136,0], p: [170,85,255], '.': null };
 
 // 32 x 24 pixels = 16 cells x 8 rows, as Bamber was (the face is drawn 28 wide, then his hand added). W is the face: yellow, as Bamber's was.
 const HAIR = [
@@ -20,14 +20,14 @@ const HAIR = [
   '....ggg.ggggggg.gggggggg.gg.',
   '....g..g......g.......g..g..',
 ];
-// Halloween: a pointed witch's hat in magenta (Teletext has no black to draw with).
+// Halloween: a pointed witch's hat in purple, one of the two colours the Halloween special adds (src/content/flummox/quiz.ts).
 const WITCH_HAT = [
-  '...............mm...........',
-  '.............mmmm...........',
-  '...........mmmmmm...........',
-  '..........mmmmmmmm..........',
-  '.........mmmmmmmmmm.........',
-  '..mmmmmmmmmmmmmmmmmmmmmmmm..',
+  '...............pp...........',
+  '.............pppp...........',
+  '...........pppppp...........',
+  '..........pppppppp..........',
+  '.........pppppppppp.........',
+  '..pppppppppppppppppppppppp..',
 ];
 const BODY = [
   '..bbbbbbb.rrr..rrr.bbbbbbb..',
@@ -90,11 +90,11 @@ const OPEN_HAND = handRows([
   '...W..', '.W.W.W', '.W.W.W', '.W.W.W', '.WWWWW', 'W.WWWW', 'WWWWWW',
   '.WWWW.', '..WWW.', '..WWW.', '..WWW.', '..WWW.', '..WWW.', '..WWW.',
 ]);
-// Halloween: a jack-o'-lantern held up in his hand (red, the nearest Teletext has to orange), its stalk green.
+// Halloween: a jack-o'-lantern held up in his hand, in the special's orange, its stalk green.
 const PUMPKIN = [
   '......', '......', '......', '......', '......', '......',
   '......', '...g..', '..gg..',
-  '.rrrr.', 'r.rr.r', 'rrrrrr', 'r....r', 'rr..rr', '.rrrr.',
+  '.oooo.', 'o.oo.o', 'oooooo', 'o....o', 'oo..oo', '.oooo.',
   '.WWWW.', 'WWWWWW', '.WWWW.', '..WWW.', '..WWW.', '..WWW.',
 ];
 const SLEEVE = ['.bbbbb', 'bbbbbb', 'bbbbbb'];

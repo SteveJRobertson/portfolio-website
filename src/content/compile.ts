@@ -21,7 +21,7 @@ import {
 } from './schema.ts';
 import { MARGIN, layoutRows, slotsUsed, type ImageRenderer } from './wrap.ts';
 import { parseMarkup } from './markup.ts';
-import { mosaicCols, mosaicRowsFor, overfullCells, toMosaic, type RgbaImage } from './mosaic.ts';
+import { mosaicCols, mosaicRowsFor, overfullCells, toMosaic, EVERY_COLOUR, type RgbaImage } from './mosaic.ts';
 import { buildSemantic } from './semantic.ts';
 
 export interface SourceFile {
@@ -151,7 +151,7 @@ export const imageRenderer =
       if (overfull.length) {
         return fail(`pixel art "${source.image}" uses more than two colours in cell(s) ${overfull.join('; ')} (column,row); a cell can show two`);
       }
-      return { rows: toMosaic(picture, { rows, cols }), cols, errors: [] };
+      return { rows: toMosaic(picture, { rows, cols, palette: EVERY_COLOUR }), cols, errors: [] };
     }
 
     const narrow = width < WIDE_COLS;
@@ -251,6 +251,9 @@ export const compilePages = (files: SourceFile[], images: Readonly<Record<string
       errors.push(...problems.map((p) => `${file}: ${p}`));
       continue;
     }
+    // Orange and purple are for Flummox! specials (src/content/flummox/quiz.ts); the pages stay real Teletext
+    const special = /\{(?:bg:)?(orange|purple)\}/.exec(JSON.stringify(data));
+    if (special) errors.push(`${file}: {${special[1]}} is only for Flummox! specials; pages keep to Teletext's eight colours`);
     const page = data as PageSource;
     if (file !== `page${page.page}.json`) errors.push(`${file}: holds page ${page.page}, so it should be page${page.page}.json`);
     const other = seen.get(page.page);

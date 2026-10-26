@@ -1,4 +1,4 @@
-import { TELETEXT_COLORS, THIN_LINE, type GridSegment, type TeletextColor } from '../types/teletext.ts';
+import { SPECIAL_COLORS, TELETEXT_COLORS, THIN_LINE, type GridSegment, type TeletextColor } from '../types/teletext.ts';
 import { sextant } from './mosaic.ts';
 import { ICONS, type IconName } from '../icons/icons.ts';
 
@@ -61,7 +61,7 @@ export const ICON_CELLS = '\u00a0\u00a0';
 /** The middle third of a cell: a solid bar across the screen. */
 export const RULE = sextant(0b001100);
 
-const isColor = (name: string): name is TeletextColor => (TELETEXT_COLORS as readonly string[]).includes(name);
+const isColor = (name: string): name is TeletextColor => ([...TELETEXT_COLORS, ...SPECIAL_COLORS] as readonly string[]).includes(name);
 
 export const parseMarkup = (source: string): ParsedLine => {
   const segments: GridSegment[] = [];
