@@ -1,4 +1,4 @@
-import type { GridRow, GridSegment, TeletextColor } from '../types/teletext.ts';
+import { TELETEXT_COLORS, type GridRow, type GridSegment, type TeletextColor } from '../types/teletext.ts';
 
 /**
  * The build-time image converter (SPEC §8): turns a picture into rows of 2×3
@@ -35,9 +35,14 @@ export const PALETTE_RGB: Record<TeletextColor, readonly [number, number, number
   magenta: [255, 0, 255],
   cyan: [0, 255, 255],
   white: [255, 255, 255],
+  orange: [255, 136, 0],
+  purple: [170, 85, 255],
 };
 
-const ALL_COLOURS = Object.keys(PALETTE_RGB) as TeletextColor[];
+/** Photos and drawings keep to real Teletext's colours. */
+const ALL_COLOURS = TELETEXT_COLORS;
+/** Pixel art is used as drawn, so a special's art can use its orange and purple too. */
+export const EVERY_COLOUR = Object.keys(PALETTE_RGB) as TeletextColor[];
 
 /**
  * A mosaic cell is 0.6em × 1em, split 2 across and 3 down, so each of its

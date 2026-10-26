@@ -23,12 +23,15 @@ const rows = Array.from({ length: 9 }, (_, y) => [...word].map((c) => G[c][y]).j
 const width = Math.ceil(rows[0].length / 2) * 2;
 const padded = rows.map((r) => r.padEnd(width, '.'));
 
-const png = new PNG({ width, height: 9 });
-padded.forEach((row, y) => [...row].forEach((ch, x) => {
-  const i = (y * width + x) * 4;
-  if (ch === '#') { png.data[i] = 255; png.data[i + 1] = 255; png.data[i + 2] = 0; png.data[i + 3] = 255; } else png.data[i + 3] = 0;
-}));
 const out = process.argv[2] ?? '.';
-fs.writeFileSync(path.join(out, 'flummox-logo.png'), PNG.sync.write(png));
+// The regular logo in yellow; a dated special's in its own colour (Halloween: orange)
+for (const [file, [r, g, b]] of [['flummox-logo.png', [255, 255, 0]], ['flummox-logo-halloween.png', [255, 136, 0]]]) {
+  const png = new PNG({ width, height: 9 });
+  padded.forEach((row, y) => [...row].forEach((ch, x) => {
+    const i = (y * width + x) * 4;
+    if (ch === '#') { png.data[i] = r; png.data[i + 1] = g; png.data[i + 2] = b; png.data[i + 3] = 255; } else png.data[i + 3] = 0;
+  }));
+  fs.writeFileSync(path.join(out, file), PNG.sync.write(png));
+}
 console.log('flummox-logo.png', `${width}x9`, `${width / 2} cells`);
 padded.forEach((r) => console.log(r.replace(/\./g, ' ')));

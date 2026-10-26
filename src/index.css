@@ -21,6 +21,9 @@
   --tt-magenta: #ff00ff;
   --tt-cyan: #00ffff;
   --tt-white: #ffffff;
+  /* Flummox! specials only (SPECIAL_COLORS): Halloween's orange and purple */
+  --tt-orange: #ff8800;
+  --tt-purple: #aa55ff;
 
   /* Fonts */
   --tt-font: 'Bedstead', monospace;
@@ -67,6 +70,8 @@ html, body {
 .c-cyan    { color: var(--tt-cyan); }
 .c-white   { color: var(--tt-white); }
 .c-black   { color: var(--tt-black); }
+.c-orange  { color: var(--tt-orange); }
+.c-purple  { color: var(--tt-purple); }
 
 .bg-red     { background-color: #cc0000; color: #ffffff; }
 .bg-green   { background-color: #00aa00; color: #000000; }
@@ -79,6 +84,10 @@ html, body {
    the lighter --tt-blue is for black backgrounds and would fail AA on white */
 .bg-white.c-blue { color: #0000ff; }
 .bg-black   { background-color: var(--tt-black); color: var(--tt-white); }
+.bg-orange  { background-color: #e07000; color: #000000; }
+.bg-purple  { background-color: #7a2acc; color: #ffffff; }
+.bg-white.c-purple { color: #6a1fc0; }
+.bg-white.c-orange { color: #b04a00; }
 
 /* Block graphics backgrounds: the same colours as the foreground, so a picture's cells blend */
 .m-bg-red     { background-color: var(--tt-red); }
@@ -89,6 +98,8 @@ html, body {
 .m-bg-cyan    { background-color: var(--tt-cyan); }
 .m-bg-white   { background-color: var(--tt-white); }
 .m-bg-black   { background-color: var(--tt-black); }
+.m-bg-orange  { background-color: var(--tt-orange); }
+.m-bg-purple  { background-color: var(--tt-purple); }
 
 /* ============================================================
    DISPLAY ENGINE (SPEC §3)
