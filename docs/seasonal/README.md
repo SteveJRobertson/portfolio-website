@@ -16,7 +16,7 @@ The rest of the site (About, Career, Projects, Skills, the colours) stays as it 
   "from": "2026-10-27",
   "until": "2026-10-31",
   "costume": "halloween",
-  "copy": [{ "find": "PLAY FLUMMOX! THE QUIZ p152", "replace": "HALLOWEEN FLUMMOX! QUIZ p152" }],
+  "copy": [{ "find": "PLAY FLUMMOX! p152", "replace": "HALLOWEEN FLUMMOX! QUIZ p152" }],
   "quiz": { "edition": "Halloween 2026", "title": "HALLOWEEN SPECIAL", "greeting": "Happy Halloween! …", "…": "as quiz.json" }
 }
 ```
