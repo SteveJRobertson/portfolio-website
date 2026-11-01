@@ -16,7 +16,7 @@ The rest of the site (About, Career, Projects, Skills, the colours) stays as it 
   "from": "2026-10-27",
   "until": "2026-10-31",
   "costume": "halloween",
-  "copy": [{ "find": "PLAY FLUMMOX! THE QUIZ p152", "replace": "HALLOWEEN FLUMMOX! QUIZ p152" }],
+  "copy": [{ "find": "PLAY FLUMMOX! p152", "replace": "HALLOWEEN FLUMMOX! QUIZ p152" }],
   "quiz": { "edition": "Halloween 2026", "title": "HALLOWEEN SPECIAL", "greeting": "Happy Halloween! …", "…": "as quiz.json" }
 }
 ```
@@ -32,7 +32,7 @@ The rest of the site (About, Career, Projects, Skills, the colours) stays as it 
 
 ## How it switches
 
-The site is static, so the build decides: it takes today's date in the UK and uses the special that's on, if any. `deploy.yml` builds and deploys main every night at 00:05 UTC (just after midnight in winter, just after 1am in summer), so a special goes live on its first day and is gone on the day after its last.
+The site is static, so the build decides: it takes today's date in the UK and uses the special that's on, if any. `deploy.yml` builds and deploys main every night at 00:05 UTC (just after midnight in winter, just after 1am in summer), so a special goes live on its first day and is gone on the day after its last. GitHub starts scheduled runs late when it's busy: in October 2026 the 00:05 run usually started between 03:45 and 04:15 UTC, so expect a special to switch on or off around 4am UK time. To switch sooner, run Deploy by hand from the Actions tab.
 
 `npm run validate` checks every special, whatever the date: its dates, its questions on every screen, and that each copy change still matches a page.
 

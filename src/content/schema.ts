@@ -88,7 +88,7 @@ export interface PageSource {
   hint?: string;
   /**
    * A double-height red promo bar above Fastext, linking to `page`, as Teletext
-   * advertised its other pages ("PLAY FLUMMOX! THE QUIZ p152"). Pages without sub-pages only.
+   * advertised its other pages ("PLAY FLUMMOX! p152"). Pages without sub-pages only.
    */
   promo?: { text: string; page: number };
   /** Portrait override, used line for line instead of the automatic wrap. */

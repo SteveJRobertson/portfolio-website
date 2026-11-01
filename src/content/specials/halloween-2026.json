@@ -4,11 +4,11 @@
   "costume": "halloween",
   "copy": [
     {
-      "find": "PLAY FLUMMOX! THE QUIZ p152",
+      "find": "PLAY FLUMMOX! p152",
       "replace": "HALLOWEEN FLUMMOX! QUIZ p152"
     },
     {
-      "find": "{yellow}NEW{/} {white}Flummox! quiz",
+      "find": "{white}Play Flummox!",
       "replace": "{magenta}NEW{/} {white}Halloween Flummox!"
     }
   ],
