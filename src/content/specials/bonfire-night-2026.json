@@ -117,15 +117,15 @@
         "correct": 1
       },
       {
-        "question": "Which 1982 Sinclair home computer had rubber keys?",
+        "question": "Which East Sussex town is famous for its huge Bonfire Night parades?",
         "answers": [
-          "ZX Spectrum",
-          "Commodore 64",
-          "BBC Micro",
-          "Amstrad CPC"
+          "Lewes",
+          "Hastings",
+          "Rye",
+          "Eastbourne"
         ],
         "correct": 0,
-        "quip": "Yes! 48K of pure joy."
+        "quip": "Right! Its bonfire societies march through the streets."
       },
       {
         "question": "In Minecraft, which green mob hisses, then explodes?",
@@ -138,15 +138,15 @@
         "correct": 3
       },
       {
-        "question": "Which programming language is named after a comedy group?",
+        "question": "Bonfire toffee is another name for which sweet?",
         "answers": [
-          "Ruby",
-          "Perl",
-          "Python",
-          "Rust"
+          "Tablet",
+          "Fudge",
+          "Treacle toffee",
+          "Butterscotch"
         ],
         "correct": 2,
-        "quip": "Correct! Monty Python, not the snake."
+        "quip": "Correct! Mind your fillings."
       },
       {
         "question": "Which firework spins round on a pin?",

@@ -4,7 +4,7 @@
   "quiz": {
     "edition": "Online Week 2026",
     "title": "ONLINE WEEK",
-    "greeting": "You've got mail! This week's questions have logged on. Press red to begin.",
+    "greeting": "Logging on... This week's questions are all about the internet. Press red to begin.",
     "checkpoints": [
       3,
       6,
@@ -83,15 +83,15 @@
         "correct": 0
       },
       {
-        "question": "How many bits are in a byte?",
+        "question": "What did AOL famously tell you when an email arrived?",
         "answers": [
-          "4",
-          "8",
-          "16",
-          "32"
+          "New mail!",
+          "You've got mail!",
+          "Message received!",
+          "Inbox ready!"
         ],
         "correct": 1,
-        "quip": "Correct! And four bits make a nibble."
+        "quip": "Right! And a film was named after it."
       },
       {
         "question": "What does a 404 error mean?",
@@ -115,36 +115,35 @@
         "correct": 3
       },
       {
-        "question": "Which Bletchley Park codebreaker devised a test for machine intelligence?",
+        "question": "Which company made the web browser Internet Explorer?",
         "answers": [
-          "Alan Turing",
-          "Charles Babbage",
-          "Ada Lovelace",
-          "Grace Hopper"
+          "Microsoft",
+          "Apple",
+          "IBM",
+          "Netscape"
         ],
-        "correct": 0,
-        "quip": "Correct! He's on the £50 note."
+        "correct": 0
       },
       {
-        "question": "Ada Lovelace wrote about which of Charles Babbage's machines?",
+        "question": "Which video site was bought by Google in 2006?",
         "answers": [
-          "Difference Engine",
-          "Enigma",
-          "Colossus",
-          "Analytical Engine"
+          "Vimeo",
+          "Dailymotion",
+          "Flickr",
+          "YouTube"
         ],
-        "correct": 3
+        "correct": 3,
+        "quip": "Correct! Its first video was at a zoo."
       },
       {
-        "question": "How many hearts does an octopus have?",
+        "question": "What does the e in email stand for?",
         "answers": [
-          "One",
-          "Two",
-          "Three",
-          "Eight"
+          "Easy",
+          "Express",
+          "Electronic",
+          "External"
         ],
-        "correct": 2,
-        "quip": "Right! And blue blood, too."
+        "correct": 2
       },
       {
         "question": "Junk email is called spam after what?",
