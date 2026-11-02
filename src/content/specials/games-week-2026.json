@@ -96,12 +96,12 @@
         "quip": "Correct! Mr Biffo's finest work."
       },
       {
-        "question": "What does RAM stand for?",
+        "question": "Which arcade game has you guiding a frog across a road and a river?",
         "answers": [
-          "Random Access Memory",
-          "Read And Modify",
-          "Rapid Action Memory",
-          "Run Any Machine"
+          "Frogger",
+          "Paperboy",
+          "Q*bert",
+          "Centipede"
         ],
         "correct": 0
       },
@@ -117,14 +117,15 @@
         "quip": "Right! He was a carpenter back then."
       },
       {
-        "question": "What is the capital of Australia?",
+        "question": "Which company made the PlayStation?",
         "answers": [
-          "Canberra",
-          "Sydney",
-          "Melbourne",
-          "Perth"
+          "Sony",
+          "Sega",
+          "Nintendo",
+          "Atari"
         ],
-        "correct": 0
+        "correct": 0,
+        "quip": "Correct! It landed in the UK in 1995."
       },
       {
         "question": "In which 1983 film does a computer called WOPR play war games?",
@@ -138,15 +139,15 @@
         "quip": "Correct! The only winning move is not to play."
       },
       {
-        "question": "Which home computer was made for a BBC series about computing?",
+        "question": "Which space-trading game launched on the BBC Micro in 1984?",
         "answers": [
-          "ZX81",
-          "BBC Micro",
-          "Dragon 32",
-          "Oric-1"
+          "Starglider",
+          "Elite",
+          "Asteroids",
+          "Wing Commander"
         ],
         "correct": 1,
-        "quip": "Yes! Built by Acorn, in Cambridge."
+        "quip": "Right on, Commander!"
       },
       {
         "question": "In chess, which piece only ever moves diagonally?",
