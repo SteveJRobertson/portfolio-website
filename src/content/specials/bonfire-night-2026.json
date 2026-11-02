@@ -128,15 +128,14 @@
         "quip": "Right! Its bonfire societies march through the streets."
       },
       {
-        "question": "What did children ask passers-by for when showing off their guy?",
+        "question": "In Minecraft, which green mob hisses, then explodes?",
         "answers": [
-          "A sweet",
-          "A match",
-          "A story",
-          "A penny"
+          "Zombie",
+          "Enderman",
+          "Skeleton",
+          "Creeper"
         ],
-        "correct": 3,
-        "quip": "Right! A penny for the guy."
+        "correct": 3
       },
       {
         "question": "Bonfire toffee is another name for which sweet?",
