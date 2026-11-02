@@ -45,3 +45,7 @@ The site is static, so the build decides: it takes today's date in the UK and us
 ## Next year
 
 Copy `halloween-2026.json` to `halloween-2027.json`, change the dates and `edition`, and swap the questions (or keep them). Old files can stay: a special whose dates have passed does nothing.
+
+## Weekly question sets
+
+A special can be just a new set of questions: no `costume` and no `copy`, only `from`, `until` and `quiz`. November 2026 runs one a week, Sunday to Saturday, each with its own `edition` so best scores start fresh: `bonfire-night-2026`, `games-week-2026`, `telly-week-2026`, `online-week-2026` and `st-andrews-2026` (to Sat 5 Dec). Between specials the regular `quiz.json` questions come back. With no copy changes, a set's `share.png` is the same as `public/share.png`, so copy it in.
