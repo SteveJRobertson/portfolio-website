@@ -1,0 +1,163 @@
+{
+  "from": "2026-11-08",
+  "until": "2026-11-14",
+  "quiz": {
+    "edition": "Games Week 2026",
+    "title": "GAMES WEEK",
+    "greeting": "Insert coin! This week's questions have a gaming twist. Press red to begin.",
+    "checkpoints": [
+      3,
+      6,
+      9
+    ],
+    "share": "I scored {score}/12 on Flummox!, the Teletext quiz on STEEVEFAX page 152. Can you flummox Felix?",
+    "verdicts": [
+      {
+        "min": 12,
+        "text": "Felix is utterly FLUMMOXED! A perfect game."
+      },
+      {
+        "min": 9,
+        "text": "Felix is impressed. Nearly perfect."
+      },
+      {
+        "min": 5,
+        "text": "Not bad. Felix has seen worse."
+      },
+      {
+        "min": 0,
+        "text": "Felix is not flummoxed in the slightest."
+      }
+    ],
+    "questions": [
+      {
+        "question": "Which Pac-Man ghost is red?",
+        "answers": [
+          "Pinky",
+          "Blinky",
+          "Inky",
+          "Clyde"
+        ],
+        "correct": 1,
+        "quip": "Right! And he's the one chasing you."
+      },
+      {
+        "question": "Which company made the Game Boy?",
+        "answers": [
+          "Sega",
+          "Atari",
+          "Nintendo",
+          "Sony"
+        ],
+        "correct": 2,
+        "quip": "Correct! 1989, with Tetris in the box."
+      },
+      {
+        "question": "In which country was Tetris first made, in 1984?",
+        "answers": [
+          "Japan",
+          "Soviet Union",
+          "USA",
+          "Hungary"
+        ],
+        "correct": 1,
+        "quip": "Right! By Alexey Pajitnov, in Moscow."
+      },
+      {
+        "question": "What is Sonic the Hedgehog's two-tailed sidekick called?",
+        "answers": [
+          "Knuckles",
+          "Shadow",
+          "Amy",
+          "Tails"
+        ],
+        "correct": 3
+      },
+      {
+        "question": "Grand Theft Auto was born in which Scottish city?",
+        "answers": [
+          "Glasgow",
+          "Aberdeen",
+          "Dundee",
+          "Edinburgh"
+        ],
+        "correct": 2,
+        "quip": "Yes! DMA Design started there."
+      },
+      {
+        "question": "Digitiser, the video games pages, was on which channel's Teletext?",
+        "answers": [
+          "BBC One",
+          "BBC Two",
+          "ITV",
+          "Channel 4"
+        ],
+        "correct": 3,
+        "quip": "Correct! Mr Biffo's finest work."
+      },
+      {
+        "question": "What does RAM stand for?",
+        "answers": [
+          "Random Access Memory",
+          "Read And Modify",
+          "Rapid Action Memory",
+          "Run Any Machine"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "Who first appeared as Jumpman in 1981's Donkey Kong?",
+        "answers": [
+          "Luigi",
+          "Wario",
+          "Mario",
+          "Toad"
+        ],
+        "correct": 2,
+        "quip": "Right! He was a carpenter back then."
+      },
+      {
+        "question": "What is the capital of Australia?",
+        "answers": [
+          "Canberra",
+          "Sydney",
+          "Melbourne",
+          "Perth"
+        ],
+        "correct": 0
+      },
+      {
+        "question": "In which 1983 film does a computer called WOPR play war games?",
+        "answers": [
+          "Tron",
+          "Hackers",
+          "Sneakers",
+          "WarGames"
+        ],
+        "correct": 3,
+        "quip": "Correct! The only winning move is not to play."
+      },
+      {
+        "question": "Which home computer was made for a BBC series about computing?",
+        "answers": [
+          "ZX81",
+          "BBC Micro",
+          "Dragon 32",
+          "Oric-1"
+        ],
+        "correct": 1,
+        "quip": "Yes! Built by Acorn, in Cambridge."
+      },
+      {
+        "question": "In chess, which piece only ever moves diagonally?",
+        "answers": [
+          "Bishop",
+          "Rook",
+          "Knight",
+          "Pawn"
+        ],
+        "correct": 0
+      }
+    ]
+  }
+}
